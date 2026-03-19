@@ -8,20 +8,19 @@ import { TreePine, Linkedin, Youtube, Instagram, Facebook } from 'lucide-react'
 const companyLinks = [
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
-  { label: 'Careers', href: '/careers' },
+  { label: 'Apply for Funding', href: '/apply' },
 ]
 
 const solutionLinks = [
-  { label: 'Real Estate Loans', href: '/solutions/real-estate-loans' },
-  { label: 'Business Funding', href: '/solutions/business-funding' },
-  { label: 'Business Services', href: '/solutions/business-services' },
-  { label: 'Clean Energy', href: '/solutions/clean-energy' },
+  { label: 'All Solutions', href: '/solutions' },
+  { label: 'Wellness Program', href: '/solutions/wellness' },
 ]
 
 const consultantLinks = [
-  { label: 'Join Sequoia', href: '/consultants/opportunity' },
-  { label: 'Training Library', href: '/consultants/training-library' },
-  { label: 'Resources', href: '/consultants/resources' },
+  { label: 'Join Sequoia', href: '/opportunity' },
+  { label: 'Enroll', href: '/enroll' },
+  { label: 'Training & Resources', href: '/resources' },
+  { label: 'Consultant Login', href: '/login' },
 ]
 
 const socialLinks = [

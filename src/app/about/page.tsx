@@ -337,7 +337,7 @@ export default function AboutPage() {
               <Button href="/apply" variant="secondary" size="lg">
                 Get Funding
               </Button>
-              <Button href="/careers" variant="ghost" size="lg" className="text-white hover:bg-white/10 border border-white/25">
+              <Button href="/opportunity" variant="ghost" size="lg" className="text-white hover:bg-white/10 border border-white/25">
                 Join Our Team
               </Button>
             </div>

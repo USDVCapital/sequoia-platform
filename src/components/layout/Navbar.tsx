@@ -9,17 +9,14 @@ import { TreePine, ChevronDown, Menu, X } from 'lucide-react'
 // ---------------------------------------------------------------------------
 
 const solutionsLinks = [
-  { label: 'Real Estate Loans', href: '/solutions/real-estate-loans' },
-  { label: 'Business Funding', href: '/solutions/business-funding' },
-  { label: 'Business Services', href: '/solutions/business-services' },
-  { label: 'Clean Energy', href: '/solutions/clean-energy' },
-  { label: 'Wellness Program', href: '/solutions/wellness-program' },
+  { label: 'All Solutions', href: '/solutions' },
+  { label: 'Wellness Program', href: '/solutions/wellness' },
 ]
 
 const consultantLinks = [
-  { label: 'Opportunity', href: '/consultants/opportunity' },
-  { label: 'Training Library', href: '/consultants/training-library' },
-  { label: 'Leaderboard', href: '/consultants/leaderboard' },
+  { label: 'Opportunity', href: '/opportunity' },
+  { label: 'Training Library', href: '/resources' },
+  { label: 'Enroll', href: '/enroll' },
 ]
 
 // ---------------------------------------------------------------------------
@@ -198,13 +195,13 @@ export default function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="/get-funding"
+              href="/apply"
               className="inline-flex items-center justify-center rounded-md bg-sequoia-700 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-sequoia-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sequoia-700 focus-visible:ring-offset-2"
             >
               Get Funding
             </Link>
             <Link
-              href="/consultant-login"
+              href="/login"
               className="inline-flex items-center justify-center rounded-md border border-sequoia-700 bg-transparent px-5 py-2.5 text-sm font-medium text-sequoia-700 hover:bg-sequoia-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sequoia-700 focus-visible:ring-offset-2"
             >
               Consultant Login
@@ -309,14 +306,14 @@ export default function Navbar() {
         {/* Drawer CTAs */}
         <div className="shrink-0 border-t border-gray-100 px-5 py-5 flex flex-col gap-3">
           <Link
-            href="/get-funding"
+            href="/apply"
             onClick={closeMobile}
             className="flex items-center justify-center rounded-md bg-sequoia-700 px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-sequoia-800 transition-colors"
           >
             Get Funding
           </Link>
           <Link
-            href="/consultant-login"
+            href="/login"
             onClick={closeMobile}
             className="flex items-center justify-center rounded-md border border-sequoia-700 bg-transparent px-5 py-3 text-sm font-medium text-sequoia-700 hover:bg-sequoia-50 transition-colors"
           >
