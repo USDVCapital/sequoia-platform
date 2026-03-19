@@ -245,27 +245,17 @@ p {
   max-width: 70ch;
 }
 
-a {
-  color: #000000;
+/* :where() gives specificity 0, so Tailwind utilities like text-white always win */
+:where(a) {
+  color: inherit;
   text-decoration-color: transparent;
   text-underline-offset: 3px;
   transition: color var(--duration-brand) var(--ease-brand),
     text-decoration-color var(--duration-brand) var(--ease-brand);
 }
 
-a:hover {
-  color: #000000;
-  text-decoration-line: underline;
+:where(a:hover) {
   text-decoration-color: var(--gold-500);
-}
-
-.dark a {
-  color: #FFFFFF;
-}
-
-.dark a:hover {
-  color: #FFFFFF;
-  text-decoration-color: var(--gold-400);
 }
 
 /* ─── Utility / Component Layer ──────────────────────────────────────────── */

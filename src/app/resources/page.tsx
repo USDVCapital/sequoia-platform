@@ -14,6 +14,9 @@ import {
 } from 'lucide-react'
 import Badge from '@/components/ui/Badge'
 import SectionHeading from '@/components/ui/SectionHeading'
+import FadeIn from '@/components/motion/FadeIn'
+import StaggerContainer from '@/components/motion/StaggerContainer'
+import StaggerItem from '@/components/motion/StaggerItem'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -241,36 +244,38 @@ export default function ResourcesPage() {
 
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="bg-gradient-hero py-20">
-        <div className="container-brand text-center">
-          <span className="badge-dark mb-5 inline-flex">
-            <Video size={12} />
-            Training Library
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Your Training Library
-          </h1>
-          <p className="text-sequoia-200 text-xl max-w-2xl mx-auto">
-            190+ videos, guides, and resources to help you succeed as a Sequoia consultant.
-          </p>
+        <FadeIn direction="up">
+          <div className="container-brand text-center">
+            <span className="badge-dark mb-5 inline-flex">
+              <Video size={12} />
+              Training Library
+            </span>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+              Your Training Library
+            </h1>
+            <p className="text-sequoia-200 text-xl max-w-2xl mx-auto">
+              190+ videos, guides, and resources to help you succeed as a Sequoia consultant.
+            </p>
 
-          {/* Live training countdown */}
-          <div className="mt-10 inline-flex items-center gap-3 glass rounded-full px-5 py-3">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold-400" />
-            </span>
-            <Wifi size={16} className="text-sequoia-300" />
-            <span className="text-white font-semibold text-sm">
-              Next Live Training: Wednesday 8 PM ET
-            </span>
-            {countdown && (
-              <span className="badge-gold text-xs">
-                <Clock size={11} />
-                {countdown}
+            {/* Live training countdown */}
+            <div className="mt-10 inline-flex items-center gap-3 glass rounded-full px-5 py-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold-400" />
               </span>
-            )}
+              <Wifi size={16} className="text-sequoia-300" />
+              <span className="text-white font-semibold text-sm">
+                Next Live Training: Wednesday 8 PM ET
+              </span>
+              {countdown && (
+                <span className="badge-gold text-xs">
+                  <Clock size={11} />
+                  {countdown}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* ── Filter Tabs + Video Grid ────────────────────────────────────── */}
@@ -278,35 +283,39 @@ export default function ResourcesPage() {
         <div className="container-brand">
 
           {/* Filter tabs */}
-          <div className="flex flex-wrap gap-2 mb-10" role="tablist" aria-label="Filter training videos">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                role="tab"
-                aria-selected={activeFilter === f}
-                onClick={() => setActiveFilter(f)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-150 cursor-pointer border ${
-                  activeFilter === f
-                    ? 'bg-sequoia-700 text-white border-sequoia-700'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-sequoia-300 hover:text-sequoia-700'
-                }`}
-              >
-                {f}
-                {f !== 'All' && (
-                  <span className="ml-1.5 opacity-60 text-xs">
-                    ({VIDEOS.filter((v) => v.category === f).length})
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+          <FadeIn direction="up">
+            <div className="flex flex-wrap gap-2 mb-10" role="tablist" aria-label="Filter training videos">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  role="tab"
+                  aria-selected={activeFilter === f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-150 cursor-pointer border ${
+                    activeFilter === f
+                      ? 'bg-sequoia-700 text-white border-sequoia-700'
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-sequoia-300 hover:text-sequoia-700'
+                  }`}
+                >
+                  {f}
+                  {f !== 'All' && (
+                    <span className="ml-1.5 opacity-60 text-xs">
+                      ({VIDEOS.filter((v) => v.category === f).length})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </FadeIn>
 
           {/* Video grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <StaggerContainer staggerDelay={0.08} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filtered.map((video) => (
-              <VideoCard key={video.id} video={video} />
+              <StaggerItem key={video.id} direction="up">
+                <VideoCard video={video} />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
           {filtered.length === 0 && (
             <div className="text-center py-16 text-gray-400">
@@ -357,38 +366,42 @@ export default function ResourcesPage() {
       {/* ── Quick Start Resources ───────────────────────────────────────── */}
       <section className="section-padding bg-gradient-section">
         <div className="container-brand">
-          <SectionHeading
-            eyebrow="Quick Start"
-            heading="Downloadable Resources"
-            subheading="Essential guides and one-pagers to get your consulting business off the ground quickly."
-          />
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="Quick Start"
+              heading="Downloadable Resources"
+              subheading="Essential guides and one-pagers to get your consulting business off the ground quickly."
+            />
+          </FadeIn>
 
-          <div className="mt-10 max-w-2xl mx-auto space-y-3">
-            {QUICK_START.map((item) => (
-              <div
-                key={item.title}
-                className="card-sequoia p-4 flex items-center justify-between gap-4 group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="icon-box-sequoia flex-shrink-0">{item.icon}</div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {item.type} &middot; {item.size}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  aria-label={`Download ${item.title}`}
-                  className="flex-shrink-0 flex items-center gap-1.5 text-sequoia-700 hover:text-sequoia-900 text-sm font-semibold transition-colors duration-150 cursor-pointer"
+          <FadeIn direction="up" delay={0.2}>
+            <div className="mt-10 max-w-2xl mx-auto space-y-3">
+              {QUICK_START.map((item) => (
+                <div
+                  key={item.title}
+                  className="card-sequoia p-4 flex items-center justify-between gap-4 group"
                 >
-                  <Download size={16} />
-                  <span className="hidden sm:inline">Download</span>
-                </button>
-              </div>
-            ))}
-          </div>
+                  <div className="flex items-center gap-4">
+                    <div className="icon-box-sequoia flex-shrink-0">{item.icon}</div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {item.type} &middot; {item.size}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={`Download ${item.title}`}
+                    className="flex-shrink-0 flex items-center gap-1.5 text-sequoia-700 hover:text-sequoia-900 text-sm font-semibold transition-colors duration-150 cursor-pointer"
+                  >
+                    <Download size={16} />
+                    <span className="hidden sm:inline">Download</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
         </div>
       </section>
 

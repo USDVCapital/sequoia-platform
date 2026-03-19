@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import {
   Building2,
@@ -16,6 +18,10 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import StatCard from '@/components/ui/StatCard'
 import SectionHeading from '@/components/ui/SectionHeading'
+import FadeIn from '@/components/motion/FadeIn'
+import StaggerContainer from '@/components/motion/StaggerContainer'
+import StaggerItem from '@/components/motion/StaggerItem'
+import CountUp from '@/components/motion/CountUp'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -121,58 +127,68 @@ export default function HomePage() {
 
         <div className="container-brand relative z-10 section-padding-lg">
           {/* Badge */}
-          <div className="flex justify-center mb-6">
-            <span className="badge-dark">
-              Trusted Since 2015 · Nationwide Reach
-            </span>
-          </div>
+          <FadeIn delay={0} direction="up">
+            <div className="flex justify-center mb-6">
+              <span className="badge-dark">
+                Trusted Since 2015 · Nationwide Reach
+              </span>
+            </div>
+          </FadeIn>
 
           {/* Headline */}
-          <h1 className="text-center text-gradient-hero text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none max-w-4xl mx-auto">
-            Fueling Growth &amp; Expanding Possibilities
-          </h1>
+          <FadeIn delay={0} direction="up">
+            <h1 className="text-center text-gradient-hero text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none max-w-4xl mx-auto">
+              Fueling Growth &amp; Expanding Possibilities
+            </h1>
+          </FadeIn>
 
           {/* Subtitle */}
-          <p className="mt-6 text-center text-sequoia-200 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
-            Your trusted partner for business solutions, commercial lending, and
-            recurring income opportunities.
-          </p>
+          <FadeIn delay={0.1} direction="up">
+            <p className="mt-6 text-center text-sequoia-200 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
+              Your trusted partner for business solutions, commercial lending, and
+              recurring income opportunities.
+            </p>
+          </FadeIn>
 
           {/* CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="primary" size="lg" href="/solutions">
-              Find Funding for My Business
-              <ArrowRight size={18} />
-            </Button>
-            <Button variant="secondary" size="lg" href="/opportunity">
-              Build a Consulting Business
-              <ArrowRight size={18} />
-            </Button>
-          </div>
+          <FadeIn delay={0.2} direction="up">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button variant="primary" size="lg" href="/solutions">
+                Find Funding for My Business
+                <ArrowRight size={18} />
+              </Button>
+              <Button variant="secondary" size="lg" href="/opportunity">
+                Build a Consulting Business
+                <ArrowRight size={18} />
+              </Button>
+            </div>
+          </FadeIn>
 
           {/* Social proof bar */}
-          <div className="mt-14 glass rounded-2xl py-5 px-6 max-w-3xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-center justify-center divide-y sm:divide-y-0 sm:divide-x divide-white/20 gap-0">
-              <div className="flex items-center gap-3 px-6 py-3 sm:py-0 first:pt-0 last:pb-0">
-                <TrendingUp size={20} className="text-gold-400 shrink-0" />
-                <span className="text-white font-semibold text-sm sm:text-base">
-                  $70M+ Funded in 2025
-                </span>
-              </div>
-              <div className="flex items-center gap-3 px-6 py-3 sm:py-0">
-                <Network size={20} className="text-gold-400 shrink-0" />
-                <span className="text-white font-semibold text-sm sm:text-base">
-                  500+ Vetted Lending Partners
-                </span>
-              </div>
-              <div className="flex items-center gap-3 px-6 py-3 sm:py-0">
-                <Users size={20} className="text-gold-400 shrink-0" />
-                <span className="text-white font-semibold text-sm sm:text-base">
-                  2,500+ Consultant Network
-                </span>
+          <FadeIn delay={0.3} direction="up">
+            <div className="mt-14 glass rounded-2xl py-5 px-6 max-w-3xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center justify-center divide-y sm:divide-y-0 sm:divide-x divide-white/20 gap-0">
+                <div className="flex items-center gap-3 px-6 py-3 sm:py-0 first:pt-0 last:pb-0">
+                  <TrendingUp size={20} className="text-gold-400 shrink-0" />
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    $70M+ Funded in 2025
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 px-6 py-3 sm:py-0">
+                  <Network size={20} className="text-gold-400 shrink-0" />
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    500+ Vetted Lending Partners
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 px-6 py-3 sm:py-0">
+                  <Users size={20} className="text-gold-400 shrink-0" />
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    2,500+ Consultant Network
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </FadeIn>
         </div>
 
         {/* Bottom wave transition */}
@@ -197,33 +213,37 @@ export default function HomePage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding bg-gradient-section">
         <div className="container-brand">
-          <SectionHeading
-            eyebrow="What We Do"
-            heading="Our Solutions"
-            subheading="From commercial real estate loans to employee wellness programs, we connect businesses and consultants with the right solutions at the right time."
-            align="center"
-          />
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="What We Do"
+              heading="Our Solutions"
+              subheading="From commercial real estate loans to employee wellness programs, we connect businesses and consultants with the right solutions at the right time."
+              align="center"
+            />
+          </FadeIn>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StaggerContainer className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {verticals.map((v) => (
-              <Card key={v.title} href={v.href} className="group flex flex-col gap-4 hover:border-sequoia-700/40">
-                <div className="icon-box-sequoia group-hover:bg-sequoia-200 transition-colors duration-200">
-                  {v.icon}
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <h3 className="text-lg font-bold text-sequoia-900 leading-snug">
-                    {v.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed flex-1">
-                    {v.description}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-sequoia-700 group-hover:text-sequoia-900 transition-colors duration-150">
-                  Learn More <ArrowRight size={14} />
-                </span>
-              </Card>
+              <StaggerItem key={v.title} direction="up">
+                <Card href={v.href} className="group flex flex-col gap-4 hover:border-sequoia-700/40">
+                  <div className="icon-box-sequoia group-hover:bg-sequoia-200 transition-colors duration-200">
+                    {v.icon}
+                  </div>
+                  <div className="flex-1 flex flex-col gap-2">
+                    <h3 className="text-lg font-bold text-sequoia-900 leading-snug">
+                      {v.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed flex-1">
+                      {v.description}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-sequoia-700 group-hover:text-sequoia-900 transition-colors duration-150">
+                    Learn More <ArrowRight size={14} />
+                  </span>
+                </Card>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
@@ -232,34 +252,42 @@ export default function HomePage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding bg-white">
         <div className="container-brand">
-          <SectionHeading
-            eyebrow="Why Sequoia"
-            heading="Built on Results, Driven by Solutions"
-            align="center"
-          />
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="Why Sequoia"
+              heading="Built on Results, Driven by Solutions"
+              align="center"
+            />
+          </FadeIn>
 
           {/* Stat cards */}
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <StatCard
-              icon={<TrendingUp size={22} />}
-              value="$70M+"
-              label="Funded in 2025"
-              trend="+24% YoY"
-            />
-            <StatCard
-              icon={<Network size={22} />}
-              value="500+"
-              label="Vetted Lending Partners"
-            />
-            <StatCard
-              icon={<Users size={22} />}
-              value="2,500+"
-              label="Consultant Network"
-            />
-          </div>
+          <StaggerContainer className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <StaggerItem direction="up">
+              <StatCard
+                icon={<TrendingUp size={22} />}
+                value={<CountUp end={70} prefix="$" suffix="M+" duration={2} />}
+                label="Funded in 2025"
+                trend="+24% YoY"
+              />
+            </StaggerItem>
+            <StaggerItem direction="up">
+              <StatCard
+                icon={<Network size={22} />}
+                value={<CountUp end={500} suffix="+" duration={2} />}
+                label="Vetted Lending Partners"
+              />
+            </StaggerItem>
+            <StaggerItem direction="up">
+              <StatCard
+                icon={<Users size={22} />}
+                value={<CountUp end={2500} suffix="+" duration={2} />}
+                label="Consultant Network"
+              />
+            </StaggerItem>
+          </StaggerContainer>
 
           {/* Allen Wu quote */}
-          <div className="mt-14 max-w-3xl mx-auto text-center">
+          <FadeIn direction="up" className="mt-14 max-w-3xl mx-auto text-center">
             <p className="text-lg leading-relaxed text-gray-700">
               Sequoia Enterprise Solutions was built on the belief that the right
               solution changes everything — for the client, for the consultant,
@@ -279,7 +307,7 @@ export default function HomePage() {
                 — Allen Wu, Founder &amp; CEO, Sequoia Enterprise Solutions
               </footer>
             </blockquote>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -290,74 +318,78 @@ export default function HomePage() {
         <div className="container-brand">
           <div className="rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 shadow-brand-xl border border-sequoia-100">
             {/* Left — content */}
-            <div className="bg-white p-10 lg:p-14 flex flex-col justify-center gap-6">
-              <span className="badge-gold self-start">Featured Program</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-sequoia-900 leading-tight tracking-tight">
-                The Wellness Program That{' '}
-                <span className="text-gradient-gold">Pays You Every Month</span>
-              </h2>
-              <p className="text-gray-600 leading-relaxed text-base max-w-prose">
-                The EHMP (Employer Health Management Program) is Sequoia's
-                highest-velocity door-opener product. It's a fully IRS-compliant
-                Section 125 plan that creates a three-way win: employers
-                dramatically cut payroll tax costs, employees receive real
-                wellness benefits, and consultants earn predictable recurring
-                commissions.
-              </p>
-              <ul className="space-y-3">
-                {wellnessFeatures.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm text-gray-700">
-                    <CheckCircle2
-                      size={18}
-                      className="text-sequoia-600 shrink-0 mt-0.5"
-                    />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="pt-2">
-                <Button variant="primary" size="lg" href="/solutions/wellness">
-                  Learn About Wellness
-                  <ArrowRight size={18} />
-                </Button>
+            <FadeIn direction="left">
+              <div className="bg-white p-10 lg:p-14 flex flex-col justify-center gap-6">
+                <span className="badge-gold self-start">Featured Program</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-sequoia-900 leading-tight tracking-tight">
+                  The Wellness Program That{' '}
+                  <span className="text-gradient-gold">Pays You Every Month</span>
+                </h2>
+                <p className="text-gray-600 leading-relaxed text-base max-w-prose">
+                  The EHMP (Employer Health Management Program) is Sequoia's
+                  highest-velocity door-opener product. It's a fully IRS-compliant
+                  Section 125 plan that creates a three-way win: employers
+                  dramatically cut payroll tax costs, employees receive real
+                  wellness benefits, and consultants earn predictable recurring
+                  commissions.
+                </p>
+                <ul className="space-y-3">
+                  {wellnessFeatures.map((f) => (
+                    <li key={f} className="flex items-start gap-3 text-sm text-gray-700">
+                      <CheckCircle2
+                        size={18}
+                        className="text-sequoia-600 shrink-0 mt-0.5"
+                      />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="pt-2">
+                  <Button variant="primary" size="lg" href="/solutions/wellness">
+                    Learn About Wellness
+                    <ArrowRight size={18} />
+                  </Button>
+                </div>
               </div>
-            </div>
+            </FadeIn>
 
             {/* Right — highlight panel */}
-            <div className="bg-gradient-sequoia p-10 lg:p-14 flex flex-col justify-center gap-8">
-              <p className="text-sequoia-200 text-sm font-semibold uppercase tracking-widest">
-                Consultant Earnings Snapshot
-              </p>
-              <div className="space-y-6">
-                {[
-                  { employees: '50', monthly: '$600–$900', annual: '$7,200–$10,800' },
-                  { employees: '100', monthly: '$1,200–$1,800', annual: '$14,400–$21,600' },
-                  { employees: '250', monthly: '$3,000–$4,500', annual: '$36,000–$54,000' },
-                ].map((row) => (
-                  <div
-                    key={row.employees}
-                    className="glass rounded-xl p-5 flex flex-col gap-1"
-                  >
-                    <span className="text-sequoia-300 text-xs font-semibold uppercase tracking-wider">
-                      {row.employees} Employees
-                    </span>
-                    <span className="text-white text-2xl font-bold">
-                      {row.monthly}
-                      <span className="text-sequoia-300 text-sm font-normal ml-1">
-                        /month
+            <FadeIn direction="right">
+              <div className="bg-gradient-sequoia p-10 lg:p-14 flex flex-col justify-center gap-8">
+                <p className="text-sequoia-200 text-sm font-semibold uppercase tracking-widest">
+                  Consultant Earnings Snapshot
+                </p>
+                <div className="space-y-6">
+                  {[
+                    { employees: '50', monthly: '$600–$900', annual: '$7,200–$10,800' },
+                    { employees: '100', monthly: '$1,200–$1,800', annual: '$14,400–$21,600' },
+                    { employees: '250', monthly: '$3,000–$4,500', annual: '$36,000–$54,000' },
+                  ].map((row) => (
+                    <div
+                      key={row.employees}
+                      className="glass rounded-xl p-5 flex flex-col gap-1"
+                    >
+                      <span className="text-sequoia-300 text-xs font-semibold uppercase tracking-wider">
+                        {row.employees} Employees
                       </span>
-                    </span>
-                    <span className="text-sequoia-300 text-sm">
-                      {row.annual} / year
-                    </span>
-                  </div>
-                ))}
+                      <span className="text-white text-2xl font-bold">
+                        {row.monthly}
+                        <span className="text-sequoia-300 text-sm font-normal ml-1">
+                          /month
+                        </span>
+                      </span>
+                      <span className="text-sequoia-300 text-sm">
+                        {row.annual} / year
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sequoia-300 text-xs leading-relaxed">
+                  Earnings based on $12–$18 per enrolled employee per month.
+                  Results vary by plan and enrollment.
+                </p>
               </div>
-              <p className="text-sequoia-300 text-xs leading-relaxed">
-                Earnings based on $12–$18 per enrolled employee per month.
-                Results vary by plan and enrollment.
-              </p>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -382,7 +414,7 @@ export default function HomePage() {
           }}
         />
 
-        <div className="container-brand relative z-10 text-center">
+        <FadeIn direction="up" className="container-brand relative z-10 text-center">
           <span className="badge-dark">Consultant Opportunity</span>
           <h2 className="mt-6 text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight max-w-3xl mx-auto">
             What Would an Extra{' '}
@@ -423,7 +455,7 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
@@ -431,43 +463,47 @@ export default function HomePage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding bg-white">
         <div className="container-brand">
-          <SectionHeading
-            eyebrow="Client Stories"
-            heading="What Our Clients and Consultants Say"
-            subheading="Real outcomes from real people — business owners who got funded and consultants who built income they didn't think was possible."
-            align="center"
-          />
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="Client Stories"
+              heading="What Our Clients and Consultants Say"
+              subheading="Real outcomes from real people — business owners who got funded and consultants who built income they didn't think was possible."
+              align="center"
+            />
+          </FadeIn>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <StaggerContainer className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
             {testimonials.map((t) => (
-              <Card key={t.name} className="flex flex-col gap-5">
-                {/* Stars */}
-                <div className="flex gap-1" aria-label={`${t.rating} out of 5 stars`}>
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      className="text-gold-500 fill-gold-400"
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
+              <StaggerItem key={t.name} direction="up">
+                <Card className="flex flex-col gap-5">
+                  {/* Stars */}
+                  <div className="flex gap-1" aria-label={`${t.rating} out of 5 stars`}>
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        className="text-gold-500 fill-gold-400"
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </div>
 
-                {/* Quote */}
-                <blockquote className="flex-1">
-                  <p className="text-gray-700 leading-relaxed italic">
-                    "{t.quote}"
-                  </p>
-                </blockquote>
+                  {/* Quote */}
+                  <blockquote className="flex-1">
+                    <p className="text-gray-700 leading-relaxed italic">
+                      "{t.quote}"
+                    </p>
+                  </blockquote>
 
-                {/* Attribution */}
-                <footer className="border-t border-gray-100 pt-4">
-                  <p className="font-semibold text-sequoia-900 text-sm">{t.name}</p>
-                  <p className="text-gray-500 text-xs mt-0.5">{t.title}</p>
-                </footer>
-              </Card>
+                  {/* Attribution */}
+                  <footer className="border-t border-gray-100 pt-4">
+                    <p className="font-semibold text-sequoia-900 text-sm">{t.name}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{t.title}</p>
+                  </footer>
+                </Card>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
@@ -476,28 +512,29 @@ export default function HomePage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding bg-sequoia-50">
         <div className="container-brand">
-          <SectionHeading
-            eyebrow="Our Network"
-            heading="Trusted By Industry Leaders"
-            subheading="Sequoia works alongside top real estate firms, chambers of commerce, financial institutions, and lending platforms nationwide."
-            align="center"
-          />
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="Our Network"
+              heading="Trusted By Industry Leaders"
+              subheading="Sequoia works alongside top real estate firms, chambers of commerce, financial institutions, and lending platforms nationwide."
+              align="center"
+            />
+          </FadeIn>
 
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <StaggerContainer className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {partners.map((partner) => (
-              <div
-                key={partner}
-                className="flex items-center justify-center rounded-xl border border-sequoia-100 bg-white px-6 py-5 shadow-sm text-center"
-              >
-                <span className="text-xs sm:text-sm font-semibold text-sequoia-700 leading-snug">
-                  {partner}
-                </span>
-              </div>
+              <StaggerItem key={partner} direction="up">
+                <div className="flex items-center justify-center rounded-xl border border-sequoia-100 bg-white px-6 py-5 shadow-sm text-center">
+                  <span className="text-xs sm:text-sm font-semibold text-sequoia-700 leading-snug">
+                    {partner}
+                  </span>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
           {/* Final CTA band */}
-          <div className="mt-16 rounded-2xl bg-gradient-sequoia p-10 text-center flex flex-col items-center gap-6">
+          <FadeIn direction="up" className="mt-16 rounded-2xl bg-gradient-sequoia p-10 text-center flex flex-col items-center gap-6">
             <h3 className="text-2xl sm:text-3xl font-bold text-white max-w-xl leading-tight">
               Ready to grow with Sequoia?
             </h3>
@@ -518,7 +555,7 @@ export default function HomePage() {
                 Contact Us
               </Button>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </>

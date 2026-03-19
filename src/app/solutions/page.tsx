@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Building2,
   Hammer,
@@ -24,6 +26,9 @@ import {
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import SectionHeading from '@/components/ui/SectionHeading'
+import FadeIn from '@/components/motion/FadeIn'
+import StaggerContainer from '@/components/motion/StaggerContainer'
+import StaggerItem from '@/components/motion/StaggerItem'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -270,24 +275,22 @@ function SolutionSection({
   return (
     <section className={`section-padding ${bgClass}`}>
       <div className="container-brand">
-        <SectionHeading eyebrow={eyebrow} heading={heading} subheading={subheading} />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <FadeIn direction="up">
+          <SectionHeading eyebrow={eyebrow} heading={heading} subheading={subheading} />
+        </FadeIn>
+        <StaggerContainer className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.name} {...product} />
+            <StaggerItem key={product.name} direction="up">
+              <ProductCard {...product} />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   )
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
-
-export const metadata = {
-  title: 'Comprehensive Business Solutions | Sequoia Enterprise Solutions',
-  description:
-    'Real estate loans, business funding, wellness programs, and clean energy solutions — all through one trusted platform.',
-}
 
 export default function SolutionsPage() {
   return (
@@ -305,23 +308,31 @@ export default function SolutionsPage() {
         />
 
         <div className="container-brand relative z-10 text-center">
-          <span className="badge-dark mb-6 inline-flex">Full-Spectrum Financing & Advisory</span>
-          <h1 className="text-display-lg sm:text-display-xl font-extrabold tracking-tight text-gradient-hero mx-auto max-w-4xl">
-            Comprehensive Business Solutions
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-sequoia-300 max-w-2xl mx-auto">
-            From real estate loans to employee wellness programs, Sequoia Enterprise Solutions
-            connects you with the right capital and services to grow — all through one trusted
-            platform.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Button href="/apply" variant="secondary" size="lg">
-              Start Your Application
-            </Button>
-            <a href="#real-estate" className="btn-ghost-light">
-              Explore Solutions
-            </a>
-          </div>
+          <FadeIn direction="up" delay={0}>
+            <span className="badge-dark mb-6 inline-flex">Full-Spectrum Financing & Advisory</span>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.1}>
+            <h1 className="text-display-lg sm:text-display-xl font-extrabold tracking-tight text-gradient-hero mx-auto max-w-4xl">
+              Comprehensive Business Solutions
+            </h1>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.2}>
+            <p className="mt-6 text-lg leading-relaxed text-sequoia-300 max-w-2xl mx-auto">
+              From real estate loans to employee wellness programs, Sequoia Enterprise Solutions
+              connects you with the right capital and services to grow — all through one trusted
+              platform.
+            </p>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.3}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <Button href="/apply" variant="secondary" size="lg">
+                Start Your Application
+              </Button>
+              <a href="#real-estate" className="btn-ghost-light">
+                Explore Solutions
+              </a>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -381,25 +392,33 @@ export default function SolutionsPage() {
       {/* ── CTA Banner ── */}
       <section className="bg-gradient-sequoia-dark section-padding">
         <div className="container-brand text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-400 mb-3">
-            Free Consultation
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white max-w-2xl mx-auto">
-            Not sure which solution fits?
-          </h2>
-          <p className="mt-4 text-sequoia-300 text-lg max-w-xl mx-auto leading-relaxed">
-            Our advisors take the time to understand your goals and match you with the right
-            program — at no cost to you.
-          </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Button href="/apply" variant="secondary" size="lg">
-              Request a Free Consultation
-            </Button>
-            <a href="tel:+1-800-000-0000" className="btn-ghost-light inline-flex items-center gap-2">
-              <Phone className="size-4" />
-              Talk to an Advisor
-            </a>
-          </div>
+          <FadeIn direction="up" delay={0}>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-400 mb-3">
+              Free Consultation
+            </p>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.1}>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white max-w-2xl mx-auto">
+              Not sure which solution fits?
+            </h2>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.2}>
+            <p className="mt-4 text-sequoia-300 text-lg max-w-xl mx-auto leading-relaxed">
+              Our advisors take the time to understand your goals and match you with the right
+              program — at no cost to you.
+            </p>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.3}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <Button href="/apply" variant="secondary" size="lg">
+                Request a Free Consultation
+              </Button>
+              <a href="tel:+1-800-000-0000" className="btn-ghost-light inline-flex items-center gap-2">
+                <Phone className="size-4" />
+                Talk to an Advisor
+              </a>
+            </div>
+          </FadeIn>
         </div>
       </section>
     </>

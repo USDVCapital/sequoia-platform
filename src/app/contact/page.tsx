@@ -4,6 +4,9 @@ import { useState, useRef } from 'react'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import SectionHeading from '@/components/ui/SectionHeading'
+import FadeIn from '@/components/motion/FadeIn'
+import StaggerContainer from '@/components/motion/StaggerContainer'
+import StaggerItem from '@/components/motion/StaggerItem'
 import { MapPin, Phone, Mail, Clock, CheckCircle2, ChevronRight } from 'lucide-react'
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error'
@@ -110,16 +113,18 @@ export default function ContactPage() {
           }}
         />
         <div className="container-brand relative">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="badge-dark mb-6 inline-flex">Get in Touch</span>
-            <h1 className="text-gradient-hero text-4xl font-bold tracking-tight sm:text-5xl">
-              Contact Us Today
-            </h1>
-            <p className="mt-5 text-lg leading-relaxed text-sequoia-200">
-              Have a question about funding, partnerships, or our programs? Our team is ready to help
-              — reach out and we&apos;ll respond promptly.
-            </p>
-          </div>
+          <FadeIn direction="up">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="badge-dark mb-6 inline-flex">Get in Touch</span>
+              <h1 className="text-gradient-hero text-4xl font-bold tracking-tight sm:text-5xl">
+                Contact Us Today
+              </h1>
+              <p className="mt-5 text-lg leading-relaxed text-sequoia-200">
+                Have a question about funding, partnerships, or our programs? Our team is ready to help
+                — reach out and we&apos;ll respond promptly.
+              </p>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -130,69 +135,75 @@ export default function ContactPage() {
 
             {/* ── Left column: contact info ─────────────────────────────── */}
             <div className="flex flex-col gap-6 lg:col-span-2">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
-                  Reach Us
-                </p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
-                  We&apos;re Here to Help
-                </h2>
-                <p className="mt-3 text-sm leading-relaxed text-gray-500">
-                  Whether you prefer email, phone, or stopping by our Rockville office — there&apos;s
-                  always someone ready to assist.
-                </p>
-              </div>
+              <FadeIn direction="up">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+                    Reach Us
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
+                    We&apos;re Here to Help
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-gray-500">
+                    Whether you prefer email, phone, or stopping by our Rockville office — there&apos;s
+                    always someone ready to assist.
+                  </p>
+                </div>
+              </FadeIn>
 
-              <div className="flex flex-col gap-4">
+              <StaggerContainer className="flex flex-col gap-4">
                 {contactDetails.map(({ icon, label, primary, secondary, href }) => (
-                  <Card key={label} className="flex items-start gap-4 p-5">
-                    <div className="icon-box-sequoia shrink-0">{icon}</div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                        {label}
-                      </p>
-                      {href ? (
-                        <a
-                          href={href}
-                          target={href.startsWith('http') ? '_blank' : undefined}
-                          rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          className="mt-0.5 block truncate font-semibold text-sequoia-700 hover:text-sequoia-800"
-                        >
-                          {primary}
-                        </a>
-                      ) : (
-                        <p className="mt-0.5 font-semibold text-sequoia-900">{primary}</p>
-                      )}
-                      <p className="mt-0.5 text-xs text-gray-500">{secondary}</p>
-                    </div>
-                  </Card>
+                  <StaggerItem key={label}>
+                    <Card className="flex items-start gap-4 p-5">
+                      <div className="icon-box-sequoia shrink-0">{icon}</div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                          {label}
+                        </p>
+                        {href ? (
+                          <a
+                            href={href}
+                            target={href.startsWith('http') ? '_blank' : undefined}
+                            rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            className="mt-0.5 block truncate font-semibold text-sequoia-700 hover:text-sequoia-800"
+                          >
+                            {primary}
+                          </a>
+                        ) : (
+                          <p className="mt-0.5 font-semibold text-sequoia-900">{primary}</p>
+                        )}
+                        <p className="mt-0.5 text-xs text-gray-500">{secondary}</p>
+                      </div>
+                    </Card>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {/* Wednesday training callout */}
-              <Card className="border-gold-200 bg-gold-50 p-5">
-                <div className="flex items-start gap-3">
-                  <Clock size={18} className="mt-0.5 shrink-0 text-gold-700" />
-                  <div>
-                    <p className="font-semibold text-gold-900">Wednesday Training Call</p>
-                    <p className="mt-1 text-sm leading-relaxed text-gold-800">
-                      Join our weekly training every Wednesday at <strong>8:00 PM ET</strong> — open
-                      to agents, consultants, and curious business owners.
-                    </p>
-                    <a
-                      href="tel:+13013378035"
-                      className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-gold-700 hover:text-gold-800"
-                    >
-                      <Phone size={13} />
-                      Call 301-337-8035 to RSVP
-                    </a>
+              <FadeIn direction="up" delay={0.1}>
+                <Card className="border-gold-200 bg-gold-50 p-5">
+                  <div className="flex items-start gap-3">
+                    <Clock size={18} className="mt-0.5 shrink-0 text-gold-700" />
+                    <div>
+                      <p className="font-semibold text-gold-900">Wednesday Training Call</p>
+                      <p className="mt-1 text-sm leading-relaxed text-gold-800">
+                        Join our weekly training every Wednesday at <strong>8:00 PM ET</strong> — open
+                        to agents, consultants, and curious business owners.
+                      </p>
+                      <a
+                        href="tel:+13013378035"
+                        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-gold-700 hover:text-gold-800"
+                      >
+                        <Phone size={13} />
+                        Call 301-337-8035 to RSVP
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </FadeIn>
             </div>
 
             {/* ── Right column: contact form ───────────────────────────── */}
-            <div className="lg:col-span-3">
+            <FadeIn direction="right" className="lg:col-span-3">
               <Card className="p-8">
                 {status === 'success' ? (
                   /* Success state */
@@ -380,7 +391,7 @@ export default function ContactPage() {
                   </>
                 )}
               </Card>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>

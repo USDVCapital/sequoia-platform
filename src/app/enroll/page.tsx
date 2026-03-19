@@ -15,6 +15,7 @@ import {
   CircleCheck,
 } from 'lucide-react'
 import SectionHeading from '@/components/ui/SectionHeading'
+import FadeIn from '@/components/motion/FadeIn'
 
 const valueItems = [
   { icon: <Users size={17} />, text: 'Access to 500+ vetted lending partners' },
@@ -108,202 +109,207 @@ export default function EnrollPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
 
             {/* Left — Value Recap */}
-            <div className="lg:col-span-2">
-              {/* Pricing callout */}
-              <div className="rounded-2xl bg-gradient-sequoia p-8 text-center mb-8">
-                <p className="text-sequoia-200 text-sm uppercase tracking-widest font-semibold mb-2">
-                  Consultant Membership
-                </p>
-                <div className="flex items-end justify-center gap-1">
-                  <span className="text-5xl font-black text-white">$29</span>
-                  <span className="text-xl font-bold text-sequoia-300 mb-1">.99</span>
-                  <span className="text-sequoia-300 mb-1">/month</span>
-                </div>
-                <p className="text-sequoia-300 text-xs mt-2">Cancel anytime. No contracts.</p>
-              </div>
-
-              {/* What's included */}
-              <h2 className="text-xl font-bold text-gray-900 mb-5">What You Get</h2>
-              <ul className="space-y-4">
-                {valueItems.map((item) => (
-                  <li key={item.text} className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sequoia-100 text-sequoia-700 flex items-center justify-center mt-0.5">
-                      {item.icon}
-                    </div>
-                    <span className="text-gray-700 text-sm leading-relaxed">{item.text}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="divider-gold my-8" />
-
-              {/* Trust signals */}
-              <div className="space-y-3">
-                {[
-                  'No license required to refer clients',
-                  'Weekly live support and training',
-                  'Real people, real deals — 500+ funded',
-                ].map((t) => (
-                  <div key={t} className="flex items-center gap-2 text-sm text-gray-600">
-                    <CircleCheck size={16} className="text-sequoia-600 flex-shrink-0" />
-                    {t}
+            <FadeIn direction="left" className="lg:col-span-2">
+              <div>
+                {/* Pricing callout */}
+                <div className="rounded-2xl bg-gradient-sequoia p-8 text-center mb-8">
+                  <p className="text-sequoia-200 text-sm uppercase tracking-widest font-semibold mb-2">
+                    Consultant Membership
+                  </p>
+                  <div className="flex items-end justify-center gap-1">
+                    <span className="text-5xl font-black text-white">$29</span>
+                    <span className="text-xl font-bold text-sequoia-300 mb-1">.99</span>
+                    <span className="text-sequoia-300 mb-1">/month</span>
                   </div>
-                ))}
+                  <p className="text-sequoia-300 text-xs mt-2">Cancel anytime. No contracts.</p>
+                </div>
+
+                {/* What's included */}
+                <h2 className="text-xl font-bold text-gray-900 mb-5">What You Get</h2>
+                <ul className="space-y-4">
+                  {valueItems.map((item) => (
+                    <li key={item.text} className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sequoia-100 text-sequoia-700 flex items-center justify-center mt-0.5">
+                        {item.icon}
+                      </div>
+                      <span className="text-gray-700 text-sm leading-relaxed">{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="divider-gold my-8" />
+
+                {/* Trust signals */}
+                <div className="space-y-3">
+                  {[
+                    'No license required to refer clients',
+                    'Weekly live support and training',
+                    'Real people, real deals — 500+ funded',
+                  ].map((t) => (
+                    <div key={t} className="flex items-center gap-2 text-sm text-gray-600">
+                      <CircleCheck size={16} className="text-sequoia-600 flex-shrink-0" />
+                      {t}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </FadeIn>
 
             {/* Right — Enrollment Form */}
-            <div className="lg:col-span-3">
-              {submitted ? (
-                <SuccessState name={form.fullName} email={form.email} />
-              ) : (
-                <div className="card-sequoia p-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">Create Your Account</h2>
-                  <p className="text-gray-500 text-sm mb-7">
-                    Complete the form below to start your Sequoia consultant membership.
-                  </p>
-
-                  <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                    {/* Full Name */}
-                    <div>
-                      <label
-                        htmlFor="fullName"
-                        className="block text-sm font-semibold text-gray-700 mb-1.5"
-                      >
-                        Full Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        name="fullName"
-                        type="text"
-                        autoComplete="name"
-                        placeholder="Jane Smith"
-                        value={form.fullName}
-                        onChange={handleChange}
-                        className={`input-brand ${errors.fullName ? 'border-red-400 focus:border-red-400' : ''}`}
-                      />
-                      {errors.fullName && (
-                        <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
-                      )}
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-semibold text-gray-700 mb-1.5"
-                      >
-                        Email Address <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        placeholder="jane@example.com"
-                        value={form.email}
-                        onChange={handleChange}
-                        className={`input-brand ${errors.email ? 'border-red-400 focus:border-red-400' : ''}`}
-                      />
-                      {errors.email && (
-                        <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-                      )}
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-semibold text-gray-700 mb-1.5"
-                      >
-                        Phone Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        autoComplete="tel"
-                        placeholder="(555) 000-0000"
-                        value={form.phone}
-                        onChange={handleChange}
-                        className={`input-brand ${errors.phone ? 'border-red-400 focus:border-red-400' : ''}`}
-                      />
-                      {errors.phone && (
-                        <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
-                      )}
-                    </div>
-
-                    {/* Professional Background */}
-                    <div>
-                      <label
-                        htmlFor="background"
-                        className="block text-sm font-semibold text-gray-700 mb-1.5"
-                      >
-                        Professional Background <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        id="background"
-                        name="background"
-                        value={form.background}
-                        onChange={handleChange}
-                        className={`input-brand ${errors.background ? 'border-red-400' : ''}`}
-                      >
-                        <option value="">Select your background…</option>
-                        {backgrounds.map((b) => (
-                          <option key={b} value={b}>{b}</option>
-                        ))}
-                      </select>
-                      {errors.background && (
-                        <p className="mt-1 text-xs text-red-600">{errors.background}</p>
-                      )}
-                    </div>
-
-                    {/* Referral Code */}
-                    <div>
-                      <label
-                        htmlFor="referralCode"
-                        className="block text-sm font-semibold text-gray-700 mb-1.5"
-                      >
-                        Referral Code{' '}
-                        <span className="text-gray-400 font-normal">(optional)</span>
-                      </label>
-                      <input
-                        id="referralCode"
-                        name="referralCode"
-                        type="text"
-                        placeholder="Enter referral code if you have one"
-                        value={form.referralCode}
-                        onChange={handleChange}
-                        className="input-brand"
-                      />
-                    </div>
-
-                    {/* Pricing reminder */}
-                    <div className="rounded-lg bg-sequoia-50 border border-sequoia-200 p-4 flex items-center justify-between">
-                      <span className="text-sequoia-800 font-semibold text-sm">
-                        Consultant Membership
-                      </span>
-                      <span className="text-sequoia-900 font-black text-xl">
-                        $29.99<span className="text-sm font-normal text-sequoia-700">/mo</span>
-                      </span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="btn-gold w-full justify-center text-base py-4"
-                    >
-                      Complete Enrollment
-                      <ArrowRight size={18} />
-                    </button>
-
-                    <p className="text-center text-xs text-gray-400 leading-relaxed">
-                      By enrolling you agree to our Terms of Service and Privacy Policy.
-                      Cancel anytime from your account dashboard.
+            <FadeIn direction="right" className="lg:col-span-3">
+              <div>
+                {submitted ? (
+                  <SuccessState name={form.fullName} email={form.email} />
+                ) : (
+                  <div className="card-sequoia p-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">Create Your Account</h2>
+                    <p className="text-gray-500 text-sm mb-7">
+                      Complete the form below to start your Sequoia consultant membership.
                     </p>
-                  </form>
-                </div>
-              )}
-            </div>
+
+                    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                      {/* Full Name */}
+                      <div>
+                        <label
+                          htmlFor="fullName"
+                          className="block text-sm font-semibold text-gray-700 mb-1.5"
+                        >
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="fullName"
+                          name="fullName"
+                          type="text"
+                          autoComplete="name"
+                          placeholder="Jane Smith"
+                          value={form.fullName}
+                          onChange={handleChange}
+                          className={`input-brand ${errors.fullName ? 'border-red-400 focus:border-red-400' : ''}`}
+                        />
+                        {errors.fullName && (
+                          <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
+                        )}
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-semibold text-gray-700 mb-1.5"
+                        >
+                          Email Address <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="jane@example.com"
+                          value={form.email}
+                          onChange={handleChange}
+                          className={`input-brand ${errors.email ? 'border-red-400 focus:border-red-400' : ''}`}
+                        />
+                        {errors.email && (
+                          <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                        )}
+                      </div>
+
+                      {/* Phone */}
+                      <div>
+                        <label
+                          htmlFor="phone"
+                          className="block text-sm font-semibold text-gray-700 mb-1.5"
+                        >
+                          Phone Number <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          autoComplete="tel"
+                          placeholder="(555) 000-0000"
+                          value={form.phone}
+                          onChange={handleChange}
+                          className={`input-brand ${errors.phone ? 'border-red-400 focus:border-red-400' : ''}`}
+                        />
+                        {errors.phone && (
+                          <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
+                        )}
+                      </div>
+
+                      {/* Professional Background */}
+                      <div>
+                        <label
+                          htmlFor="background"
+                          className="block text-sm font-semibold text-gray-700 mb-1.5"
+                        >
+                          Professional Background <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          id="background"
+                          name="background"
+                          value={form.background}
+                          onChange={handleChange}
+                          className={`input-brand ${errors.background ? 'border-red-400' : ''}`}
+                        >
+                          <option value="">Select your background…</option>
+                          {backgrounds.map((b) => (
+                            <option key={b} value={b}>{b}</option>
+                          ))}
+                        </select>
+                        {errors.background && (
+                          <p className="mt-1 text-xs text-red-600">{errors.background}</p>
+                        )}
+                      </div>
+
+                      {/* Referral Code */}
+                      <div>
+                        <label
+                          htmlFor="referralCode"
+                          className="block text-sm font-semibold text-gray-700 mb-1.5"
+                        >
+                          Referral Code{' '}
+                          <span className="text-gray-400 font-normal">(optional)</span>
+                        </label>
+                        <input
+                          id="referralCode"
+                          name="referralCode"
+                          type="text"
+                          placeholder="Enter referral code if you have one"
+                          value={form.referralCode}
+                          onChange={handleChange}
+                          className="input-brand"
+                        />
+                      </div>
+
+                      {/* Pricing reminder */}
+                      <div className="rounded-lg bg-sequoia-50 border border-sequoia-200 p-4 flex items-center justify-between">
+                        <span className="text-sequoia-800 font-semibold text-sm">
+                          Consultant Membership
+                        </span>
+                        <span className="text-sequoia-900 font-black text-xl">
+                          $29.99<span className="text-sm font-normal text-sequoia-700">/mo</span>
+                        </span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="btn-gold w-full justify-center text-base py-4"
+                      >
+                        Complete Enrollment
+                        <ArrowRight size={18} />
+                      </button>
+
+                      <p className="text-center text-xs text-gray-400 leading-relaxed">
+                        By enrolling you agree to our Terms of Service and Privacy Policy.
+                        Cancel anytime from your account dashboard.
+                      </p>
+                    </form>
+                  </div>
+                )}
+              </div>
+            </FadeIn>
+
           </div>
         </div>
       </section>
