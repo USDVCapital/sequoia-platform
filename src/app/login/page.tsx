@@ -1,0 +1,216 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { TreePine, Eye, EyeOff, ArrowRight } from "lucide-react";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!form.email || !form.password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    setIsLoading(true);
+    // Simulate auth — in production, this would call an API
+    setTimeout(() => {
+      // Accept any credentials for demo
+      router.push("/portal");
+    }, 800);
+  };
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left Panel - Branding */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-sequoia-900 via-sequoia-800 to-sequoia-700 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-gold-400 blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-sequoia-400 blur-3xl" />
+        </div>
+        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
+          <div className="flex items-center gap-3 mb-12">
+            <TreePine className="w-10 h-10 text-gold-400" />
+            <div>
+              <p className="text-2xl font-bold tracking-tight">SEQUOIA</p>
+              <p className="text-sm text-sequoia-300">Enterprise Solutions</p>
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-bold leading-tight mb-6">
+            Your Consultant
+            <br />
+            <span className="text-gold-400">Command Center</span>
+          </h1>
+
+          <p className="text-lg text-sequoia-200 mb-10 max-w-md">
+            Access your pipeline, training library, AI assistant, and community
+            — all in one place.
+          </p>
+
+          <div className="space-y-4">
+            {[
+              "Track your deals and commissions in real time",
+              "190+ training videos at your fingertips",
+              "CEA AI Assistant for instant product guidance",
+              "Connect with 2,500+ consultants nationwide",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-gold-400 shrink-0" />
+                <p className="text-sequoia-100">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Login Form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-neutral-50">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center gap-2 mb-10">
+            <TreePine className="w-8 h-8 text-sequoia-700" />
+            <div>
+              <p className="text-xl font-bold text-sequoia-900 tracking-tight">
+                SEQUOIA
+              </p>
+              <p className="text-xs text-neutral-500">Enterprise Solutions</p>
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-bold text-neutral-900 mb-2">
+            Welcome back
+          </h2>
+          <p className="text-neutral-500 mb-8">
+            Sign in to your consultant portal
+          </p>
+
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-neutral-700 mb-1.5"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sequoia-500 focus:border-transparent transition"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-neutral-700 mb-1.5"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sequoia-500 focus:border-transparent transition pr-12"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded border-neutral-300 text-sequoia-600 focus:ring-sequoia-500"
+                />
+                <span className="text-sm text-neutral-600">Remember me</span>
+              </label>
+              <button
+                type="button"
+                className="text-sm text-sequoia-600 hover:text-sequoia-700 font-medium transition"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 px-6 rounded-xl bg-sequoia-700 hover:bg-sequoia-800 text-white font-semibold transition flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-neutral-500">
+              Not a consultant yet?{" "}
+              <Link
+                href="/opportunity"
+                className="text-sequoia-600 hover:text-sequoia-700 font-medium transition"
+              >
+                Learn about the opportunity
+              </Link>
+            </p>
+            <p className="text-sm text-neutral-400 mt-2">
+              or{" "}
+              <Link
+                href="/enroll"
+                className="text-gold-600 hover:text-gold-700 font-medium transition"
+              >
+                Enroll now for $29.99/month
+              </Link>
+            </p>
+          </div>
+
+          <p className="mt-12 text-xs text-neutral-400 text-center">
+            Demo mode: Enter any email and password to explore the portal.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
