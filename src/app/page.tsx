@@ -433,10 +433,9 @@ export default function HomePage() {
               <ArrowRight size={18} />
             </Button>
             <Button
-              variant="outline"
+              variant="outline-light"
               size="lg"
               href="/opportunity#faq"
-              className="border-white/30 text-white hover:bg-white/10 hover:border-white/50"
             >
               How Does It Work?
             </Button>
@@ -547,10 +546,9 @@ export default function HomePage() {
                 Explore Funding Solutions
               </Button>
               <Button
-                variant="outline"
+                variant="outline-light"
                 size="lg"
                 href="/contact"
-                className="border-white/30 text-white hover:bg-white/10 hover:border-white/60"
               >
                 Contact Us
               </Button>

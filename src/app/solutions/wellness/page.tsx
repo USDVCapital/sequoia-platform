@@ -454,8 +454,8 @@ export default function WellnessPage() {
               <Button href="/apply?type=wellness-employer" variant="secondary" size="lg">
                 Enroll Your Company
               </Button>
-              <Button href="/apply?type=wellness-consultant" variant="outline" size="lg">
-                <span className="text-white border-white/40">Become a Wellness Consultant</span>
+              <Button href="/apply?type=wellness-consultant" variant="outline-light" size="lg">
+                Become a Wellness Consultant
               </Button>
             </div>
           </FadeIn>

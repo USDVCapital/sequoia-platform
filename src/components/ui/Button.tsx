@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import type { ReactNode, MouseEventHandler, CSSProperties } from 'react'
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost'
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'outline-light' | 'ghost-light'
 type ButtonSize = 'sm' | 'md' | 'lg'
 
 interface ButtonProps {
@@ -27,6 +27,10 @@ const variantClasses: Record<ButtonVariant, string> = {
     'border border-black/20 hover:bg-neutral-100 focus-visible:ring-black bg-transparent',
   ghost:
     'hover:bg-neutral-100 focus-visible:ring-black bg-transparent',
+  'outline-light':
+    'border border-white/25 hover:bg-white/10 focus-visible:ring-white bg-transparent',
+  'ghost-light':
+    'hover:bg-white/10 focus-visible:ring-white bg-transparent',
 }
 
 // Inline styles to guarantee text color — Tailwind utility classes lose to
@@ -36,6 +40,8 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   secondary: { color: '#000000' },
   outline: { color: '#000000' },
   ghost: { color: '#525252' },
+  'outline-light': { color: '#FFFFFF' },
+  'ghost-light': { color: 'rgba(255,255,255,0.8)' },
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
