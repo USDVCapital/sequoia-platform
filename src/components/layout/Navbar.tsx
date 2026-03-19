@@ -200,7 +200,8 @@ export default function Navbar() {
             <ThemeToggle />
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center rounded-md bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-neutral-100"
+              className="inline-flex items-center justify-center rounded-md bg-black px-5 py-2.5 text-sm font-medium hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:bg-white dark:hover:bg-neutral-100"
+              style={{ color: '#FFFFFF' }}
             >
               Get Funding
             </Link>
@@ -315,7 +316,8 @@ export default function Navbar() {
           <Link
             href="/apply"
             onClick={closeMobile}
-            className="flex items-center justify-center rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-neutral-800 transition-colors"
+            className="flex items-center justify-center rounded-md bg-black px-5 py-3 text-sm font-medium hover:bg-neutral-800 transition-colors"
+            style={{ color: '#FFFFFF' }}
           >
             Get Funding
           </Link>
