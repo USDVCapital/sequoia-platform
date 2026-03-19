@@ -9,10 +9,10 @@ interface CardProps {
 }
 
 const baseClasses =
-  'rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200'
+  'rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 dark:border-neutral-800 dark:bg-neutral-900'
 
 const interactiveClasses =
-  'hover:shadow-md hover:-translate-y-0.5 hover:border-sequoia-700/30 cursor-pointer'
+  'hover:shadow-md hover:-translate-y-0.5 hover:border-neutral-300 dark:hover:border-neutral-700 cursor-pointer'
 
 export default function Card({ children, className, href }: CardProps) {
   const classes = clsx(

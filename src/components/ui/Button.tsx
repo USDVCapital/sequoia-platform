@@ -20,13 +20,13 @@ interface ButtonProps {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-sequoia-700 text-white hover:bg-sequoia-800 focus-visible:ring-sequoia-700 shadow-sm',
+    'bg-black text-white hover:bg-neutral-800 focus-visible:ring-black shadow-sm dark:bg-white dark:text-black dark:hover:bg-neutral-100',
   secondary:
-    'bg-gold-500 text-white hover:bg-gold-600 focus-visible:ring-gold-500 shadow-sm',
+    'bg-gold-500 text-black hover:bg-gold-600 focus-visible:ring-gold-500 shadow-sm',
   outline:
-    'border border-sequoia-700 text-sequoia-700 hover:bg-sequoia-50 focus-visible:ring-sequoia-700 bg-transparent',
+    'border border-black/20 text-black hover:bg-neutral-100 focus-visible:ring-black bg-transparent dark:border-white/20 dark:text-white dark:hover:bg-white/10',
   ghost:
-    'text-sequoia-700 hover:bg-sequoia-50 focus-visible:ring-sequoia-700 bg-transparent',
+    'text-neutral-700 hover:bg-neutral-100 focus-visible:ring-black bg-transparent dark:text-neutral-300 dark:hover:bg-white/10',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
