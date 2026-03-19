@@ -45,7 +45,7 @@ export default function LoginPage() {
             <TreePine className="w-10 h-10 text-gold-400" />
             <div>
               <p className="text-2xl font-bold tracking-tight">SEQUOIA</p>
-              <p className="text-sm text-sequoia-300">Enterprise Solutions</p>
+              <p className="text-sm text-white/70">Enterprise Solutions</p>
             </div>
           </div>
 
@@ -55,7 +55,7 @@ export default function LoginPage() {
             <span className="text-gold-400">Command Center</span>
           </h1>
 
-          <p className="text-lg text-sequoia-200 mb-10 max-w-md">
+          <p className="text-lg text-white/80 mb-10 max-w-md">
             Access your pipeline, training library, AI assistant, and community
             — all in one place.
           </p>
@@ -69,7 +69,7 @@ export default function LoginPage() {
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-gold-400 shrink-0" />
-                <p className="text-sequoia-100">{item}</p>
+                <p className="text-white">{item}</p>
               </div>
             ))}
           </div>

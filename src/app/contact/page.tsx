@@ -137,7 +137,7 @@ export default function ContactPage() {
             <div className="flex flex-col gap-6 lg:col-span-2">
               <FadeIn direction="up">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-700">
                     Reach Us
                   </p>
                   <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">

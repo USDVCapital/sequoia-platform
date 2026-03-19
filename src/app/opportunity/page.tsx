@@ -193,7 +193,7 @@ export default function OpportunityPage() {
               </StaggerItem>
 
               <StaggerItem direction="up">
-                <p className="mt-6 text-lg sm:text-xl text-sequoia-200 max-w-2xl leading-relaxed">
+                <p className="mt-6 text-lg sm:text-xl text-white/80 max-w-2xl leading-relaxed">
                   Join 2,500+ professionals earning through commercial lending, business consulting,
                   and wellness program referrals — all under one platform, for one flat monthly fee.
                 </p>
@@ -222,7 +222,7 @@ export default function OpportunityPage() {
                   ].map((s) => (
                     <div key={s.label} className="text-center">
                       <p className="text-2xl font-bold text-white">{s.value}</p>
-                      <p className="text-xs text-sequoia-300 uppercase tracking-wider mt-0.5">{s.label}</p>
+                      <p className="text-xs text-white/70 uppercase tracking-wider mt-0.5">{s.label}</p>
                     </div>
                   ))}
                 </div>
@@ -285,7 +285,7 @@ export default function OpportunityPage() {
 
             <FadeIn direction="left">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-gold-500 mb-2">
+                <p className="text-sm font-semibold uppercase tracking-widest text-gold-700 mb-2">
                   Everything Included
                 </p>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-4">
@@ -413,7 +413,7 @@ export default function OpportunityPage() {
                     ))}
                   </div>
 
-                  <blockquote className="text-sequoia-200 text-sm leading-relaxed flex-1">
+                  <blockquote className="text-white/80 text-sm leading-relaxed flex-1">
                     &ldquo;{s.quote}&rdquo;
                   </blockquote>
 
@@ -422,11 +422,11 @@ export default function OpportunityPage() {
                   <div className="flex items-end justify-between">
                     <div>
                       <p className="font-bold text-white">{s.name}</p>
-                      <p className="text-xs text-sequoia-400">{s.title}</p>
+                      <p className="text-xs text-white/60">{s.title}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-black text-gold-400">{s.stat}</p>
-                      <p className="text-xs text-sequoia-400">{s.statLabel}</p>
+                      <p className="text-xs text-white/60">{s.statLabel}</p>
                     </div>
                   </div>
                 </div>
@@ -461,13 +461,13 @@ export default function OpportunityPage() {
       <section className="section-padding bg-gradient-sequoia">
         <FadeIn direction="up">
           <div className="container-brand text-center">
-            <p className="text-sm font-semibold uppercase tracking-widest text-sequoia-300 mb-3">
+            <p className="text-sm font-semibold uppercase tracking-widest text-white/70 mb-3">
               Take the First Step
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 max-w-2xl mx-auto">
               Ready to Build Your Consulting Business?
             </h2>
-            <p className="text-sequoia-200 max-w-xl mx-auto mb-10 text-lg leading-relaxed">
+            <p className="text-white/80 max-w-xl mx-auto mb-10 text-lg leading-relaxed">
               Join 2,500+ professionals who are already earning through Sequoia's platform.
               Get started today for $29.99/month — cancel anytime.
             </p>

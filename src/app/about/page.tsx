@@ -100,7 +100,7 @@ export default function AboutPage() {
               </h1>
             </FadeIn>
             <FadeIn direction="up" delay={0.2}>
-              <p className="mt-6 text-lg leading-relaxed text-sequoia-200 sm:text-xl">
+              <p className="mt-6 text-lg leading-relaxed text-white/80 sm:text-xl">
                 We started as specialists and grew into a full-service platform — because our clients
                 needed more, and we answered the call.
               </p>
@@ -214,7 +214,7 @@ export default function AboutPage() {
 
                 {/* CEO content */}
                 <div className="flex flex-col justify-center lg:col-span-3">
-                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-500">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-700">
                     Leadership
                   </p>
                   <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -349,7 +349,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Ready to Work with Us?
               </h2>
-              <p className="mt-4 text-lg leading-relaxed text-sequoia-300">
+              <p className="mt-4 text-lg leading-relaxed text-white/70">
                 Whether you need funding, a business consultation, or you&apos;re a professional looking
                 to partner — we have a seat at the table for you.
               </p>

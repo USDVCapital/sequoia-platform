@@ -157,7 +157,7 @@ export default function WellnessPage() {
               </h1>
             </FadeIn>
             <FadeIn direction="up" delay={0.2}>
-              <p className="mt-6 text-lg leading-relaxed text-sequoia-300 max-w-2xl">
+              <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-2xl">
                 Our flagship Employee Health Management Program (EHMP) lets employers reduce FICA
                 taxes with zero net cost while employees gain genuine wellness benefits. For
                 consultants, it creates a powerful, recurring income stream that compounds with
@@ -309,7 +309,7 @@ export default function WellnessPage() {
                   <br />
                   <span className="text-gradient-gold">One Enrollment at a Time</span>
                 </h2>
-                <p className="mt-4 text-sequoia-300 leading-relaxed">
+                <p className="mt-4 text-white/70 leading-relaxed">
                   The EHMP is our most powerful door-opener. You introduce employers to a program
                   that costs them nothing and saves them money — an easy conversation that pays you
                   every single month.
@@ -317,7 +317,7 @@ export default function WellnessPage() {
 
                 <ul className="mt-8 flex flex-col gap-3">
                   {consultantBenefits.map((benefit) => (
-                    <li key={benefit} className="flex items-start gap-3 text-sm text-sequoia-200">
+                    <li key={benefit} className="flex items-start gap-3 text-sm text-white/80">
                       <CheckCircle2 className="size-4 shrink-0 text-gold-400 mt-0.5" />
                       {benefit}
                     </li>
@@ -345,36 +345,36 @@ export default function WellnessPage() {
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                    <span className="text-sequoia-300 text-sm">Employees enrolled</span>
+                    <span className="text-white/70 text-sm">Employees enrolled</span>
                     <span className="text-white font-bold text-lg">200</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                    <span className="text-sequoia-300 text-sm">Commission per employee / month</span>
+                    <span className="text-white/70 text-sm">Commission per employee / month</span>
                     <span className="text-white font-bold text-lg">$18</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                    <span className="text-sequoia-300 text-sm">Monthly recurring income</span>
+                    <span className="text-white/70 text-sm">Monthly recurring income</span>
                     <span className="text-gold-400 font-extrabold text-2xl">$3,600</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sequoia-300 text-sm">Annual recurring income</span>
+                    <span className="text-white/70 text-sm">Annual recurring income</span>
                     <span className="text-gold-400 font-extrabold text-2xl">$43,200</span>
                   </div>
                 </div>
 
-                <p className="mt-6 text-xs text-sequoia-400 leading-relaxed">
+                <p className="mt-6 text-xs text-white/60 leading-relaxed">
                   200 employees × $18/month = $3,600/month recurring income. Scale to 500+ employees
                   across multiple employers and the income compounds significantly. Commissions range
                   from $12–$18 per employee per month depending on group size and structure.
                 </p>
 
                 <div className="mt-6 rounded-xl bg-sequoia-800/60 border border-sequoia-600/30 p-4">
-                  <p className="text-xs font-semibold text-sequoia-300 uppercase tracking-wider mb-2">
+                  <p className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-2">
                     Current Progress
                   </p>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-sequoia-200">153 enrolled</span>
-                    <span className="text-sm text-sequoia-200">5,000 goal</span>
+                    <span className="text-sm text-white/80">153 enrolled</span>
+                    <span className="text-sm text-white/80">5,000 goal</span>
                   </div>
                   <div className="h-2 bg-sequoia-700 rounded-full overflow-hidden">
                     <div
@@ -382,7 +382,7 @@ export default function WellnessPage() {
                       style={{ width: `${Math.round((153 / 5000) * 100)}%` }}
                     />
                   </div>
-                  <p className="mt-2 text-xs text-sequoia-400">
+                  <p className="mt-2 text-xs text-white/60">
                     {Math.round((153 / 5000) * 100)}% of 2026 enrollment goal — significant
                     opportunity remains
                   </p>
@@ -424,7 +424,7 @@ export default function WellnessPage() {
               <StaggerItem key={q} direction="up">
                 <Card>
                   <h3 className="font-semibold text-sequoia-900 flex items-start gap-2">
-                    <ChevronRight className="size-4 shrink-0 text-gold-500 mt-0.5" />
+                    <ChevronRight className="size-4 shrink-0 text-gold-700 mt-0.5" />
                     {q}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600 pl-6">{a}</p>
@@ -444,7 +444,7 @@ export default function WellnessPage() {
             </h2>
           </FadeIn>
           <FadeIn direction="up" delay={0.1}>
-            <p className="mt-4 text-sequoia-300 text-lg max-w-xl mx-auto">
+            <p className="mt-4 text-white/70 text-lg max-w-xl mx-auto">
               Whether you're an employer looking to save money or a consultant building recurring
               income, the EHMP opens the door.
             </p>

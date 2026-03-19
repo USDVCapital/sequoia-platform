@@ -317,7 +317,7 @@ export default function SolutionsPage() {
             </h1>
           </FadeIn>
           <FadeIn direction="up" delay={0.2}>
-            <p className="mt-6 text-lg leading-relaxed text-sequoia-300 max-w-2xl mx-auto">
+            <p className="mt-6 text-lg leading-relaxed text-white/70 max-w-2xl mx-auto">
               From real estate loans to employee wellness programs, Sequoia Enterprise Solutions
               connects you with the right capital and services to grow — all through one trusted
               platform.
@@ -403,7 +403,7 @@ export default function SolutionsPage() {
             </h2>
           </FadeIn>
           <FadeIn direction="up" delay={0.2}>
-            <p className="mt-4 text-sequoia-300 text-lg max-w-xl mx-auto leading-relaxed">
+            <p className="mt-4 text-white/70 text-lg max-w-xl mx-auto leading-relaxed">
               Our advisors take the time to understand your goals and match you with the right
               program — at no cost to you.
             </p>

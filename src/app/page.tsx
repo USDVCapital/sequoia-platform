@@ -144,7 +144,7 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <FadeIn delay={0.1} direction="up">
-            <p className="mt-6 text-center text-sequoia-200 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
+            <p className="mt-6 text-center text-white/80 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto">
               Your trusted partner for business solutions, commercial lending, and
               recurring income opportunities.
             </p>
@@ -356,7 +356,7 @@ export default function HomePage() {
             {/* Right — highlight panel */}
             <FadeIn direction="right">
               <div className="bg-gradient-sequoia p-10 lg:p-14 flex flex-col justify-center gap-8">
-                <p className="text-sequoia-200 text-sm font-semibold uppercase tracking-widest">
+                <p className="text-white/60 text-sm font-semibold uppercase tracking-widest">
                   Consultant Earnings Snapshot
                 </p>
                 <div className="space-y-6">
@@ -369,22 +369,22 @@ export default function HomePage() {
                       key={row.employees}
                       className="glass rounded-xl p-5 flex flex-col gap-1"
                     >
-                      <span className="text-sequoia-300 text-xs font-semibold uppercase tracking-wider">
+                      <span className="text-white/70 text-xs font-semibold uppercase tracking-wider">
                         {row.employees} Employees
                       </span>
                       <span className="text-white text-2xl font-bold">
                         {row.monthly}
-                        <span className="text-sequoia-300 text-sm font-normal ml-1">
+                        <span className="text-white/70 text-sm font-normal ml-1">
                           /month
                         </span>
                       </span>
-                      <span className="text-sequoia-300 text-sm">
+                      <span className="text-white/70 text-sm">
                         {row.annual} / year
                       </span>
                     </div>
                   ))}
                 </div>
-                <p className="text-sequoia-300 text-xs leading-relaxed">
+                <p className="text-white/50 text-xs leading-relaxed">
                   Earnings based on $12–$18 per enrolled employee per month.
                   Results vary by plan and enrollment.
                 </p>
@@ -421,7 +421,7 @@ export default function HomePage() {
             <span className="text-gradient-gold">$3,500/Month</span> Mean for
             You?
           </h2>
-          <p className="mt-6 text-sequoia-200 text-lg leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-6 text-white/80 text-lg leading-relaxed max-w-2xl mx-auto">
             Sequoia consultants build real recurring income by introducing
             employers to the EHMP Wellness Program. No cold calling scripts. No
             inventory. No quotas. Just a compelling conversation that delivers
@@ -450,7 +450,7 @@ export default function HomePage() {
             ].map((p) => (
               <div key={p.value} className="glass rounded-xl p-6 text-center">
                 <p className="text-3xl font-extrabold text-gold-400">{p.value}</p>
-                <p className="mt-2 text-sequoia-200 text-sm leading-snug">{p.label}</p>
+                <p className="mt-2 text-white/80 text-sm leading-snug">{p.label}</p>
               </div>
             ))}
           </div>
@@ -481,7 +481,7 @@ export default function HomePage() {
                       <Star
                         key={i}
                         size={16}
-                        className="text-gold-500 fill-gold-400"
+                        className="text-gold-700 fill-gold-500"
                         aria-hidden="true"
                       />
                     ))}
@@ -537,7 +537,7 @@ export default function HomePage() {
             <h3 className="text-2xl sm:text-3xl font-bold text-white max-w-xl leading-tight">
               Ready to grow with Sequoia?
             </h3>
-            <p className="text-sequoia-200 max-w-md text-base leading-relaxed">
+            <p className="text-white/70 max-w-md text-base leading-relaxed">
               Whether you need capital for your business or you're ready to build
               a recurring income stream, we're here to make it happen.
             </p>

@@ -97,7 +97,7 @@ export default function EnrollPage() {
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
             Become a Sequoia Consultant
           </h1>
-          <p className="text-sequoia-200 text-lg max-w-xl mx-auto">
+          <p className="text-white/80 text-lg max-w-xl mx-auto">
             One flat monthly fee. Full platform access. Cancel anytime.
           </p>
         </div>
@@ -113,15 +113,15 @@ export default function EnrollPage() {
               <div>
                 {/* Pricing callout */}
                 <div className="rounded-2xl bg-gradient-sequoia p-8 text-center mb-8">
-                  <p className="text-sequoia-200 text-sm uppercase tracking-widest font-semibold mb-2">
+                  <p className="text-white/80 text-sm uppercase tracking-widest font-semibold mb-2">
                     Consultant Membership
                   </p>
                   <div className="flex items-end justify-center gap-1">
                     <span className="text-5xl font-black text-white">$29</span>
-                    <span className="text-xl font-bold text-sequoia-300 mb-1">.99</span>
-                    <span className="text-sequoia-300 mb-1">/month</span>
+                    <span className="text-xl font-bold text-white/70 mb-1">.99</span>
+                    <span className="text-white/70 mb-1">/month</span>
                   </div>
-                  <p className="text-sequoia-300 text-xs mt-2">Cancel anytime. No contracts.</p>
+                  <p className="text-white/70 text-xs mt-2">Cancel anytime. No contracts.</p>
                 </div>
 
                 {/* What's included */}

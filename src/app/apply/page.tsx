@@ -304,7 +304,7 @@ export default function ApplyPage() {
           <h1 className="text-display-md sm:text-display-lg font-extrabold tracking-tight text-white">
             Let's Find the Right Solution for You
           </h1>
-          <p className="mt-4 text-sequoia-300 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="mt-4 text-white/70 text-lg max-w-xl mx-auto leading-relaxed">
             This isn't a loan application — it's a conversation starter. Share a little about
             your goals, and we'll match you with the right advisor.
           </p>
