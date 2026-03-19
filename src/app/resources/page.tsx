@@ -253,7 +253,7 @@ export default function ResourcesPage() {
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
               Your Training Library
             </h1>
-            <p className="text-sequoia-200 text-xl max-w-2xl mx-auto">
+            <p className="text-white/80 text-xl max-w-2xl mx-auto">
               190+ videos, guides, and resources to help you succeed as a Sequoia consultant.
             </p>
 
@@ -263,7 +263,7 @@ export default function ResourcesPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold-400" />
               </span>
-              <Wifi size={16} className="text-sequoia-300" />
+              <Wifi size={16} className="text-white/70" />
               <span className="text-white font-semibold text-sm">
                 Next Live Training: Wednesday 8 PM ET
               </span>
@@ -336,7 +336,7 @@ export default function ResourcesPage() {
               </div>
               <div>
                 <p className="text-white font-bold text-xl">Next Live Training</p>
-                <p className="text-sequoia-200 text-sm mt-0.5">
+                <p className="text-white/80 text-sm mt-0.5">
                   Wednesday at 8:00 PM Eastern Time — every week
                 </p>
               </div>
@@ -346,7 +346,7 @@ export default function ResourcesPage() {
               {countdown && (
                 <div className="text-center">
                   <p className="text-3xl font-black text-white">{countdown}</p>
-                  <p className="text-sequoia-300 text-xs uppercase tracking-wider">Until next session</p>
+                  <p className="text-white/70 text-xs uppercase tracking-wider">Until next session</p>
                 </div>
               )}
               <a
