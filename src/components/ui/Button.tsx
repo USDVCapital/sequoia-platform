@@ -20,13 +20,13 @@ interface ButtonProps {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-black hover:bg-neutral-800 focus-visible:ring-black shadow-sm dark:bg-white dark:hover:bg-neutral-100',
+    'bg-black hover:bg-neutral-800 focus-visible:ring-black shadow-sm',
   secondary:
     'bg-gold-500 hover:bg-gold-600 focus-visible:ring-gold-500 shadow-sm',
   outline:
-    'border border-black/20 hover:bg-neutral-100 focus-visible:ring-black bg-transparent dark:border-white/20 dark:hover:bg-white/10',
+    'border border-black/20 hover:bg-neutral-100 focus-visible:ring-black bg-transparent',
   ghost:
-    'hover:bg-neutral-100 focus-visible:ring-black bg-transparent dark:hover:bg-white/10',
+    'hover:bg-neutral-100 focus-visible:ring-black bg-transparent',
 }
 
 // Inline styles to guarantee text color — Tailwind utility classes lose to
@@ -36,13 +36,6 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   secondary: { color: '#000000' },
   outline: { color: '#000000' },
   ghost: { color: '#525252' },
-}
-
-const variantStylesDark: Record<ButtonVariant, CSSProperties> = {
-  primary: { color: '#000000' },
-  secondary: { color: '#000000' },
-  outline: { color: '#FFFFFF' },
-  ghost: { color: '#D4D4D4' },
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -73,9 +66,9 @@ export default function Button({
 
   if (href) {
     return (
-      <LinkWithColor href={href} className={classes} variant={variant}>
+      <Link href={href} className={classes} style={variantStyles[variant]}>
         {children}
-      </LinkWithColor>
+      </Link>
     )
   }
 
@@ -89,46 +82,5 @@ export default function Button({
     >
       {children}
     </button>
-  )
-}
-
-// Client component that reads dark mode state and applies correct inline color
-function LinkWithColor({
-  href,
-  className,
-  variant,
-  children,
-}: {
-  href: string
-  className: string
-  variant: ButtonVariant
-  children: ReactNode
-}) {
-  // Use a ref + effect to handle dark mode color since inline styles
-  // can't respond to CSS class changes
-  const ref = import('react').then(() => {}) // just to satisfy linter
-
-  return (
-    <Link
-      href={href}
-      className={className}
-      ref={(el) => {
-        if (!el) return
-        const updateColor = () => {
-          const isDark = document.documentElement.classList.contains('dark')
-          const styles = isDark ? variantStylesDark[variant] : variantStyles[variant]
-          el.style.color = styles.color ?? ''
-        }
-        updateColor()
-        // Watch for dark mode changes
-        const observer = new MutationObserver(updateColor)
-        observer.observe(document.documentElement, {
-          attributes: true,
-          attributeFilter: ['class'],
-        })
-      }}
-    >
-      {children}
-    </Link>
   )
 }

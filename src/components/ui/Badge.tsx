@@ -9,10 +9,10 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  success: 'bg-neutral-100 text-neutral-800 ring-neutral-300/40 dark:bg-neutral-800 dark:text-neutral-200 dark:ring-neutral-600/40',
-  warning: 'bg-gold-100 text-gold-800 ring-gold-600/20 dark:bg-gold-900/30 dark:text-gold-400 dark:ring-gold-600/20',
-  info: 'bg-blue-100 text-blue-800 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-600/20',
-  neutral: 'bg-neutral-100 text-neutral-600 ring-neutral-300/40 dark:bg-neutral-800 dark:text-neutral-400 dark:ring-neutral-600/40',
+  success: 'bg-neutral-100 text-neutral-800 ring-neutral-300/40',
+  warning: 'bg-gold-100 text-gold-800 ring-gold-600/20',
+  info: 'bg-blue-100 text-blue-800 ring-blue-600/20',
+  neutral: 'bg-neutral-100 text-neutral-600 ring-neutral-300/40',
 }
 
 export default function Badge({ variant = 'neutral', children }: BadgeProps) {

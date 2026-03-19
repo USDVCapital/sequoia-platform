@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronDown, Menu, X } from 'lucide-react'
-import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // ---------------------------------------------------------------------------
 // Data
@@ -49,7 +48,7 @@ function Dropdown({ label, items }: DropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
+        className="flex items-center gap-1 text-sm font-medium text-neutral-600 hover:text-black transition-colors py-2"
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -60,13 +59,13 @@ function Dropdown({ label, items }: DropdownProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-52 rounded-lg border border-neutral-200 bg-white dark:border-white/10 dark:bg-neutral-900 py-1.5 z-50">
+        <div className="absolute left-0 top-full mt-1 w-52 rounded-lg border border-neutral-200 bg-white py-1.5 z-50">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-black dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white transition-colors"
+              className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-black transition-colors"
             >
               {item.label}
             </Link>
@@ -149,10 +148,10 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full bg-white dark:bg-black transition-all duration-200 ${
+        className={`sticky top-0 z-40 w-full bg-white transition-all duration-200 ${
           scrolled
-            ? 'border-b border-neutral-200 dark:border-white/10'
-            : 'border-b border-neutral-100 dark:border-white/5'
+            ? 'border-b border-neutral-200'
+            : 'border-b border-neutral-100'
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -179,7 +178,7 @@ export default function Navbar() {
           >
             <Link
               href="/about"
-              className="text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
+              className="text-sm font-medium text-neutral-600 hover:text-black transition-colors py-2"
             >
               About Us
             </Link>
@@ -189,7 +188,7 @@ export default function Navbar() {
 
             <Link
               href="/contact"
-              className="text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
+              className="text-sm font-medium text-neutral-600 hover:text-black transition-colors py-2"
             >
               Contact
             </Link>
@@ -197,17 +196,16 @@ export default function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
-            <ThemeToggle />
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center rounded-md bg-black px-5 py-2.5 text-sm font-medium hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:bg-white dark:hover:bg-neutral-100"
+              className="inline-flex items-center justify-center rounded-md bg-black px-5 py-2.5 text-sm font-medium hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
               style={{ color: '#FFFFFF' }}
             >
               Get Funding
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-md border border-black/20 bg-transparent px-5 py-2.5 text-sm font-medium text-black hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-md border border-black/20 bg-transparent px-5 py-2.5 text-sm font-medium text-black hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
             >
               Consultant Login
             </Link>
@@ -217,7 +215,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
           >
