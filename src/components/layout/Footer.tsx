@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { TreePine, Linkedin, Youtube, Instagram, Facebook } from 'lucide-react'
+import Image from 'next/image'
+import { Linkedin, Youtube, Instagram, Facebook } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Data
@@ -76,7 +77,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
         {...(isExternal
           ? { target: '_blank', rel: 'noopener noreferrer' }
           : {})}
-        className="text-sm text-white/75 hover:text-white transition-colors"
+        className="text-sm text-white/60 hover:text-white transition-colors"
       >
         {label}
       </Link>
@@ -90,7 +91,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 export default function Footer() {
   return (
-    <footer className="bg-sequoia-900 text-white">
+    <footer className="bg-black text-white">
       {/* Main grid */}
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 lg:px-8">
         {/* Brand + columns */}
@@ -99,18 +100,16 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link
               href="/"
-              className="inline-flex items-center gap-2.5 mb-4"
+              className="inline-flex items-center mb-4"
               aria-label="Sequoia Enterprise Solutions – home"
             >
-              <TreePine className="h-7 w-7 text-sequoia-400" aria-hidden="true" />
-              <div className="leading-tight">
-                <span className="block text-lg font-extrabold tracking-tight text-white">
-                  SEQUOIA
-                </span>
-                <span className="block text-[0.6rem] font-medium uppercase tracking-widest text-white/50">
-                  Enterprise Solutions
-                </span>
-              </div>
+              <Image
+                src="/logo-gold.png"
+                alt="Sequoia Enterprise Solutions"
+                width={144}
+                height={36}
+                style={{ height: '36px', width: 'auto' }}
+              />
             </Link>
             <p className="text-sm text-white/60 leading-relaxed max-w-xs">
               Empowering businesses and consultants with capital solutions,
@@ -148,7 +147,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="inline-flex items-center gap-2 text-sm text-white/75 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
                 >
                   <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
                   {label}
@@ -159,10 +158,13 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Gold accent divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-yellow-600/60 to-transparent" />
+
       {/* Bottom bar */}
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-2 text-center text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+          <div className="flex flex-col gap-2 text-center text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between sm:text-left">
             <p>© 2026 Sequoia Enterprise Solutions. All rights reserved.</p>
             <div className="flex flex-col items-center gap-1 sm:flex-row sm:gap-4">
               <address className="not-italic">

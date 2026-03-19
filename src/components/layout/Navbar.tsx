@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { TreePine, ChevronDown, Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronDown, Menu, X } from 'lucide-react'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // ---------------------------------------------------------------------------
 // Data
@@ -47,7 +49,7 @@ function Dropdown({ label, items }: DropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-sequoia-700 transition-colors py-2"
+        className="flex items-center gap-1 text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -58,13 +60,13 @@ function Dropdown({ label, items }: DropdownProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 w-52 rounded-lg border border-gray-100 bg-white py-1.5 shadow-lg ring-1 ring-black/5 z-50">
+        <div className="absolute left-0 top-full mt-1 w-52 rounded-lg border border-neutral-200 bg-white dark:border-white/10 dark:bg-neutral-900 py-1.5 z-50">
           {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-sequoia-50 hover:text-sequoia-700 transition-colors"
+              className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 hover:text-black dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white transition-colors"
             >
               {item.label}
             </Link>
@@ -92,12 +94,12 @@ function MobileAccordion({ label, items, onNavigate }: MobileAccordionProps) {
     <div>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between py-3 text-base font-medium text-gray-800"
+        className="flex w-full items-center justify-between py-3 text-base font-medium text-neutral-800"
         aria-expanded={open}
       >
         {label}
         <ChevronDown
-          className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       {open && (
@@ -107,7 +109,7 @@ function MobileAccordion({ label, items, onNavigate }: MobileAccordionProps) {
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className="py-2 text-sm text-gray-600 hover:text-sequoia-700 transition-colors"
+              className="py-2 text-sm text-neutral-600 hover:text-black transition-colors"
             >
               {item.label}
             </Link>
@@ -147,26 +149,27 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full bg-white transition-shadow duration-200 ${
-          scrolled ? 'shadow-md' : 'shadow-sm'
+        className={`sticky top-0 z-40 w-full bg-white dark:bg-black transition-all duration-200 ${
+          scrolled
+            ? 'border-b border-neutral-200 dark:border-white/10'
+            : 'border-b border-neutral-100 dark:border-white/5'
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 shrink-0"
+            className="flex items-center shrink-0"
             aria-label="Sequoia Enterprise Solutions – home"
           >
-            <TreePine className="h-7 w-7 text-sequoia-700" aria-hidden="true" />
-            <div className="leading-tight">
-              <span className="block text-lg font-extrabold tracking-tight text-sequoia-900">
-                SEQUOIA
-              </span>
-              <span className="block text-[0.6rem] font-medium uppercase tracking-widest text-gray-500">
-                Enterprise Solutions
-              </span>
-            </div>
+            <Image
+              src="/logo-black.png"
+              alt="Sequoia Enterprise Solutions"
+              width={160}
+              height={40}
+              style={{ height: '40px', width: 'auto' }}
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}
@@ -176,7 +179,7 @@ export default function Navbar() {
           >
             <Link
               href="/about"
-              className="text-sm font-medium text-gray-700 hover:text-sequoia-700 transition-colors py-2"
+              className="text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
             >
               About Us
             </Link>
@@ -186,7 +189,7 @@ export default function Navbar() {
 
             <Link
               href="/contact"
-              className="text-sm font-medium text-gray-700 hover:text-sequoia-700 transition-colors py-2"
+              className="text-sm font-medium text-neutral-600 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors py-2"
             >
               Contact
             </Link>
@@ -194,15 +197,16 @@ export default function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
+            <ThemeToggle />
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center rounded-md bg-sequoia-700 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-sequoia-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sequoia-700 focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center rounded-md bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:bg-white dark:text-black dark:hover:bg-neutral-100"
             >
               Get Funding
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-md border border-sequoia-700 bg-transparent px-5 py-2.5 text-sm font-medium text-sequoia-700 hover:bg-sequoia-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sequoia-700 focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center rounded-md border border-black/20 bg-transparent px-5 py-2.5 text-sm font-medium text-black hover:bg-neutral-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
             >
               Consultant Login
             </Link>
@@ -212,7 +216,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white transition-colors"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
           >
@@ -242,22 +246,25 @@ export default function Navbar() {
         aria-label="Mobile navigation"
       >
         {/* Drawer header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 h-16 shrink-0">
+        <div className="flex items-center justify-between border-b border-neutral-100 px-5 h-16 shrink-0">
           <Link
             href="/"
             onClick={closeMobile}
-            className="flex items-center gap-2"
+            className="flex items-center"
             aria-label="Sequoia Enterprise Solutions – home"
           >
-            <TreePine className="h-6 w-6 text-sequoia-700" aria-hidden="true" />
-            <span className="font-extrabold tracking-tight text-sequoia-900">
-              SEQUOIA
-            </span>
+            <Image
+              src="/logo-black.png"
+              alt="Sequoia Enterprise Solutions"
+              width={120}
+              height={32}
+              style={{ height: '32px', width: 'auto' }}
+            />
           </Link>
           <button
             type="button"
             onClick={closeMobile}
-            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            className="rounded-md p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" aria-hidden="true" />
@@ -265,12 +272,12 @@ export default function Navbar() {
         </div>
 
         {/* Drawer links */}
-        <nav className="flex-1 overflow-y-auto px-5 py-4 divide-y divide-gray-100">
+        <nav className="flex-1 overflow-y-auto px-5 py-4 divide-y divide-neutral-100">
           <div className="pb-3">
             <Link
               href="/about"
               onClick={closeMobile}
-              className="block py-3 text-base font-medium text-gray-800 hover:text-sequoia-700 transition-colors"
+              className="block py-3 text-base font-medium text-neutral-800 hover:text-black transition-colors"
             >
               About Us
             </Link>
@@ -296,7 +303,7 @@ export default function Navbar() {
             <Link
               href="/contact"
               onClick={closeMobile}
-              className="block py-3 text-base font-medium text-gray-800 hover:text-sequoia-700 transition-colors"
+              className="block py-3 text-base font-medium text-neutral-800 hover:text-black transition-colors"
             >
               Contact
             </Link>
@@ -304,18 +311,18 @@ export default function Navbar() {
         </nav>
 
         {/* Drawer CTAs */}
-        <div className="shrink-0 border-t border-gray-100 px-5 py-5 flex flex-col gap-3">
+        <div className="shrink-0 border-t border-neutral-100 px-5 py-5 flex flex-col gap-3">
           <Link
             href="/apply"
             onClick={closeMobile}
-            className="flex items-center justify-center rounded-md bg-sequoia-700 px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-sequoia-800 transition-colors"
+            className="flex items-center justify-center rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-neutral-800 transition-colors"
           >
             Get Funding
           </Link>
           <Link
             href="/login"
             onClick={closeMobile}
-            className="flex items-center justify-center rounded-md border border-sequoia-700 bg-transparent px-5 py-3 text-sm font-medium text-sequoia-700 hover:bg-sequoia-50 transition-colors"
+            className="flex items-center justify-center rounded-md border border-black/20 bg-transparent px-5 py-3 text-sm font-medium text-black hover:bg-neutral-100 transition-colors"
           >
             Consultant Login
           </Link>
