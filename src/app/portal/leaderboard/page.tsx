@@ -243,8 +243,8 @@ export default function LeaderboardPage() {
                         {formatMetric(metricValue, metricTab)}
                       </p>
                       {rank === 1 && (
-                        <p className="text-gold-600 text-xs font-semibold flex items-center justify-end gap-0.5">
-                          <Star size={10} className="fill-gold-500 text-gold-500" /> Top Performer
+                        <p className="text-gold-700 text-xs font-semibold flex items-center justify-end gap-0.5">
+                          <Star size={10} className="fill-gold-700 text-gold-700" /> Top Performer
                         </p>
                       )}
                     </div>

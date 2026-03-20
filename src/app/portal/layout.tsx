@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
-  TreePine,
   LayoutDashboard,
   FileText,
   GraduationCap,
@@ -66,8 +66,14 @@ function Sidebar({ pathname, onClose }: SidebarProps) {
     <aside className="flex flex-col h-full w-64 bg-sequoia-900 text-white">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-sequoia-800/60">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sequoia-700/50">
-          <TreePine className="h-5 w-5 text-sequoia-300" aria-hidden="true" />
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sequoia-700/50 shrink-0">
+          <Image
+            src="/logo-gold.png"
+            alt="Sequoia logo"
+            width={20}
+            height={20}
+            className="object-contain"
+          />
         </div>
         <div className="leading-tight">
           <span className="block text-base font-extrabold tracking-tight text-white">
