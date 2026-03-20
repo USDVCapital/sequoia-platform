@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Image from 'next/image'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -190,11 +191,15 @@ export default function AboutPage() {
                 {/* CEO card */}
                 <div className="lg:col-span-2">
                   <Card className="overflow-hidden p-0">
-                    {/* Avatar placeholder with gradient */}
-                    <div className="flex h-64 items-center justify-center bg-gradient-sequoia">
-                      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-5xl font-bold text-white shadow-lg ring-4 ring-white/30">
-                        AW
-                      </div>
+                    {/* CEO headshot */}
+                    <div className="relative h-72 w-full">
+                      <Image
+                        src="/Allen Wu Headshot.png"
+                        alt="Allen Wu — CEO, Sequoia Enterprise Solutions"
+                        fill
+                        className="object-cover object-top"
+                        sizes="(max-width: 1024px) 100vw, 40vw"
+                      />
                     </div>
                     <div className="p-6 text-center">
                       <p className="text-xl font-bold text-sequoia-900">Allen Wu</p>
