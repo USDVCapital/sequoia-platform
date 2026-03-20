@@ -1,6 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -9,6 +12,23 @@ import FadeIn from '@/components/motion/FadeIn'
 import StaggerContainer from '@/components/motion/StaggerContainer'
 import StaggerItem from '@/components/motion/StaggerItem'
 import { MapPin, Phone, Mail, Clock, CheckCircle2, ChevronRight } from 'lucide-react'
+
+// ─── Zod Schema ─────────────────────────────────────────────────────────────────
+
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().optional().refine(
+    (val) => !val || /^[\d\s\-\(\)\+]*$/.test(val),
+    'Phone must contain only numbers'
+  ),
+  role: z.string().optional(),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+})
+
+type ContactFormData = z.infer<typeof contactSchema>
+
+// ─── Constants ──────────────────────────────────────────────────────────────────
 
 type FormStatus = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -51,7 +71,7 @@ const contactDetails = [
 ]
 
 const roleOptions = [
-  { value: '', label: 'Select your role…' },
+  { value: '', label: 'Select your role...' },
   { value: 'business-owner', label: 'Business Owner' },
   { value: 'real-estate-agent', label: 'Real Estate Agent' },
   { value: 'consultant', label: 'Consultant' },
@@ -60,43 +80,29 @@ const roleOptions = [
 ]
 
 export default function ContactPage() {
-  const formRef = useRef<HTMLFormElement>(null)
   const [status, setStatus] = useState<FormStatus>('idle')
-  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  function validate(data: FormData): Record<string, string> {
-    const errs: Record<string, string> = {}
-    const name = (data.get('name') as string | null)?.trim()
-    const email = (data.get('email') as string | null)?.trim()
-    const message = (data.get('message') as string | null)?.trim()
+  useEffect(() => {
+    document.title = 'Contact Sequoia Enterprise Solutions — Rockville, MD'
+  }, [])
 
-    if (!name) errs.name = 'Full name is required.'
-    if (!email) {
-      errs.email = 'Email address is required.'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errs.email = 'Please enter a valid email address.'
-    }
-    if (!message) errs.message = 'Message is required.'
-    return errs
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    mode: 'onBlur',
+    defaultValues: { name: '', email: '', phone: '', role: '', message: '' },
+  })
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const data = new FormData(e.currentTarget)
-    const errs = validate(data)
-
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs)
-      return
-    }
-
-    setErrors({})
+  async function onSubmit() {
     setStatus('submitting')
-
     // Simulate network latency (no backend)
     await new Promise((r) => setTimeout(r, 900))
     setStatus('success')
-    formRef.current?.reset()
+    reset()
   }
 
   return (
@@ -233,8 +239,7 @@ export default function ContactPage() {
                     </div>
 
                     <form
-                      ref={formRef}
-                      onSubmit={handleSubmit}
+                      onSubmit={handleSubmit(onSubmit)}
                       noValidate
                       className="space-y-5"
                     >
@@ -248,16 +253,15 @@ export default function ContactPage() {
                         </label>
                         <input
                           id="name"
-                          name="name"
                           type="text"
                           autoComplete="name"
                           placeholder="Jane Smith"
-                          className={`input-brand ${errors.name ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgb(239_68_68/0.15)]' : ''}`}
-                          aria-describedby={errors.name ? 'name-error' : undefined}
+                          className={`input-brand ${errors.name ? 'border-red-500' : ''}`}
+                          {...register('name')}
                         />
                         {errors.name && (
-                          <p id="name-error" className="mt-1 text-xs text-red-600">
-                            {errors.name}
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.name.message}
                           </p>
                         )}
                       </div>
@@ -273,16 +277,15 @@ export default function ContactPage() {
                           </label>
                           <input
                             id="email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="jane@example.com"
-                            className={`input-brand ${errors.email ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgb(239_68_68/0.15)]' : ''}`}
-                            aria-describedby={errors.email ? 'email-error' : undefined}
+                            className={`input-brand ${errors.email ? 'border-red-500' : ''}`}
+                            {...register('email')}
                           />
                           {errors.email && (
-                            <p id="email-error" className="mt-1 text-xs text-red-600">
-                              {errors.email}
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.email.message}
                             </p>
                           )}
                         </div>
@@ -296,12 +299,17 @@ export default function ContactPage() {
                           </label>
                           <input
                             id="phone"
-                            name="phone"
                             type="tel"
                             autoComplete="tel"
                             placeholder="(555) 000-0000"
-                            className="input-brand"
+                            className={`input-brand ${errors.phone ? 'border-red-500' : ''}`}
+                            {...register('phone')}
                           />
+                          {errors.phone && (
+                            <p className="mt-1 text-xs text-red-500">
+                              {errors.phone.message}
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -311,13 +319,12 @@ export default function ContactPage() {
                           htmlFor="role"
                           className="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                          I am a…
+                          I am a...
                         </label>
                         <select
                           id="role"
-                          name="role"
-                          defaultValue=""
                           className="input-brand appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22none%22 viewBox=%220 0 20 20%22%3E%3Cpath stroke=%22%236b7280%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%221.5%22 d=%22m6 8 4 4 4-4%22/%3E%3C/svg%3E')] bg-[right_0.75rem_center] bg-[length:1.25rem_1.25rem] bg-no-repeat pr-10"
+                          {...register('role')}
                         >
                           {roleOptions.map(({ value, label }) => (
                             <option key={value} value={value} disabled={value === ''}>
@@ -337,15 +344,14 @@ export default function ContactPage() {
                         </label>
                         <textarea
                           id="message"
-                          name="message"
                           rows={5}
-                          placeholder="Tell us what you need — funding type, loan amount, timeline, or anything else on your mind…"
-                          className={`input-brand resize-y ${errors.message ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgb(239_68_68/0.15)]' : ''}`}
-                          aria-describedby={errors.message ? 'message-error' : undefined}
+                          placeholder="Tell us what you need — funding type, loan amount, timeline, or anything else on your mind..."
+                          className={`input-brand resize-y ${errors.message ? 'border-red-500' : ''}`}
+                          {...register('message')}
                         />
                         {errors.message && (
-                          <p id="message-error" className="mt-1 text-xs text-red-600">
-                            {errors.message}
+                          <p className="mt-1 text-xs text-red-500">
+                            {errors.message.message}
                           </p>
                         )}
                       </div>
@@ -360,7 +366,7 @@ export default function ContactPage() {
                         {status === 'submitting' ? (
                           <>
                             <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            Sending…
+                            Sending...
                           </>
                         ) : (
                           <>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import {
   HeartPulse,
   Users,
@@ -130,6 +131,10 @@ function StatPill({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function WellnessPage() {
+  useEffect(() => {
+    document.title = 'Employee Health Management Platform — Zero Cost to Employers | SEQ Solution'
+  }, [])
+
   return (
     <>
       {/* ── Hero ── */}

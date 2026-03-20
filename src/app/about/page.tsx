@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -74,6 +75,10 @@ const partnerships = [
 ]
 
 export default function AboutPage() {
+  useEffect(() => {
+    document.title = 'About Sequoia Enterprise Solutions — Our Story & Mission'
+  }, [])
+
   return (
     <div className="flex flex-col">
 

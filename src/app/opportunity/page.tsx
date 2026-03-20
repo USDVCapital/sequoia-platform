@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DollarSign,
   Users,
@@ -163,6 +163,10 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function OpportunityPage() {
+  useEffect(() => {
+    document.title = 'Build a Consulting Business with Sequoia — Earn Recurring Income'
+  }, [])
+
   return (
     <div className="bg-background">
 

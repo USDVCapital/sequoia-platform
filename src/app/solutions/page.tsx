@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import {
   Building2,
   Hammer,
@@ -22,6 +23,13 @@ import {
   Zap,
   ArrowRight,
   Phone,
+  ChevronDown,
+  Banknote,
+  Shield,
+  Wallet,
+  Receipt,
+  BadgeCheck,
+  Battery,
 } from 'lucide-react'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
@@ -203,6 +211,268 @@ const cleanEnergy = [
   },
 ]
 
+// ─── Accordion Data ──────────────────────────────────────────────────────────
+
+type AccordionTab = 'Real Estate Loans' | 'Business Funding' | 'Business Services' | 'Clean Energy'
+
+interface AccordionProduct {
+  name: string
+  summary: string
+  specs: string[]
+  href: string
+  ctaLabel?: string
+}
+
+const accordionData: Record<AccordionTab, AccordionProduct[]> = {
+  'Real Estate Loans': [
+    {
+      name: 'Fix & Flip',
+      summary: 'Short-term rehab financing for value-add investment properties.',
+      specs: [
+        'Up to 90% of purchase price, 100% of rehab costs',
+        'Max 70% of after-repair value (ARV)',
+        '620+ credit score required',
+        '6–18 month terms',
+        'Loan range: $100K–$5M',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'DSCR Rental',
+      summary: 'Long-term rental financing based on property cash flow, not personal income.',
+      specs: [
+        'Non-owner-occupied investment properties',
+        'Minimum 1.0 DSCR (debt service coverage ratio)',
+        '75% max LTV',
+        'No personal income verification required',
+        '640+ credit score',
+        '30-year fixed-rate terms available',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Multifamily Bridge',
+      summary: 'Bridge financing for apartment buildings and larger multifamily assets.',
+      specs: [
+        '5+ unit properties',
+        'Up to 80% LTV',
+        '12–36 month terms',
+        'Interest-only payments available',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Commercial Real Estate',
+      summary: 'Financing for office, retail, industrial, and specialty commercial properties.',
+      specs: [
+        'Office, retail, industrial, and specialty assets',
+        '75% max LTV',
+        '5–25 year amortization',
+        'Loan range: $500K–$50M',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Construction',
+      summary: 'Ground-up construction financing with draw schedules.',
+      specs: [
+        'Ground-up new construction',
+        'Up to 85% of total project cost',
+        'Structured draw schedule',
+        '12–24 month terms',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Land Loans',
+      summary: 'Financing for raw land, entitled lots, and development-ready parcels.',
+      specs: [
+        'Raw and entitled land',
+        '65% max LTV',
+        '12–36 month terms',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Hard Money / Bridge',
+      summary: 'Fast, asset-based lending for time-sensitive deals.',
+      specs: [
+        'Asset-based underwriting',
+        '620+ credit score',
+        '3–5 day funding turnaround',
+        '70% max LTV',
+        'Loan range: $100K–$10M',
+      ],
+      href: '/apply',
+    },
+  ],
+  'Business Funding': [
+    {
+      name: 'SBA 7(a)',
+      summary: 'The most versatile SBA loan for working capital, expansion, and acquisitions.',
+      specs: [
+        'Up to $5M in loan amount',
+        '680+ credit score required',
+        'Minimum 2 years in business',
+        '10–25 year repayment terms',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'SBA 504',
+      summary: 'Owner-occupied commercial real estate and heavy equipment financing.',
+      specs: [
+        'For owner-occupied CRE and major equipment',
+        '$5.5M SBA portion (up to $5.5M)',
+        'Only 10% equity injection required',
+        '20–25 year fixed-rate terms',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Equipment Financing',
+      summary: 'Finance machinery, technology, and essential business equipment.',
+      specs: [
+        'Up to 100% of equipment value',
+        '600+ credit score',
+        'Minimum 1 year in business',
+        '2–7 year repayment terms',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Working Capital / MCA',
+      summary: 'Fast revenue-based funding for immediate cash flow needs.',
+      specs: [
+        'Revenue-based qualification',
+        '550+ credit score',
+        'Same-day funding available',
+        'Funding range: $10K–$500K',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Business Line of Credit',
+      summary: 'Revolving credit line for ongoing operational flexibility.',
+      specs: [
+        'Revolving credit facility',
+        '620+ credit score',
+        'Credit range: $10K–$250K',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Business Acquisition',
+      summary: 'Financing to purchase an existing business via SBA or conventional programs.',
+      specs: [
+        'SBA or conventional structuring',
+        'Up to 90% of purchase price',
+        'Target business must have 3+ years of operating history',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Invoice Factoring',
+      summary: 'Unlock cash tied up in unpaid invoices immediately.',
+      specs: [
+        'Advance up to 90% of invoice value',
+        'No minimum credit score required',
+        'Same-day funding available',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Commercial Vehicle / Fleet',
+      summary: 'Financing for trucks, vans, and commercial fleet vehicles.',
+      specs: [
+        '580+ credit score',
+        'Up to 72 month terms',
+      ],
+      href: '/apply',
+    },
+  ],
+  'Business Services': [
+    {
+      name: 'EHMP Wellness Program',
+      summary: 'IRS-compliant Section 125 wellness benefits that save employers money.',
+      specs: [
+        'Section 125 compliant employer wellness plan',
+        'Consultants earn $12–$18 per employee per month in commission',
+        'Zero net cost to employers through FICA tax savings',
+        'Onboarding typically under 30 days',
+      ],
+      href: '/solutions/wellness',
+      ctaLabel: 'Learn More',
+    },
+    {
+      name: 'Payroll Services',
+      summary: 'Full-service payroll processing with tax filing and HR support.',
+      specs: [
+        'Full-service payroll processing',
+        'Automated tax filing and compliance',
+        'HR support and employee onboarding tools',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Business Insurance',
+      summary: 'Comprehensive commercial insurance packages for every business.',
+      specs: [
+        'Commercial general liability (CGL)',
+        'Professional liability / E&O',
+        'Workers compensation',
+        'Commercial auto insurance',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Merchant Services',
+      summary: 'Payment processing, POS systems, and merchant cash advance.',
+      specs: [
+        'Payment processing and POS solutions',
+        'Merchant cash advance available',
+        'No long-term contracts required',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'Business Credit Building',
+      summary: 'Build strong business credit to unlock better rates and terms.',
+      specs: [
+        '6–12 month program to achieve Tier 1 business credit',
+        'Separate business credit profile from personal',
+        'Access to better rates and higher limits',
+      ],
+      href: '/apply',
+    },
+  ],
+  'Clean Energy': [
+    {
+      name: 'Commercial Solar',
+      summary: 'Zero-down solar installations with strong ROI and federal tax credits.',
+      specs: [
+        'Zero-down financing available',
+        '20–25 year project terms',
+        '15–25% projected ROI',
+        'Federal and state tax credits applicable',
+      ],
+      href: '/apply',
+    },
+    {
+      name: 'EV Charging Infrastructure',
+      summary: 'Level 2 and DC fast charging stations for properties and fleets.',
+      specs: [
+        'Level 2 and DC fast charging stations',
+        '30% federal tax credit available',
+        'Property and fleet installations',
+      ],
+      href: '/apply',
+    },
+  ],
+}
+
+const tabKeys: AccordionTab[] = ['Real Estate Loans', 'Business Funding', 'Business Services', 'Clean Energy']
+
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 interface ProductCardProps {
@@ -294,6 +564,25 @@ function SolutionSection({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function SolutionsPage() {
+  const [activeTab, setActiveTab] = useState<AccordionTab>('Real Estate Loans')
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    document.title = 'Business Funding & Services Solutions — Sequoia Enterprise Solutions'
+  }, [])
+
+  function toggleItem(key: string) {
+    setExpandedItems((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) {
+        next.delete(key)
+      } else {
+        next.add(key)
+      }
+      return next
+    })
+  }
+
   return (
     <>
       {/* ── Hero ── */}
@@ -381,6 +670,101 @@ export default function SolutionsPage() {
           bgClass="bg-gradient-section"
         />
       </div>
+
+      {/* ── Product Accordion ── */}
+      <section className="section-padding bg-white" id="all-solutions">
+        <div className="container-brand">
+          <FadeIn direction="up">
+            <SectionHeading
+              eyebrow="Full Catalog"
+              heading="Every Solution, in One Place"
+              subheading="Browse every product we offer across real estate, business funding, services, and clean energy."
+              align="center"
+            />
+          </FadeIn>
+
+          {/* Tabs */}
+          <div className="mt-10 flex flex-wrap justify-center gap-2" role="tablist">
+            {tabKeys.map((tab) => (
+              <button
+                key={tab}
+                role="tab"
+                aria-selected={activeTab === tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-colors duration-150 cursor-pointer border ${
+                  activeTab === tab
+                    ? 'bg-sequoia-700 text-white border-sequoia-700'
+                    : 'bg-white text-gray-600 border-neutral-200 hover:border-sequoia-300 hover:text-sequoia-700'
+                }`}
+              >
+                {tab}
+                <span className="ml-1.5 opacity-60 text-xs">
+                  ({accordionData[tab].length})
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Accordion cards */}
+          <div className="mt-8 max-w-3xl mx-auto space-y-3">
+            {accordionData[activeTab].map((product) => {
+              const key = `${activeTab}-${product.name}`
+              const isOpen = expandedItems.has(key)
+              return (
+                <div
+                  key={key}
+                  className={`rounded-xl border transition-colors duration-150 ${
+                    isOpen
+                      ? 'border-sequoia-200 bg-neutral-50'
+                      : 'border-neutral-200 bg-white hover:border-sequoia-200'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(key)}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer"
+                    aria-expanded={isOpen}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-sequoia-900">{product.name}</h3>
+                      <p className="mt-0.5 text-sm text-gray-500 truncate">{product.summary}</p>
+                    </div>
+                    <ChevronDown
+                      className={`size-5 text-gray-400 shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-5 pb-5 pt-0">
+                      <div className="border-t border-neutral-200 pt-4">
+                        <ul className="space-y-2">
+                          {product.specs.map((spec) => (
+                            <li key={spec} className="flex items-start gap-2.5 text-sm text-gray-700">
+                              <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-[#C8A84E]" />
+                              {spec}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-5">
+                          <a
+                            href={product.href}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-sequoia-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sequoia-800 transition-colors"
+                          >
+                            {product.ctaLabel || 'Apply Now'}
+                            <ArrowRight className="size-3.5" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* ── CTA Banner ── */}
       <section className="bg-gradient-sequoia-dark section-padding">
