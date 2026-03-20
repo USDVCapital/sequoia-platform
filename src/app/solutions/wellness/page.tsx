@@ -132,17 +132,26 @@ export default function WellnessPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="bg-gradient-hero section-padding-lg relative overflow-hidden">
+      <section className="relative overflow-hidden">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute -top-40 right-0 size-[700px] rounded-full bg-gold-500/10 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-0 -left-32 size-[500px] rounded-full bg-sequoia-600/10 blur-3xl"
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/65"
         />
 
-        <div className="container-brand relative z-10">
+        <div className="container-brand relative z-10 section-padding-lg">
           <div className="max-w-3xl">
             <FadeIn direction="up" delay={0}>
               <span className="badge-dark mb-6 inline-flex items-center gap-2">
@@ -169,7 +178,7 @@ export default function WellnessPage() {
                 <Button href="/apply?type=wellness-employer" variant="secondary" size="lg">
                   Enroll Your Company
                 </Button>
-                <a href="#consultant" className="btn-ghost-light">
+                <a href="#consultant" className="btn-ghost-light" style={{ color: '#FFFFFF' }}>
                   Become a Wellness Consultant
                 </a>
               </div>
