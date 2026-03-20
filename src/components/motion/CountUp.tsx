@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useInView } from "framer-motion";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface CountUpProps {
   end: number;
@@ -19,15 +18,16 @@ export default function CountUp({
   className,
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
   const [count, setCount] = useState(0);
+  const hasAnimated = useRef(false);
 
-  useEffect(() => {
-    if (!isInView) return;
+  const animate = useCallback(() => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
 
-    let start = 0;
     const startTime = performance.now();
     const durationMs = duration * 1000;
+    let prev = 0;
 
     function step(currentTime: number) {
       const elapsed = currentTime - startTime;
@@ -36,8 +36,8 @@ export default function CountUp({
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = Math.round(eased * end);
 
-      if (current !== start) {
-        start = current;
+      if (current !== prev) {
+        prev = current;
         setCount(current);
       }
 
@@ -47,7 +47,30 @@ export default function CountUp({
     }
 
     requestAnimationFrame(step);
-  }, [isInView, end, duration]);
+  }, [end, duration]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            animate();
+            observer.unobserve(el);
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [animate]);
 
   return (
     <span ref={ref} className={className}>

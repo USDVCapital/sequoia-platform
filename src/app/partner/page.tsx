@@ -29,11 +29,31 @@ const partnerSchema = z.object({
   name: z.string().min(1, 'Full name is required'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().min(1, 'Phone number is required').regex(/^[\d\s\-\(\)\+]+$/, 'Phone must contain only numbers'),
-  organization: z.string().min(1, 'Organization is required'),
+  role: z.string().min(1, 'Please select your professional role'),
+  clientCount: z.string().min(1, 'Please select how many business owner clients you have'),
+  partnershipModel: z.string().min(1, 'Please select a partnership model'),
   message: z.string().optional(),
 })
 
 type PartnerFormData = z.infer<typeof partnerSchema>
+
+const professionalRoles = [
+  'Real Estate Agent',
+  'Loan Officer',
+  'Insurance Agent',
+  'CPA/Accountant',
+  'Financial Advisor',
+  'Attorney',
+  'Other',
+]
+
+const clientCountOptions = ['1\u201310', '11\u201350', '51\u2013100', '100+']
+
+const partnershipModelOptions = [
+  'Referral Partner',
+  'Independent Consultant',
+  'Team Leader',
+]
 
 const partnershipModels = [
   {
@@ -103,10 +123,11 @@ export default function PartnerPage() {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<PartnerFormData>({
     resolver: zodResolver(partnerSchema),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', phone: '', organization: '', message: '' },
+    defaultValues: { name: '', email: '', phone: '', role: '', clientCount: '', partnershipModel: '', message: '' },
   })
 
   function onSubmit() {
@@ -271,16 +292,17 @@ export default function PartnerPage() {
             <FadeIn direction="up" delay={0.1}>
               {submitted ? (
                 <Card>
-                  <div className="text-center py-8">
-                    <div className="flex justify-center mb-4">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gold-100">
-                        <CheckCircle2 className="size-7 text-gold-700" />
+                  <div className="text-center py-10">
+                    <div className="flex justify-center mb-5">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                        <CheckCircle2 className="size-8 text-green-600" />
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-black">Thank you!</h3>
-                    <p className="mt-2 text-neutral-600">
-                      We have received your inquiry and will be in touch within 24 hours to schedule
-                      your partnership call.
+                    <h3 className="text-xl font-bold text-black">
+                      Thank you, {getValues('name')}.
+                    </h3>
+                    <p className="mt-3 text-neutral-600 max-w-md mx-auto">
+                      A Sequoia partnership advisor will contact you within one business day.
                     </p>
                   </div>
                 </Card>
@@ -320,48 +342,91 @@ export default function PartnerPage() {
                       </div>
                     </div>
 
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-1.5">
-                          Phone Number <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="phone"
-                          type="tel"
-                          className={`w-full px-4 py-3 rounded-xl border bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition ${errors.phone ? 'border-red-500' : 'border-neutral-300'}`}
-                          placeholder="(555) 123-4567"
-                          {...register('phone')}
-                        />
-                        {errors.phone && (
-                          <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
-                        )}
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Phone Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="phone"
+                        type="tel"
+                        className={`w-full px-4 py-3 rounded-xl border bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition ${errors.phone ? 'border-red-500' : 'border-neutral-300'}`}
+                        placeholder="(555) 123-4567"
+                        {...register('phone')}
+                      />
+                      {errors.phone && (
+                        <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="role" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Professional Role <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="role"
+                        className={`w-full px-4 py-3 rounded-xl border bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition ${errors.role ? 'border-red-500' : 'border-neutral-300'}`}
+                        {...register('role')}
+                      >
+                        <option value="">Select your role...</option>
+                        {professionalRoles.map((r) => (
+                          <option key={r} value={r}>{r}</option>
+                        ))}
+                      </select>
+                      {errors.role && (
+                        <p className="mt-1 text-xs text-red-500">{errors.role.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="clientCount" className="block text-sm font-medium text-neutral-700 mb-1.5">
+                        How many business owner clients? <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        id="clientCount"
+                        className={`w-full px-4 py-3 rounded-xl border bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition ${errors.clientCount ? 'border-red-500' : 'border-neutral-300'}`}
+                        {...register('clientCount')}
+                      >
+                        <option value="">Select a range...</option>
+                        {clientCountOptions.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      {errors.clientCount && (
+                        <p className="mt-1 text-xs text-red-500">{errors.clientCount.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Which partnership model? <span className="text-red-500">*</span>
+                      </label>
+                      <div className="space-y-2">
+                        {partnershipModelOptions.map((model) => (
+                          <label key={model} className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="radio"
+                              value={model}
+                              className="h-4 w-4 border-neutral-300 text-gold-600 focus:ring-gold-500"
+                              {...register('partnershipModel')}
+                            />
+                            <span className="text-sm text-neutral-700">{model}</span>
+                          </label>
+                        ))}
                       </div>
-                      <div>
-                        <label htmlFor="organization" className="block text-sm font-medium text-neutral-700 mb-1.5">
-                          Organization <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="organization"
-                          type="text"
-                          className={`w-full px-4 py-3 rounded-xl border bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition ${errors.organization ? 'border-red-500' : 'border-neutral-300'}`}
-                          placeholder="Your company or organization"
-                          {...register('organization')}
-                        />
-                        {errors.organization && (
-                          <p className="mt-1 text-xs text-red-500">{errors.organization.message}</p>
-                        )}
-                      </div>
+                      {errors.partnershipModel && (
+                        <p className="mt-1 text-xs text-red-500">{errors.partnershipModel.message}</p>
+                      )}
                     </div>
 
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1.5">
-                        Tell Us About Your Business
+                        Message <span className="text-neutral-400 font-normal">(optional)</span>
                       </label>
                       <textarea
                         id="message"
                         rows={4}
                         className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition resize-none"
-                        placeholder="What type of partnership are you interested in? How many clients do you typically serve?"
+                        placeholder="Anything else you'd like us to know?"
                         {...register('message')}
                       />
                     </div>
@@ -371,7 +436,7 @@ export default function PartnerPage() {
                       className="w-full py-3 px-6 rounded-xl bg-black hover:bg-neutral-800 font-semibold transition flex items-center justify-center gap-2"
                       style={{ color: '#FFFFFF' }}
                     >
-                      Schedule a Partnership Call
+                      Schedule My Partnership Call
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </form>

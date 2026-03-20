@@ -83,6 +83,7 @@ const roleOptions = [
 export default function ContactPage() {
   const { openBooking } = useBooking()
   const [status, setStatus] = useState<FormStatus>('idle')
+  const [submittedName, setSubmittedName] = useState('')
 
   useEffect(() => {
     document.title = 'Contact Sequoia Enterprise Solutions — Rockville, MD'
@@ -99,8 +100,9 @@ export default function ContactPage() {
     defaultValues: { name: '', email: '', phone: '', role: '', message: '' },
   })
 
-  async function onSubmit() {
+  async function onSubmit(data: ContactFormData) {
     setStatus('submitting')
+    setSubmittedName(data.name)
     // Simulate network latency (no backend)
     await new Promise((r) => setTimeout(r, 900))
     setStatus('success')
@@ -210,22 +212,27 @@ export default function ContactPage() {
                 {status === 'success' ? (
                   /* Success state */
                   <div className="flex flex-col items-center py-10 text-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-sequoia-100">
-                      <CheckCircle2 size={32} className="text-sequoia-600" />
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                      <CheckCircle2 size={32} className="text-green-600" />
                     </div>
-                    <h3 className="mt-5 text-xl font-bold text-sequoia-900">Message Sent!</h3>
+                    <h3 className="mt-5 text-xl font-bold text-sequoia-900">
+                      Message sent, {submittedName}.
+                    </h3>
                     <p className="mt-2 max-w-sm text-sm leading-relaxed text-gray-500">
-                      Thank you for reaching out. A member of our team will be in touch within one
-                      business day. For urgent matters, call us at{' '}
-                      <a href="tel:+13013378035" className="font-semibold text-sequoia-700">
-                        301-337-8035
-                      </a>
-                      .
+                      We&apos;ll get back to you within one business day.
                     </p>
+                    <div className="mt-6">
+                      <a
+                        href="/solutions"
+                        className="inline-flex items-center gap-2 rounded-lg bg-sequoia-700 px-6 py-3 text-sm font-semibold text-white hover:bg-sequoia-800 transition-colors"
+                      >
+                        Explore Solutions
+                      </a>
+                    </div>
                     <button
                       type="button"
                       onClick={() => setStatus('idle')}
-                      className="mt-6 text-sm font-semibold text-sequoia-700 underline underline-offset-2 hover:text-sequoia-800"
+                      className="mt-4 text-sm font-semibold text-sequoia-700 underline underline-offset-2 hover:text-sequoia-800"
                     >
                       Send another message
                     </button>

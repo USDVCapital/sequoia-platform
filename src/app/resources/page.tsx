@@ -25,10 +25,9 @@ import TrainingCountdown from '@/components/ui/TrainingCountdown'
 type FilterKey =
   | 'All'
   | 'Agent Training'
+  | 'Product Deep Dives'
   | 'Success Stories'
   | 'Wellness / EHMP'
-  | 'Commercial Lending'
-  | 'Product Deep Dives'
 
 interface VideoCard {
   id: number
@@ -44,108 +43,107 @@ interface VideoCard {
 const FILTERS: FilterKey[] = [
   'All',
   'Agent Training',
+  'Product Deep Dives',
   'Success Stories',
   'Wellness / EHMP',
-  'Commercial Lending',
-  'Product Deep Dives',
 ]
 
 const VIDEOS: VideoCard[] = [
   {
     id: 1,
-    title: 'Disrupting the Commercial Lending Industry',
-    category: 'Commercial Lending',
-    duration: '22 min',
+    title: 'Your First 30 Days at Sequoia',
+    category: 'Agent Training',
+    duration: '12:45',
     color: 'from-sequoia-800 to-sequoia-600',
-    description: 'How Sequoia gives independent consultants access to institutional-grade lending.',
+    description: 'Step-by-step onboarding roadmap: tools, first calls, first commissions.',
   },
   {
     id: 2,
-    title: 'Compensation 6.0 Explained',
-    category: 'Agent Training',
-    duration: '18 min',
-    color: 'from-gold-700 to-gold-500',
-    description: "A full walkthrough of how commissions, revenue share, and bonuses are calculated.",
+    title: 'How to Present EHMP to Employers',
+    category: 'Wellness / EHMP',
+    duration: '18:30',
+    color: 'from-emerald-700 to-emerald-500',
+    description: 'The complete framework for introducing the EHMP wellness benefit to employer prospects.',
   },
   {
     id: 3,
-    title: 'Why Loans Get Denied — and How to Prevent It',
-    category: 'Commercial Lending',
-    duration: '31 min',
+    title: 'Fix & Flip Loan Criteria Explained',
+    category: 'Product Deep Dives',
+    duration: '15:20',
     color: 'from-sequoia-900 to-sequoia-700',
-    description: 'Common deal-killers in commercial lending and the pre-qualification checklist.',
+    description: 'Eligibility, LTV limits, draw schedules, and how to set expectations with investor clients.',
   },
   {
     id: 4,
-    title: 'EHMP Discovery Session: Live Demo',
-    category: 'Wellness / EHMP',
-    duration: '27 min',
-    color: 'from-emerald-700 to-emerald-500',
-    description: 'Watch a live employer discovery call from intro to close.',
+    title: 'SBA Loans: Eligibility & Application',
+    category: 'Product Deep Dives',
+    duration: '22:10',
+    color: 'from-indigo-700 to-indigo-500',
+    description: 'A practical guide to identifying SBA-eligible clients and preparing a strong file.',
   },
   {
     id: 5,
-    title: 'Agent Success Story: Emily',
+    title: "Joseph's $652K First Deal",
     category: 'Success Stories',
-    duration: '14 min',
-    color: 'from-gold-800 to-gold-600',
-    description: "How Emily closed $500K+ in commercial volume in her first year as a Sequoia consultant.",
-  },
-  {
-    id: 6,
-    title: 'The Real Estate Product Suite Deep Dive',
-    category: 'Product Deep Dives',
-    duration: '35 min',
-    color: 'from-sequoia-800 to-sequoia-500',
-    description: 'Fix-and-flip, DSCR, bridge loans, construction — every RE product explained.',
-  },
-  {
-    id: 7,
-    title: 'Business Funding 101: What Clients Need to Know',
-    category: 'Agent Training',
-    duration: '20 min',
-    color: 'from-blue-700 to-blue-500',
-    description: 'How to qualify a business for funding and set realistic expectations.',
-  },
-  {
-    id: 8,
-    title: 'EHMP: Objection Handling Masterclass',
-    category: 'Wellness / EHMP',
-    duration: '24 min',
-    color: 'from-teal-700 to-teal-500',
-    description: "The 10 most common employer objections and how to handle every one of them.",
-  },
-  {
-    id: 9,
-    title: 'Joseph Cordeira: The $652K Deal Story',
-    category: 'Success Stories',
-    duration: '11 min',
+    duration: '8:45',
     color: 'from-gold-900 to-gold-700',
     description: 'Joseph shares how he found, qualified, and funded a $652,000 commercial deal.',
   },
   {
-    id: 10,
-    title: 'Clean Energy Financing Explained',
+    id: 6,
+    title: "Emily's Path to $500K in 6 Months",
+    category: 'Success Stories',
+    duration: '11:30',
+    color: 'from-gold-800 to-gold-600',
+    description: "How Emily closed $500K+ in commercial volume in her first six months as a Sequoia consultant.",
+  },
+  {
+    id: 7,
+    title: 'DSCR Rental Loans Made Simple',
     category: 'Product Deep Dives',
-    duration: '19 min',
+    duration: '14:15',
+    color: 'from-sequoia-800 to-sequoia-500',
+    description: 'Everything you need to know about DSCR rental loans — qualification, ratios, and pricing.',
+  },
+  {
+    id: 8,
+    title: 'Building Your EHMP Pipeline',
+    category: 'Wellness / EHMP',
+    duration: '16:40',
+    color: 'from-teal-700 to-teal-500',
+    description: 'Strategies for building a consistent pipeline of employer wellness prospects.',
+  },
+  {
+    id: 9,
+    title: 'Commercial Real Estate 101',
+    category: 'Agent Training',
+    duration: '20:05',
+    color: 'from-blue-700 to-blue-500',
+    description: 'A comprehensive introduction to commercial real estate financing for new consultants.',
+  },
+  {
+    id: 10,
+    title: 'The Wellness Program Tax Savings',
+    category: 'Wellness / EHMP',
+    duration: '13:20',
     color: 'from-green-700 to-green-500',
-    description: 'Solar, LED retrofits, and PACE financing — opportunities in clean energy lending.',
+    description: 'How EHMP saves employers $500-$800 per employee per year through IRS-compliant wellness benefits.',
   },
   {
     id: 11,
-    title: 'Your First 30 Days as a Consultant',
+    title: 'Weekly Training Recap: March 2026',
     category: 'Agent Training',
-    duration: '29 min',
+    duration: '45:00',
     color: 'from-sequoia-700 to-sequoia-500',
-    description: 'Step-by-step onboarding roadmap: tools, first calls, first commissions.',
+    description: 'Full recording of the latest weekly training session covering new products and strategies.',
   },
   {
     id: 12,
-    title: 'SBA Loans: Eligibility and the Application Process',
-    category: 'Commercial Lending',
-    duration: '33 min',
-    color: 'from-indigo-700 to-indigo-500',
-    description: 'A practical guide to identifying SBA-eligible clients and preparing a strong file.',
+    title: 'How to Use the CEA AI Assistant',
+    category: 'Agent Training',
+    duration: '7:30',
+    color: 'from-gold-700 to-gold-500',
+    description: 'A quick tutorial on using the Sequoia AI assistant to qualify leads and answer client questions.',
   },
 ]
 
@@ -185,10 +183,9 @@ const QUICK_START = [
 const categoryBadgeVariant: Record<FilterKey, 'success' | 'warning' | 'info' | 'neutral'> = {
   'All': 'neutral',
   'Agent Training': 'success',
+  'Product Deep Dives': 'info',
   'Success Stories': 'warning',
   'Wellness / EHMP': 'info',
-  'Commercial Lending': 'neutral',
-  'Product Deep Dives': 'info',
 }
 
 // ── Countdown hook ───────────────────────────────────────────────────────────
@@ -418,6 +415,28 @@ export default function ResourcesPage() {
               ))}
             </div>
           </FadeIn>
+        </div>
+      </section>
+
+      {/* ── Video Library CTA ──────────────────────────────────────────── */}
+      <section className="py-12 bg-[var(--neutral-50)] border-t border-gray-100">
+        <div className="container-brand text-center">
+          <div className="max-w-2xl mx-auto rounded-2xl border border-gold-200 bg-gradient-to-br from-gold-50 to-white p-8">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Video size={20} className="text-gold-600" />
+              <span className="text-sm font-bold text-gold-700 uppercase tracking-wider">Full Library</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              190+ videos available to members
+            </h3>
+            <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">
+              Join Sequoia to unlock the full training library, including live weekly sessions, product deep dives, and exclusive success story interviews.
+            </p>
+            <a href="/enroll" className="btn-gold inline-flex items-center gap-2" style={{ color: '#000000' }}>
+              Join Sequoia to unlock the full library
+              <ChevronRight size={16} />
+            </a>
+          </div>
         </div>
       </section>
 
