@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Building2,
@@ -14,6 +14,9 @@ import {
   CheckCircle2,
   Quote,
   Star,
+  PlayCircle,
+  ShieldAlert,
+  Mail,
 } from 'lucide-react'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
@@ -111,6 +114,107 @@ const wellnessFeatures = [
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
+function LeadMagnetSection() {
+  const [clientEmail, setClientEmail] = useState('')
+  const [consultantEmail, setConsultantEmail] = useState('')
+  const [clientSent, setClientSent] = useState(false)
+  const [consultantSent, setConsultantSent] = useState(false)
+
+  const handleClient = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (clientEmail) {
+      try { localStorage.setItem('seq_lead_client', clientEmail) } catch {}
+      setClientSent(true)
+    }
+  }
+
+  const handleConsultant = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (consultantEmail) {
+      try { localStorage.setItem('seq_lead_consultant', consultantEmail) } catch {}
+      setConsultantSent(true)
+    }
+  }
+
+  return (
+    <section className="section-padding bg-white">
+      <div className="container-brand">
+        <FadeIn direction="up">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Client lead magnet */}
+            <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 flex flex-col gap-4">
+              <Mail size={28} className="text-gold-600" />
+              <h3 className="text-xl font-bold text-neutral-900">
+                Free Guide: The 7 Funding Options Your Bank Won&apos;t Tell You About
+              </h3>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                Discover the alternative lending sources that fund what traditional banks reject.
+              </p>
+              {clientSent ? (
+                <p className="text-sm font-semibold text-green-700 bg-green-50 rounded-lg px-4 py-3">
+                  Check your inbox — your guide is on its way.
+                </p>
+              ) : (
+                <form onSubmit={handleClient} className="flex gap-2 mt-auto">
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@company.com"
+                    value={clientEmail}
+                    onChange={(e) => setClientEmail(e.target.value)}
+                    className="input-brand flex-1 text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="shrink-0 rounded-md bg-black px-4 py-2.5 text-sm font-medium hover:bg-neutral-800 transition-colors"
+                    style={{ color: '#FFFFFF' }}
+                  >
+                    Send Me the Guide
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Consultant lead magnet */}
+            <div className="rounded-2xl border border-gold-200 bg-gold-50 p-8 flex flex-col gap-4">
+              <Mail size={28} className="text-gold-700" />
+              <h3 className="text-xl font-bold text-neutral-900">
+                Free Starter Kit: Your First 30 Days in the Sequoia Network
+              </h3>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                A day-by-day action plan to go from enrollment to your first commission.
+              </p>
+              {consultantSent ? (
+                <p className="text-sm font-semibold text-green-700 bg-green-50 rounded-lg px-4 py-3">
+                  Check your inbox — your kit is on its way.
+                </p>
+              ) : (
+                <form onSubmit={handleConsultant} className="flex gap-2 mt-auto">
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@email.com"
+                    value={consultantEmail}
+                    onChange={(e) => setConsultantEmail(e.target.value)}
+                    className="input-brand flex-1 text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="shrink-0 rounded-md bg-gold-600 px-4 py-2.5 text-sm font-medium hover:bg-gold-700 transition-colors"
+                    style={{ color: '#000000' }}
+                  >
+                    Send Me the Kit
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  )
+}
+
 export default function HomePage() {
   useEffect(() => {
     document.title = 'Sequoia Enterprise Solutions — Commercial Loans & Business Services | Rockville, MD'
@@ -190,6 +294,12 @@ export default function HomePage() {
                   <Users size={20} className="text-gold-400 shrink-0" />
                   <span className="text-white font-semibold text-sm sm:text-base">
                     2,500+ Consultant Network
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 px-6 py-3 sm:py-0">
+                  <PlayCircle size={20} className="text-gold-400 shrink-0" />
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    190+ Training Videos
                   </span>
                 </div>
               </div>
@@ -513,7 +623,48 @@ export default function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          7. PARTNERS
+          7. AVOIDING FAILURE
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="section-padding bg-neutral-900 relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-0 w-1/2 h-full opacity-5"
+          style={{
+            background: 'radial-gradient(circle at 70% 30%, var(--gold-500) 0%, transparent 60%)',
+          }}
+        />
+        <FadeIn direction="up" className="container-brand relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <ShieldAlert size={40} className="mx-auto text-gold-500 mb-6" />
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              The Businesses That Don&apos;t Find Us Keep Getting Told{' '}
+              <span className="text-gradient-gold">No</span>
+            </h2>
+            <p className="mt-6 text-neutral-400 text-lg leading-relaxed max-w-2xl mx-auto">
+              Traditional banks approve fewer than 20% of small business loan applications.
+              The businesses that find Sequoia get access to 500+ alternative lending
+              sources — and a specialist who understands their scenario.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button variant="secondary" size="lg" href="/apply">
+                See If You Qualify
+                <ArrowRight size={18} />
+              </Button>
+              <Button variant="outline-light" size="lg" href="/solutions">
+                Explore All Solutions
+              </Button>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          8. LEAD MAGNET
+      ══════════════════════════════════════════════════════════════════════ */}
+      <LeadMagnetSection />
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          9. PARTNERS
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="section-padding bg-sequoia-50">
         <div className="container-brand">
