@@ -203,29 +203,25 @@ body {
 
 /* ─── Typography Defaults ────────────────────────────────────────────────── */
 
-/* All base typography in @layer base so @layer utilities wins in cascade */
-@layer base {
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: #000000;
-  }
+/* No explicit color on headings — they inherit from body (foreground = black).
+   This ensures Tailwind text-white/text-black utilities always win. */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
 
-  p {
-    max-width: 70ch;
-  }
+p {
+  max-width: 70ch;
+}
 
-  a {
-    text-decoration-color: transparent;
-    text-underline-offset: 3px;
-    transition: color var(--duration-brand) var(--ease-brand),
-      text-decoration-color var(--duration-brand) var(--ease-brand);
-  }
+a {
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
 
-  a:hover {
-    text-decoration-color: var(--gold-500);
-  }
+a:hover {
+  text-decoration-color: var(--gold-500);
 }
 
 /* ─── Utility / Component Layer ──────────────────────────────────────────── */
