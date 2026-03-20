@@ -77,19 +77,26 @@ export default function AboutPage() {
     <div className="flex flex-col">
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-gradient-hero section-padding-lg relative overflow-hidden">
-        {/* Subtle background pattern */}
+      <section className="relative overflow-hidden">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 25% 40%, white 1px, transparent 1px), radial-gradient(circle at 75% 60%, white 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
+          className="absolute inset-0 bg-black/65"
         />
 
-        <div className="container-brand relative">
+        <div className="container-brand relative z-10 section-padding-lg">
           <div className="mx-auto max-w-3xl text-center">
             <FadeIn direction="up" delay={0}>
               <span className="badge-dark mb-6 inline-flex">About Sequoia</span>

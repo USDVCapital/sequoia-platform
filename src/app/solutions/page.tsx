@@ -296,18 +296,26 @@ export default function SolutionsPage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="bg-gradient-hero section-padding-lg relative overflow-hidden">
-        {/* Decorative orbs */}
+      <section className="relative overflow-hidden">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 -right-32 size-[600px] rounded-full bg-sequoia-600/10 blur-3xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 -left-24 size-[400px] rounded-full bg-gold-500/10 blur-3xl"
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/65"
         />
 
-        <div className="container-brand relative z-10 text-center">
+        <div className="container-brand relative z-10 section-padding-lg text-center">
           <FadeIn direction="up" delay={0}>
             <span className="badge-dark mb-6 inline-flex">Full-Spectrum Financing & Advisory</span>
           </FadeIn>

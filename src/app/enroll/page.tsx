@@ -88,8 +88,26 @@ export default function EnrollPage() {
     <div className="bg-background">
 
       {/* ── Page Header ──────────────────────────────────────────────────── */}
-      <section className="bg-gradient-hero py-16">
-        <div className="container-brand text-center">
+      <section className="relative overflow-hidden py-16">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/65"
+        />
+
+        <div className="container-brand text-center relative z-10">
           <span className="badge-dark mb-5 inline-flex">
             <ShieldCheck size={12} />
             Secure Enrollment

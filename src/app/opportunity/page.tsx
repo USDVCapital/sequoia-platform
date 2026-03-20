@@ -166,13 +166,24 @@ export default function OpportunityPage() {
     <div className="bg-background">
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-gradient-hero relative overflow-hidden">
-        {/* decorative rings */}
-        <div className="absolute inset-0 pointer-events-none" aria-hidden>
-          <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full border border-white/5" />
-          <div className="absolute -top-16 -right-16 w-[400px] h-[400px] rounded-full border border-white/5" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-gold-600/5 blur-3xl" />
-        </div>
+      <section className="relative overflow-hidden">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/65"
+        />
 
         <div className="container-brand section-padding-lg relative z-10">
           <div className="max-w-3xl">
