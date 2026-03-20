@@ -169,7 +169,7 @@ export default function WellnessPage() {
                 <Button href="/apply?type=wellness-employer" variant="secondary" size="lg">
                   Enroll Your Company
                 </Button>
-                <a href="#consultant" className="btn-ghost-light">
+                <a href="#consultant" className="btn-ghost-light" style={{ color: '#FFFFFF' }}>
                   Become a Wellness Consultant
                 </a>
               </div>

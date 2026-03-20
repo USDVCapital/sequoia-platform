@@ -358,11 +358,11 @@ function SuccessState({ name, email }: { name: string; email: string }) {
       </ol>
 
       <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="/resources" className="btn-primary">
+        <a href="/resources" className="btn-primary" style={{ color: '#FFFFFF' }}>
           Go to Training Library
           <ArrowRight size={16} />
         </a>
-        <a href="/opportunity" className="btn-outline">
+        <a href="/opportunity" className="btn-outline" style={{ color: '#000000' }}>
           Review the Opportunity
         </a>
       </div>

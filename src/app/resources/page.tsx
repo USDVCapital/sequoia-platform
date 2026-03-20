@@ -354,6 +354,7 @@ export default function ResourcesPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold"
+                style={{ color: '#000000' }}
               >
                 Join on Zoom
                 <ChevronRight size={16} />
@@ -415,7 +416,7 @@ export default function ResourcesPage() {
             Get full access to all 190+ training videos plus the complete Sequoia
             platform for $29.99/month.
           </p>
-          <a href="/enroll" className="btn-gold">
+          <a href="/enroll" className="btn-gold" style={{ color: '#000000' }}>
             Enroll for $29.99/month
             <ChevronRight size={16} />
           </a>

@@ -328,7 +328,7 @@ export default function SolutionsPage() {
               <Button href="/apply" variant="secondary" size="lg">
                 Start Your Application
               </Button>
-              <a href="#real-estate" className="btn-ghost-light">
+              <a href="#real-estate" className="btn-ghost-light" style={{ color: '#FFFFFF' }}>
                 Explore Solutions
               </a>
             </div>
@@ -413,7 +413,7 @@ export default function SolutionsPage() {
               <Button href="/apply" variant="secondary" size="lg">
                 Request a Free Consultation
               </Button>
-              <a href="tel:+1-800-000-0000" className="btn-ghost-light inline-flex items-center gap-2">
+              <a href="tel:+13013378035" className="btn-ghost-light inline-flex items-center gap-2" style={{ color: '#FFFFFF' }}>
                 <Phone className="size-4" />
                 Talk to an Advisor
               </a>

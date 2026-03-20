@@ -205,7 +205,7 @@ export default function OpportunityPage() {
                     Join Sequoia for $29.99/month
                     <ArrowRight size={18} />
                   </a>
-                  <a href="/resources" className="btn-ghost-light text-base">
+                  <a href="/resources" className="btn-ghost-light text-base" style={{ color: '#FFFFFF' }}>
                     Watch Training Videos
                     <Play size={16} />
                   </a>
@@ -477,7 +477,7 @@ export default function OpportunityPage() {
                 Enroll Now — $29.99/month
                 <ArrowRight size={18} />
               </a>
-              <a href="/resources" className="btn-ghost-light text-base">
+              <a href="/resources" className="btn-ghost-light text-base" style={{ color: '#FFFFFF' }}>
                 Explore Training Library
                 <BookOpen size={16} />
               </a>
