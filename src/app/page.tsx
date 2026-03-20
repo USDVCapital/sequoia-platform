@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import {
   Building2,
@@ -23,6 +24,7 @@ import FadeIn from '@/components/motion/FadeIn'
 import StaggerContainer from '@/components/motion/StaggerContainer'
 import StaggerItem from '@/components/motion/StaggerItem'
 import CountUp from '@/components/motion/CountUp'
+import TrainingCountdown from '@/components/ui/TrainingCountdown'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -110,6 +112,10 @@ const wellnessFeatures = [
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  useEffect(() => {
+    document.title = 'Sequoia Enterprise Solutions — Commercial Loans & Business Services | Rockville, MD'
+  }, [])
+
   return (
     <>
       {/* ══════════════════════════════════════════════════════════════════════
@@ -154,6 +160,13 @@ export default function HomePage() {
                 Build a Consulting Business
                 <ArrowRight size={18} />
               </Button>
+            </div>
+          </FadeIn>
+
+          {/* Training countdown */}
+          <FadeIn delay={0.25} direction="up">
+            <div className="mt-8 flex justify-center">
+              <TrainingCountdown />
             </div>
           </FadeIn>
 

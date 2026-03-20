@@ -1,6 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import {
   ClipboardList,
   Building2,
@@ -14,19 +17,24 @@ import {
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// ─── Zod Schemas ────────────────────────────────────────────────────────────────
 
-interface FormData {
-  fullName: string
-  email: string
-  phone: string
-  businessName: string
-  fundingType: string
-  estimatedAmount: string
-  description: string
-}
+const step1Schema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().min(1, 'Phone number is required').regex(/^[\d\s\-\(\)\+]+$/, 'Phone must contain only numbers'),
+  businessName: z.string().min(1, 'Business name is required'),
+})
 
-type FieldKey = keyof FormData
+const step2Schema = z.object({
+  fundingType: z.string().min(1, 'Please select a solution type'),
+  estimatedAmount: z.string().min(1, 'Please select an estimated amount'),
+  description: z.string().optional(),
+})
+
+type Step1Data = z.infer<typeof step1Schema>
+type Step2Data = z.infer<typeof step2Schema>
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -95,16 +103,6 @@ const STEPS = [
   },
 ]
 
-const EMPTY_FORM: FormData = {
-  fullName: '',
-  email: '',
-  phone: '',
-  businessName: '',
-  fundingType: '',
-  estimatedAmount: '',
-  description: '',
-}
-
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function ProgressSteps({ currentStep }: { currentStep: number }) {
@@ -170,9 +168,10 @@ interface FieldProps {
   required?: boolean
   children: React.ReactNode
   hint?: string
+  error?: string
 }
 
-function Field({ label, required, children, hint }: FieldProps) {
+function Field({ label, required, children, hint, error }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-semibold text-gray-800">
@@ -180,7 +179,8 @@ function Field({ label, required, children, hint }: FieldProps) {
         {required && <span className="text-gold-700 ml-0.5">*</span>}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400">{hint}</p>}
+      {error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
+      {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
     </div>
   )
 }
@@ -188,58 +188,57 @@ function Field({ label, required, children, hint }: FieldProps) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ApplyPage() {
-  const [form, setForm] = useState<FormData>(EMPTY_FORM)
   const [currentStep, setCurrentStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({})
 
-  function update(field: FieldKey, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }))
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
-    }
-  }
+  useEffect(() => {
+    document.title = 'Apply for Commercial Funding — Sequoia Enterprise Solutions'
+  }, [])
 
-  function validateStep(step: number): boolean {
-    const newErrors: Partial<Record<FieldKey, string>> = {}
+  // Step 1 form
+  const step1Form = useForm<Step1Data>({
+    resolver: zodResolver(step1Schema),
+    mode: 'onBlur',
+    defaultValues: { firstName: '', lastName: '', email: '', phone: '', businessName: '' },
+  })
 
-    if (step === 1) {
-      if (!form.fullName.trim()) newErrors.fullName = 'Please enter your full name.'
-      if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
-        newErrors.email = 'Please enter a valid email address.'
-      if (!form.phone.trim()) newErrors.phone = 'Please enter a phone number.'
-    }
+  // Step 2 form
+  const step2Form = useForm<Step2Data>({
+    resolver: zodResolver(step2Schema),
+    mode: 'onBlur',
+    defaultValues: { fundingType: '', estimatedAmount: '', description: '' },
+  })
 
-    if (step === 2) {
-      if (!form.fundingType) newErrors.fundingType = 'Please select a solution type.'
-      if (!form.estimatedAmount) newErrors.estimatedAmount = 'Please select an estimated amount.'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const s1 = step1Form.formState
+  const s2 = step2Form.formState
 
   function handleNext() {
-    if (validateStep(currentStep)) {
-      setCurrentStep((s) => s + 1)
+    step1Form.handleSubmit(() => {
+      setCurrentStep(2)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
+    })()
   }
 
   function handleBack() {
-    setCurrentStep((s) => s - 1)
+    setCurrentStep(1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleFinalSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (validateStep(2)) {
+    step2Form.handleSubmit(() => {
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
+    })()
   }
 
   if (submitted) {
+    const fullName = `${step1Form.getValues('firstName')} ${step1Form.getValues('lastName')}`
+    const email = step1Form.getValues('email')
+    const businessName = step1Form.getValues('businessName')
+    const fundingType = step2Form.getValues('fundingType')
+    const estimatedAmount = step2Form.getValues('estimatedAmount')
+
     return (
       <div className="min-h-screen bg-gradient-section flex items-center justify-center px-4 py-24">
         <div className="max-w-lg w-full text-center">
@@ -247,14 +246,14 @@ export default function ApplyPage() {
             <CheckCircle2 className="size-10 text-sequoia-700" />
           </div>
           <h1 className="text-3xl font-bold text-sequoia-900 mb-4">
-            We've received your inquiry
+            We&apos;ve received your inquiry
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed mb-2">
-            Thank you, <strong>{form.fullName}</strong>. A Sequoia advisor will review your
+            Thank you, <strong>{fullName}</strong>. A Sequoia advisor will review your
             request and reach out within one business day.
           </p>
           <p className="text-sm text-gray-400 mb-10">
-            Check your inbox at <strong>{form.email}</strong> for a confirmation.
+            Check your inbox at <strong>{email}</strong> for a confirmation.
           </p>
 
           <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 text-left mb-8">
@@ -264,16 +263,16 @@ export default function ApplyPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Solution Type</span>
-                <span className="font-medium text-gray-900">{form.fundingType || '—'}</span>
+                <span className="font-medium text-gray-900">{fundingType || '—'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Estimated Amount</span>
-                <span className="font-medium text-gray-900">{form.estimatedAmount || '—'}</span>
+                <span className="font-medium text-gray-900">{estimatedAmount || '—'}</span>
               </div>
-              {form.businessName && (
+              {businessName && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Business</span>
-                  <span className="font-medium text-gray-900">{form.businessName}</span>
+                  <span className="font-medium text-gray-900">{businessName}</span>
                 </div>
               )}
             </div>
@@ -301,11 +300,11 @@ export default function ApplyPage() {
         <div className="container-brand relative z-10 text-center">
           <span className="badge-dark mb-4 inline-flex">Concierge Intake</span>
           <h1 className="text-display-md sm:text-display-lg font-extrabold tracking-tight text-white">
-            Let's Find the Right Solution for You
+            Let&apos;s Find the Right Solution for You
           </h1>
           <p className="mt-4 text-white/70 text-lg max-w-xl mx-auto leading-relaxed">
-            This isn't a loan application — it's a conversation starter. Share a little about
-            your goals, and we'll match you with the right advisor.
+            This isn&apos;t a loan application — it&apos;s a conversation starter. Share a little about
+            your goals, and we&apos;ll match you with the right advisor.
           </p>
         </div>
       </section>
@@ -348,7 +347,8 @@ export default function ApplyPage() {
             <ProgressSteps currentStep={currentStep} />
 
             <form
-              onSubmit={handleSubmit}
+              onSubmit={handleFinalSubmit}
+              noValidate
               className="rounded-2xl bg-white border border-gray-100 shadow-brand-md p-8 sm:p-10"
             >
               {/* ── Step 1: Contact Info ── */}
@@ -357,67 +357,68 @@ export default function ApplyPage() {
                   <div>
                     <h2 className="text-xl font-bold text-sequoia-900">About You</h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      Basic contact info so we can reach you. We'll never sell your information.
+                      Basic contact info so we can reach you. We&apos;ll never sell your information.
                     </p>
                   </div>
 
-                  <Field label="Full Name" required>
-                    <input
-                      type="text"
-                      className="input-brand"
-                      placeholder="Jane Smith"
-                      value={form.fullName}
-                      onChange={(e) => update('fullName', e.target.value)}
-                      autoComplete="name"
-                    />
-                    {errors.fullName && (
-                      <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
-                    )}
-                  </Field>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <Field label="First Name" required error={s1.errors.firstName?.message}>
+                      <input
+                        type="text"
+                        className={`input-brand ${s1.errors.firstName ? 'border-red-500' : ''}`}
+                        placeholder="Jane"
+                        autoComplete="given-name"
+                        {...step1Form.register('firstName')}
+                      />
+                    </Field>
 
-                  <Field label="Email Address" required>
+                    <Field label="Last Name" required error={s1.errors.lastName?.message}>
+                      <input
+                        type="text"
+                        className={`input-brand ${s1.errors.lastName ? 'border-red-500' : ''}`}
+                        placeholder="Smith"
+                        autoComplete="family-name"
+                        {...step1Form.register('lastName')}
+                      />
+                    </Field>
+                  </div>
+
+                  <Field label="Email Address" required error={s1.errors.email?.message}>
                     <input
                       type="email"
-                      className="input-brand"
+                      className={`input-brand ${s1.errors.email ? 'border-red-500' : ''}`}
                       placeholder="jane@example.com"
-                      value={form.email}
-                      onChange={(e) => update('email', e.target.value)}
                       autoComplete="email"
+                      {...step1Form.register('email')}
                     />
-                    {errors.email && (
-                      <p className="text-xs text-red-500 mt-1">{errors.email}</p>
-                    )}
                   </Field>
 
                   <Field
                     label="Phone Number"
                     required
                     hint="A Sequoia advisor may call to discuss your inquiry."
+                    error={s1.errors.phone?.message}
                   >
                     <input
                       type="tel"
-                      className="input-brand"
+                      className={`input-brand ${s1.errors.phone ? 'border-red-500' : ''}`}
                       placeholder="(555) 000-0000"
-                      value={form.phone}
-                      onChange={(e) => update('phone', e.target.value)}
                       autoComplete="tel"
+                      {...step1Form.register('phone')}
                     />
-                    {errors.phone && (
-                      <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
-                    )}
                   </Field>
 
                   <Field
                     label="Business or Company Name"
-                    hint="Optional — leave blank if you're an individual investor."
+                    required
+                    error={s1.errors.businessName?.message}
                   >
                     <input
                       type="text"
-                      className="input-brand"
+                      className={`input-brand ${s1.errors.businessName ? 'border-red-500' : ''}`}
                       placeholder="Acme Holdings LLC"
-                      value={form.businessName}
-                      onChange={(e) => update('businessName', e.target.value)}
                       autoComplete="organization"
+                      {...step1Form.register('businessName')}
                     />
                   </Field>
 
@@ -440,13 +441,12 @@ export default function ApplyPage() {
                     </p>
                   </div>
 
-                  <Field label="What type of solution are you looking for?" required>
+                  <Field label="What type of solution are you looking for?" required error={s2.errors.fundingType?.message}>
                     <select
-                      className="input-brand"
-                      value={form.fundingType}
-                      onChange={(e) => update('fundingType', e.target.value)}
+                      className={`input-brand ${s2.errors.fundingType ? 'border-red-500' : ''}`}
+                      {...step2Form.register('fundingType')}
                     >
-                      <option value="">Select a solution type…</option>
+                      <option value="">Select a solution type...</option>
                       {FUNDING_TYPES.map((group) => (
                         <optgroup key={group.group} label={group.group}>
                           {group.options.map((option) => (
@@ -457,27 +457,20 @@ export default function ApplyPage() {
                         </optgroup>
                       ))}
                     </select>
-                    {errors.fundingType && (
-                      <p className="text-xs text-red-500 mt-1">{errors.fundingType}</p>
-                    )}
                   </Field>
 
-                  <Field label="Estimated Amount Needed" required>
+                  <Field label="Estimated Amount Needed" required error={s2.errors.estimatedAmount?.message}>
                     <select
-                      className="input-brand"
-                      value={form.estimatedAmount}
-                      onChange={(e) => update('estimatedAmount', e.target.value)}
+                      className={`input-brand ${s2.errors.estimatedAmount ? 'border-red-500' : ''}`}
+                      {...step2Form.register('estimatedAmount')}
                     >
-                      <option value="">Select a range…</option>
+                      <option value="">Select a range...</option>
                       {AMOUNT_RANGES.map((range) => (
                         <option key={range} value={range}>
                           {range}
                         </option>
                       ))}
                     </select>
-                    {errors.estimatedAmount && (
-                      <p className="text-xs text-red-500 mt-1">{errors.estimatedAmount}</p>
-                    )}
                   </Field>
 
                   <Field
@@ -487,9 +480,8 @@ export default function ApplyPage() {
                     <textarea
                       className="input-brand resize-none"
                       rows={4}
-                      placeholder="e.g. I'm looking to acquire a 12-unit apartment building in Phoenix and need bridge financing while I wait on a conventional loan approval…"
-                      value={form.description}
-                      onChange={(e) => update('description', e.target.value)}
+                      placeholder="e.g. I'm looking to acquire a 12-unit apartment building in Phoenix and need bridge financing while I wait on a conventional loan approval..."
+                      {...step2Form.register('description')}
                     />
                   </Field>
 
@@ -499,7 +491,7 @@ export default function ApplyPage() {
                       onClick={handleBack}
                       className="text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
                     >
-                      ← Back
+                      &larr; Back
                     </button>
                     <Button type="submit" variant="secondary" size="lg">
                       Submit Inquiry
@@ -538,7 +530,7 @@ export default function ApplyPage() {
             </p>
             <h2 className="text-2xl font-bold text-sequoia-900">A concierge experience, not a call center</h2>
             <p className="mt-3 text-sm leading-relaxed text-gray-600 max-w-lg mx-auto">
-              When you submit your inquiry, a real Sequoia advisor reviews it personally. We don't
+              When you submit your inquiry, a real Sequoia advisor reviews it personally. We don&apos;t
               blast your information to a hundred lenders — we thoughtfully match you with the
               right solution and walk with you through the process.
             </p>

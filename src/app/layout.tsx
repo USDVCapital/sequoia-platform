@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollToTop from "@/components/motion/ScrollToTop";
 import ScrollRestoration from "@/components/ScrollRestoration";
+import ClientProviders from "@/components/ClientProviders";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,11 +43,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ScrollRestoration />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <ScrollToTop />
+        <ClientProviders>
+          <ScrollRestoration />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <ScrollToTop />
+        </ClientProviders>
       </body>
     </html>
   );

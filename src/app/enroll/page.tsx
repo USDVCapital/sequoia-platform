@@ -1,6 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import {
   CheckCircle2,
   Users,
@@ -17,6 +20,22 @@ import {
 import HeroVideo from '@/components/HeroVideo'
 import SectionHeading from '@/components/ui/SectionHeading'
 import FadeIn from '@/components/motion/FadeIn'
+
+// ─── Zod Schema ─────────────────────────────────────────────────────────────────
+
+const enrollSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().min(1, 'Phone number is required').regex(/^[\d\s\-\(\)\+]+$/, 'Phone must contain only numbers'),
+  background: z.string().min(1, 'Please select your professional background'),
+  referralCode: z.string().optional(),
+  agreeToTerms: z.literal(true, { message: 'You must agree to the Terms of Service' }),
+})
+
+type EnrollFormData = z.infer<typeof enrollSchema>
+
+// ─── Constants ──────────────────────────────────────────────────────────────────
 
 const valueItems = [
   { icon: <Users size={17} />, text: 'Access to 500+ vetted lending partners' },
@@ -38,51 +57,34 @@ const backgrounds = [
   'Other',
 ]
 
-interface FormState {
-  fullName: string
-  email: string
-  phone: string
-  background: string
-  referralCode: string
-}
-
 export default function EnrollPage() {
-  const [form, setForm] = useState<FormState>({
-    fullName: '',
-    email: '',
-    phone: '',
-    background: '',
-    referralCode: '',
-  })
   const [submitted, setSubmitted] = useState(false)
-  const [errors, setErrors] = useState<Partial<FormState>>({})
 
-  function validate(): boolean {
-    const newErrors: Partial<FormState> = {}
-    if (!form.fullName.trim()) newErrors.fullName = 'Full name is required.'
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      newErrors.email = 'A valid email address is required.'
-    if (!form.phone.trim()) newErrors.phone = 'Phone number is required.'
-    if (!form.background) newErrors.background = 'Please select your professional background.'
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  useEffect(() => {
+    document.title = 'Join the Sequoia Consultant Network — $29.99/Month'
+  }, [])
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    if (errors[name as keyof FormState]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm<EnrollFormData>({
+    resolver: zodResolver(enrollSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      background: '',
+      referralCode: '',
+      agreeToTerms: false as unknown as true,
+    },
+  })
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (validate()) {
-      setSubmitted(true)
-    }
+  function onSubmit() {
+    setSubmitted(true)
   }
 
   return (
@@ -162,7 +164,7 @@ export default function EnrollPage() {
             <FadeIn direction="right" className="lg:col-span-3">
               <div>
                 {submitted ? (
-                  <SuccessState name={form.fullName} email={form.email} />
+                  <SuccessState name={`${getValues('firstName')} ${getValues('lastName')}`} email={getValues('email')} />
                 ) : (
                   <div className="card-sequoia p-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-1">Create Your Account</h2>
@@ -170,28 +172,48 @@ export default function EnrollPage() {
                       Complete the form below to start your Sequoia consultant membership.
                     </p>
 
-                    <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                      {/* Full Name */}
-                      <div>
-                        <label
-                          htmlFor="fullName"
-                          className="block text-sm font-semibold text-gray-700 mb-1.5"
-                        >
-                          Full Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          id="fullName"
-                          name="fullName"
-                          type="text"
-                          autoComplete="name"
-                          placeholder="Jane Smith"
-                          value={form.fullName}
-                          onChange={handleChange}
-                          className={`input-brand ${errors.fullName ? 'border-red-400 focus:border-red-400' : ''}`}
-                        />
-                        {errors.fullName && (
-                          <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>
-                        )}
+                    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+                      {/* First & Last Name */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                          <label
+                            htmlFor="firstName"
+                            className="block text-sm font-semibold text-gray-700 mb-1.5"
+                          >
+                            First Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="firstName"
+                            type="text"
+                            autoComplete="given-name"
+                            placeholder="Jane"
+                            className={`input-brand ${errors.firstName ? 'border-red-500' : ''}`}
+                            {...register('firstName')}
+                          />
+                          {errors.firstName && (
+                            <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="lastName"
+                            className="block text-sm font-semibold text-gray-700 mb-1.5"
+                          >
+                            Last Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            id="lastName"
+                            type="text"
+                            autoComplete="family-name"
+                            placeholder="Smith"
+                            className={`input-brand ${errors.lastName ? 'border-red-500' : ''}`}
+                            {...register('lastName')}
+                          />
+                          {errors.lastName && (
+                            <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>
+                          )}
+                        </div>
                       </div>
 
                       {/* Email */}
@@ -204,16 +226,14 @@ export default function EnrollPage() {
                         </label>
                         <input
                           id="email"
-                          name="email"
                           type="email"
                           autoComplete="email"
                           placeholder="jane@example.com"
-                          value={form.email}
-                          onChange={handleChange}
-                          className={`input-brand ${errors.email ? 'border-red-400 focus:border-red-400' : ''}`}
+                          className={`input-brand ${errors.email ? 'border-red-500' : ''}`}
+                          {...register('email')}
                         />
                         {errors.email && (
-                          <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                          <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
                         )}
                       </div>
 
@@ -227,16 +247,14 @@ export default function EnrollPage() {
                         </label>
                         <input
                           id="phone"
-                          name="phone"
                           type="tel"
                           autoComplete="tel"
                           placeholder="(555) 000-0000"
-                          value={form.phone}
-                          onChange={handleChange}
-                          className={`input-brand ${errors.phone ? 'border-red-400 focus:border-red-400' : ''}`}
+                          className={`input-brand ${errors.phone ? 'border-red-500' : ''}`}
+                          {...register('phone')}
                         />
                         {errors.phone && (
-                          <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
+                          <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
                         )}
                       </div>
 
@@ -250,18 +268,16 @@ export default function EnrollPage() {
                         </label>
                         <select
                           id="background"
-                          name="background"
-                          value={form.background}
-                          onChange={handleChange}
-                          className={`input-brand ${errors.background ? 'border-red-400' : ''}`}
+                          className={`input-brand ${errors.background ? 'border-red-500' : ''}`}
+                          {...register('background')}
                         >
-                          <option value="">Select your background…</option>
+                          <option value="">Select your background...</option>
                           {backgrounds.map((b) => (
                             <option key={b} value={b}>{b}</option>
                           ))}
                         </select>
                         {errors.background && (
-                          <p className="mt-1 text-xs text-red-600">{errors.background}</p>
+                          <p className="mt-1 text-xs text-red-500">{errors.background.message}</p>
                         )}
                       </div>
 
@@ -276,12 +292,10 @@ export default function EnrollPage() {
                         </label>
                         <input
                           id="referralCode"
-                          name="referralCode"
                           type="text"
                           placeholder="Enter referral code if you have one"
-                          value={form.referralCode}
-                          onChange={handleChange}
                           className="input-brand"
+                          {...register('referralCode')}
                         />
                       </div>
 
@@ -295,6 +309,31 @@ export default function EnrollPage() {
                         </span>
                       </div>
 
+                      {/* Agree to terms */}
+                      <div>
+                        <label className="flex items-start gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="mt-1 h-4 w-4 rounded border-gray-300 text-sequoia-600 focus:ring-sequoia-500"
+                            {...register('agreeToTerms')}
+                          />
+                          <span className="text-sm text-gray-600 leading-relaxed">
+                            I agree to the{' '}
+                            <a href="/terms" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                              Terms of Service
+                            </a>{' '}
+                            and{' '}
+                            <a href="/privacy" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                              Privacy Policy
+                            </a>
+                            . <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                        {errors.agreeToTerms && (
+                          <p className="mt-1 text-xs text-red-500">{errors.agreeToTerms.message}</p>
+                        )}
+                      </div>
+
                       <button
                         type="submit"
                         className="btn-gold w-full justify-center text-base py-4"
@@ -304,7 +343,6 @@ export default function EnrollPage() {
                       </button>
 
                       <p className="text-center text-xs text-gray-400 leading-relaxed">
-                        By enrolling you agree to our Terms of Service and Privacy Policy.
                         Cancel anytime from your account dashboard.
                       </p>
                     </form>

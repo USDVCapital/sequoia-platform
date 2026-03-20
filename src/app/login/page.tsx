@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import HeroVideo from '@/components/HeroVideo'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
   const router = useRouter();
+  const { isLoggedIn, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,6 +18,16 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    document.title = 'Consultant Login — Sequoia Enterprise Solutions';
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push("/portal");
+    }
+  }, [isLoggedIn, router]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +39,7 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
+    login(form.email);
     setTimeout(() => {
       router.push("/portal");
     }, 800);

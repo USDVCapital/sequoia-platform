@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Heart,
   MessageCircle,
@@ -19,6 +19,7 @@ import {
 
 type Tier = 'Associate' | 'Active' | 'Senior' | 'Managing Director'
 type PostCategory = 'Win' | 'Question' | 'Tip' | 'Announcement'
+type FilterTab = 'All' | 'Win' | 'Question' | 'Tip'
 
 interface Post {
   id: number
@@ -36,7 +37,7 @@ interface Post {
 
 // ── Mock Data ─────────────────────────────────────────────────────────────────
 
-const INITIAL_POSTS: Post[] = [
+const SEED_POSTS: Post[] = [
   {
     id: 1,
     author: 'Marcus Rivera',
@@ -85,7 +86,7 @@ const INITIAL_POSTS: Post[] = [
     avatarColor: 'from-purple-600 to-purple-900',
     timestamp: '1 day ago',
     content:
-      '💡 TIP: Stop leading with rates. Clients don\'t care about rates until they trust you. Lead with problems you solve — "We help business owners access capital they couldn\'t get at a bank" lands 10x better. Tried this on 3 calls this week. 2 turned into deals.',
+      'TIP: Stop leading with rates. Clients don\'t care about rates until they trust you. Lead with problems you solve — "We help business owners access capital they couldn\'t get at a bank" lands 10x better. Tried this on 3 calls this week. 2 turned into deals.',
     likes: 63,
     comments: 18,
     category: 'Tip',
@@ -144,6 +145,49 @@ const INITIAL_POSTS: Post[] = [
   },
 ]
 
+// ── localStorage helpers ──────────────────────────────────────────────────────
+
+const POSTS_STORAGE_KEY = 'sequoia-community-posts'
+const LIKES_STORAGE_KEY = 'sequoia-community-likes'
+
+function loadPosts(): Post[] | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = localStorage.getItem(POSTS_STORAGE_KEY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch { /* ignore */ }
+  return null
+}
+
+function savePosts(posts: Post[]) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(posts))
+  } catch { /* ignore */ }
+}
+
+function loadLikedIds(): Set<number> {
+  if (typeof window === 'undefined') return new Set()
+  try {
+    const stored = localStorage.getItem(LIKES_STORAGE_KEY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) return new Set(parsed)
+    }
+  } catch { /* ignore */ }
+  return new Set()
+}
+
+function saveLikedIds(ids: Set<number>) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(LIKES_STORAGE_KEY, JSON.stringify([...ids]))
+  } catch { /* ignore */ }
+}
+
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const TIER_CONFIG: Record<Tier, { bg: string; text: string }> = {
@@ -160,14 +204,48 @@ const CATEGORY_CONFIG: Record<PostCategory, { bg: string; text: string; icon: Re
   Announcement: { bg: 'bg-purple-50', text: 'text-purple-700', icon: <Star size={11} /> },
 }
 
+const FILTER_TABS: { label: string; value: FilterTab }[] = [
+  { label: 'All', value: 'All' },
+  { label: 'Wins', value: 'Win' },
+  { label: 'Questions', value: 'Question' },
+  { label: 'Pro Tips', value: 'Tip' },
+]
+
+const COMPOSER_CATEGORIES: { label: string; value: PostCategory }[] = [
+  { label: 'Win', value: 'Win' },
+  { label: 'Question', value: 'Question' },
+  { label: 'Pro Tip', value: 'Tip' },
+  { label: 'Resource', value: 'Announcement' },
+]
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function CommunityPage() {
-  const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS)
+  const [posts, setPosts] = useState<Post[]>(SEED_POSTS)
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set())
   const [composerText, setComposerText] = useState('')
+  const [composerCategory, setComposerCategory] = useState<PostCategory>('Win')
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('All')
+  const [hydrated, setHydrated] = useState(false)
 
-  function toggleLike(id: number) {
+  // Hydrate from localStorage
+  useEffect(() => {
+    const storedPosts = loadPosts()
+    if (storedPosts) setPosts(storedPosts)
+    setLikedIds(loadLikedIds())
+    setHydrated(true)
+  }, [])
+
+  // Persist posts and likes
+  useEffect(() => {
+    if (hydrated) savePosts(posts)
+  }, [posts, hydrated])
+
+  useEffect(() => {
+    if (hydrated) saveLikedIds(likedIds)
+  }, [likedIds, hydrated])
+
+  const toggleLike = useCallback((id: number) => {
     setLikedIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) {
@@ -179,25 +257,37 @@ export default function CommunityPage() {
       }
       return next
     })
-  }
+  }, [])
 
   function handlePost() {
     if (!composerText.trim()) return
+    const now = new Date()
+    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
     const newPost: Post = {
       id: Date.now(),
       author: 'Todd Billings',
       tier: 'Active',
       initials: 'TB',
       avatarColor: 'from-blue-600 to-blue-800',
-      timestamp: 'Just now',
+      timestamp: `Today at ${timeStr}`,
       content: composerText.trim(),
       likes: 0,
       comments: 0,
-      category: 'Win',
+      category: composerCategory,
     }
     setPosts((p) => [newPost, ...p])
     setComposerText('')
+    setComposerCategory('Win')
   }
+
+  function handleReplyClick() {
+    alert('Replies coming in the next update.')
+  }
+
+  // Filter posts
+  const filteredPosts = activeFilter === 'All'
+    ? posts
+    : posts.filter((p) => p.category === activeFilter)
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -249,6 +339,30 @@ export default function CommunityPage() {
                 placeholder="Share a win, ask a question, or post a tip..."
                 className="w-full resize-none rounded-xl border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3 text-sm text-[var(--sequoia-900)] placeholder-[var(--neutral-400)] focus:outline-none focus:border-sequoia-500 focus:ring-2 focus:ring-sequoia-100 transition-all duration-150 min-h-[80px]"
               />
+
+              {/* Category selector */}
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                {COMPOSER_CATEGORIES.map((cat) => {
+                  const isSelected = composerCategory === cat.value
+                  const catConfig = CATEGORY_CONFIG[cat.value]
+                  return (
+                    <button
+                      key={cat.value}
+                      type="button"
+                      onClick={() => setComposerCategory(cat.value)}
+                      className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-all duration-150 cursor-pointer ${
+                        isSelected
+                          ? `${catConfig.bg} ${catConfig.text} border-current`
+                          : 'border-[var(--neutral-200)] text-[var(--neutral-500)] hover:border-[var(--neutral-300)]'
+                      }`}
+                    >
+                      {catConfig.icon}
+                      {cat.label}
+                    </button>
+                  )
+                })}
+              </div>
+
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
                   <button
@@ -272,16 +386,38 @@ export default function CommunityPage() {
                   className="btn-gold px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Send size={13} />
-                  Post
+                  Post to Community
                 </button>
               </div>
             </div>
           </div>
         </div>
 
+        {/* ── Filter Bar ───────────────────────────────────────────── */}
+        <div className="flex items-center gap-2 mb-6">
+          {FILTER_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveFilter(tab.value)}
+              className={`text-sm font-medium px-4 py-2 rounded-lg transition-all duration-150 cursor-pointer ${
+                activeFilter === tab.value
+                  ? 'bg-sequoia-800 text-white shadow-sm'
+                  : 'bg-white border border-[var(--neutral-200)] text-[var(--neutral-600)] hover:border-sequoia-400 hover:text-sequoia-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* ── Feed ──────────────────────────────────────────────────── */}
         <div className="space-y-4">
-          {posts.map((post) => {
+          {filteredPosts.length === 0 && (
+            <div className="card-sequoia p-8 text-center">
+              <p className="text-[var(--neutral-400)] text-sm">No posts in this category yet. Be the first!</p>
+            </div>
+          )}
+          {filteredPosts.map((post) => {
             const isLiked = likedIds.has(post.id)
             const tierConfig = TIER_CONFIG[post.tier]
             const catConfig = CATEGORY_CONFIG[post.category]
@@ -358,9 +494,12 @@ export default function CommunityPage() {
                     />
                     <span>{post.likes}</span>
                   </button>
-                  <button className="flex items-center gap-2 text-sm font-medium text-[var(--neutral-400)] hover:text-sequoia-600 transition-colors duration-150 cursor-pointer">
+                  <button
+                    onClick={handleReplyClick}
+                    className="flex items-center gap-2 text-sm font-medium text-[var(--neutral-400)] hover:text-sequoia-600 transition-colors duration-150 cursor-pointer"
+                  >
                     <MessageCircle size={16} />
-                    <span>{post.comments}</span>
+                    <span>{post.comments} {post.comments === 1 ? 'reply' : 'replies'}</span>
                   </button>
                 </div>
               </article>

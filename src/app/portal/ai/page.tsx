@@ -24,203 +24,118 @@ interface Message {
 // ── Suggested prompts ─────────────────────────────────────────────────────────
 
 const SUGGESTED_PROMPTS = [
-  "What are the requirements for a fix & flip loan?",
-  "How does the Wellness Program work?",
-  "Help me pitch to a CPA",
-  "What's the max LTV for commercial?",
+  "What credit score do I need for a fix-and-flip loan?",
+  "How do I explain the EHMP to a skeptical employer?",
+  "What documents does an SBA borrower need?",
+  "How does the DSCR loan work for rental properties?",
+  "What is the minimum employee count for EHMP?",
+  "How much can I earn as a consultant?",
 ]
+
+// ── Keyword-matched response library ──────────────────────────────────────────
+
+const responseMap: { keywords: string[]; response: string }[] = [
+  {
+    keywords: ['fix and flip', 'fix & flip', 'flip', 'rehab'],
+    response: '**Fix & Flip Loan Criteria:**\n\n- Credit Score: 620+\n- LTV: Up to 90% of purchase price, 100% of rehab costs, based on 70% of ARV\n- Terms: 6\u201318 months\n- No income verification required\n- Funding in 5\u201310 business days\n- Loan amounts: $100K\u2013$5M\n\nThis is one of our fastest-closing products. The key is having a solid ARV appraisal and a clear scope of work. Would you like help preparing a submission?'
+  },
+  {
+    keywords: ['dscr', 'rental', 'investment property'],
+    response: '**DSCR Rental Loan Criteria:**\n\n- Minimum DSCR: 1.0\n- LTV: Up to 75%\n- No income verification \u2014 qualification based on property cash flow\n- 30-year fixed rate available\n- Credit: 640+\n- Available for non-owner-occupied 1\u20134 unit and small multifamily\n\nDSCR loans are ideal for investors who want to qualify based on the property\'s income rather than personal income. The debt service coverage ratio is calculated as: Net Operating Income \u00f7 Annual Debt Service.'
+  },
+  {
+    keywords: ['sba', '7a', '504'],
+    response: '**SBA Loan Programs:**\n\n**SBA 7(a):**\n- Up to $5M\n- Credit: 680+\n- 2 years in business required\n- Terms: 10\u201325 years\n- Collateral required above $25K\n- Best for: working capital, equipment, real estate\n\n**SBA 504:**\n- For owner-occupied commercial real estate and heavy equipment\n- Up to $5.5M SBA portion\n- 10% borrower equity\n- 20\u201325 year fixed rate\n\n**Documents typically needed:** 3 years tax returns, YTD P&L, balance sheet, business plan, debt schedule.'
+  },
+  {
+    keywords: ['ehmp', 'wellness', 'health', 'fica', 'section 125', 'employee benefit'],
+    response: '**EHMP (Employee Health Management Platform):**\n\nThe EHMP is a Section 125 IRS-compliant plan that restructures how certain employee benefits are delivered, generating FICA payroll tax savings that fully fund a comprehensive health benefit program.\n\n**Key facts:**\n- Zero net cost to the employer (funded by FICA savings)\n- Minimum 5 employees\n- Consultant commission: $12\u2013$18 per employee per month (recurring)\n- Enrollment typically takes 2\u20134 weeks\n- Benefits include: telehealth, prescription savings, mental health, vision, dental, wellness coaching\n\n**The math:** A 200-employee company generates approximately $3,600/month in recurring commissions for the consultant. That\'s $43,200/year from a single account.'
+  },
+  {
+    keywords: ['skeptical', 'objection', 'too good', 'pitch', 'present', 'sell', 'employer'],
+    response: '**How to Present EHMP to Skeptical Employers:**\n\n1. **Lead with their pain point**, not the product: \u201cAre you concerned about rising healthcare costs and employee retention?\u201d\n\n2. **Introduce the concept:** \u201cWhat if I could show you a way to offer comprehensive health benefits that actually saves your company money?\u201d\n\n3. **Explain the mechanism simply:** \u201cThrough a legal restructuring of how certain benefits are delivered, your company generates FICA tax savings that fully fund the program.\u201d\n\n4. **Address the #1 objection:** \u201cThis isn\'t a loophole \u2014 it\'s built on Section 125 of the IRS code, which has been in place since 1978.\u201d\n\n5. **Show specific numbers:** Use the EHMP calculator to show their exact savings based on employee count.\n\n6. **Low-risk close:** \u201cLet us run the numbers for your company at no cost. If it doesn\'t make sense, no obligation.\u201d'
+  },
+  {
+    keywords: ['equipment', 'machinery', 'vehicle', 'truck'],
+    response: '**Equipment Financing:**\n\n- Equipment serves as collateral (no additional collateral needed)\n- Credit: 600+\n- 1 year in business minimum\n- Up to 100% financing\n- Terms: 2\u20137 years\n- Available for: construction equipment, medical equipment, restaurant equipment, manufacturing, trucks, commercial vehicles\n\n**Commercial Vehicle/Fleet:**\n- Credit: 580+\n- New and used vehicles\n- Terms up to 72 months\n- For trucks, vans, and commercial fleets'
+  },
+  {
+    keywords: ['working capital', 'mca', 'cash advance', 'fast funding', 'quick'],
+    response: '**Working Capital / MCA:**\n\n- Revenue-based qualification\n- 6 months bank statements required\n- Credit: 550+ (most flexible product)\n- Same-day approval possible\n- Funding: $10K\u2013$500K\n- Factor rates from 1.15\n\nThis is our fastest product \u2014 ideal for businesses that need capital quickly and have strong revenue. The qualification is based primarily on bank deposits rather than credit score.'
+  },
+  {
+    keywords: ['commission', 'earn', 'income', 'compensation', 'pay', 'money'],
+    response: '**Sequoia Consultant Income Streams:**\n\n1. **EHMP Recurring Commissions:** $12\u2013$18 per enrolled employee per month. This is recurring passive income \u2014 a single 200-employee account = ~$3,600/month.\n\n2. **Loan Referral Commissions:** One-time commissions on funded commercial deals. Varies by product and loan size.\n\n3. **Revenue Share:** Earn a percentage of production from consultants you\'ve recruited into the network.\n\n**Example monthly income:**\n- 50 EHMP enrollees = $600\u2013$900/month\n- 100 EHMP enrollees = $1,200\u2013$1,800/month\n- 250 EHMP enrollees = $3,000\u2013$4,500/month\n- Plus loan commissions on closed deals'
+  },
+  {
+    keywords: ['get started', 'new', 'begin', 'first', 'start', 'join'],
+    response: '**Getting Started as a Sequoia Consultant:**\n\n1. **Enroll** at $29.99/month \u2014 this gives you full access to the platform\n2. **Complete your profile** in the portal\n3. **Watch the \u201cWelcome to Sequoia\u201d training video**\n4. **Attend your first Wednesday training** (every Wed at 8 PM ET)\n5. **Start with EHMP** \u2014 it\'s the fastest path to your first commission because it costs the employer nothing out of pocket\n6. **Use the CEA AI** (that\'s me!) to prepare for client conversations\n7. **Submit your first lead** through the portal\n\nThe 30-Day Reactivation Challenge at /reactivation is a great structured path if you want step-by-step guidance.'
+  },
+  {
+    keywords: ['solar', 'ev', 'charging', 'clean energy', 'green'],
+    response: '**Clean Energy Financing:**\n\n**Commercial Solar:**\n- Zero-down financing available\n- Terms: 20\u201325 years\n- Average ROI: 15\u201325% over system life\n- Federal tax credits (ITC) + depreciation benefits\n- For commercial and industrial properties\n\n**EV Charging Stations:**\n- Level 2 and DC fast charging\n- For commercial properties, multifamily, and fleets\n- Federal tax credits up to 30%\n- Financing available\n\nWe have 2 active locations in Chicago with 15 charging stations already deployed.'
+  },
+  {
+    keywords: ['hello', 'hi', 'hey', 'good morning', 'good afternoon'],
+    response: 'Hi Todd! Great to see you in the portal. I\'m your Sequoia AI assistant \u2014 here to help you close more deals and support your consulting business.\n\nYou can ask me about:\n- **Loan products** \u2014 criteria, LTV, eligibility\n- **Sales strategy** \u2014 pitching, objection handling, referral partners\n- **The Wellness Program** \u2014 how it works, who to target\n- **Deal structuring** \u2014 how to package a file for underwriting\n- **Commission & earnings** \u2014 how much you can make\n\nWhat can I help you with today?'
+  },
+  {
+    keywords: ['ltv', 'loan to value', 'commercial'],
+    response: '**LTV Guidelines for Commercial Products:**\n\n- Multi-Family (5+ units): 80% LTV (stabilized properties)\n- Mixed-Use: 75% LTV (depends on occupancy)\n- Office / Retail: 70\u201375% LTV (market-dependent)\n- Industrial / Warehouse: 70% LTV\n- Bridge Loans: 70\u201375% LTV (on stabilized as-is value)\n- DSCR Rental (1\u20134 unit): 80% LTV (min 1.1 DSCR)\n- Fix & Flip: 90% LTC (up to 100% rehab)\n- Construction: 70% ARV (draws on completion)\n- SBA 7(a): Up to 90% (with SBA guarantee)\n\n**Important:** These are general guidelines. Every deal is reviewed on its merits \u2014 strong sponsors or cash-flowing properties can sometimes push above these benchmarks.'
+  },
+  {
+    keywords: ['cpa', 'accountant', 'tax', 'referral'],
+    response: '**CPAs as Referral Partners:**\n\nCPAs work with business owners every day. Their clients regularly ask about capital, growth financing, and benefits. You\'re not competing with them \u2014 you\'re adding value.\n\n**Your opening script:**\n\u201cHi [Name], I work with Sequoia Enterprise Solutions. We help business owners access commercial funding and employee wellness programs. I\'d love to set up a 15-minute call to show you what we do \u2014 if it\'s a fit, I can be a resource you refer clients to with full confidence.\u201d\n\n**What to offer:**\n- A referral arrangement\n- A simple one-pager they can hand to clients\n- A shared intake form for easy warm referrals\n\n**Key insight:** Don\'t pitch the product first. Pitch the partnership. CPAs are protective of their client relationships \u2014 show them you\'re professional and they\'ll send you deal flow for years.'
+  },
+]
+
+const FALLBACK_RESPONSE = "That's a great question. I don't have a specific answer in my current knowledge base, but your Sequoia specialist can address it directly. You can reach the team at support@seqsolution.com or join Wednesday's live training at 8 PM ET."
 
 // ── AI Response Logic ─────────────────────────────────────────────────────────
 
 function getAIResponse(input: string): string {
   const lower = input.toLowerCase()
 
-  if (lower.includes('fix') && (lower.includes('flip') || lower.includes('fix & flip'))) {
-    return `Great question! Here's what you need to know about **Fix & Flip loans** through Sequoia:
-
-**Eligibility:**
-- Minimum credit score: 620+
-- Experience preferred but not required for first-time flippers
-- Property must be non-owner-occupied residential
-
-**Loan Terms:**
-- Up to 90% LTC (Loan-to-Cost) on purchase
-- Up to 100% of rehab costs covered
-- Loan amounts: $75K – $5M+
-- Terms: 6–24 months
-
-**What we look for:**
-- ARV (After Repair Value) should support the loan amount
-- Exit strategy (sell or refinance)
-- A basic scope of work / budget
-
-**Pro tip:** Lead with the ARV when talking to clients — that's what drives the loan amount, not the purchase price. Want help walking through the submission process?`
+  for (const entry of responseMap) {
+    for (const keyword of entry.keywords) {
+      if (lower.includes(keyword)) {
+        return entry.response
+      }
+    }
   }
 
-  if (lower.includes('wellness') || lower.includes('ehmp') || lower.includes('employee')) {
-    return `The **Employee Health Management Program (EHMP)** is one of Sequoia's most powerful products. Here's the breakdown:
-
-**What it is:**
-EHMP is a fully-funded employer wellness benefit — meaning eligible employers pay $0 out of pocket for a robust health and wellness program for their employees.
-
-**How it works:**
-1. You identify employers with 2–500 employees
-2. They complete a short discovery questionnaire
-3. If eligible, the program is set up at no cost to the employer
-4. You earn a recurring residual commission per enrolled employee
-
-**Best clients to target:**
-- Small businesses (5–50 employees) that can't afford traditional group insurance
-- Construction companies, restaurants, retail, healthcare staff
-
-**Your pitch:**
-"I help business owners provide a meaningful health benefit to their team — at zero cost to the business." That's it. That's your opener.
-
-Want a deeper walkthrough of the objection handling process?`
-  }
-
-  if (lower.includes('cpa') || lower.includes('accountant') || lower.includes('tax')) {
-    return `CPAs are one of the **highest-value referral sources** in your network. Here's how to approach them:
-
-**The angle:**
-CPAs work with business owners every day. Their clients regularly ask about capital, growth financing, and benefits. You're not competing with them — you're adding value to their clients.
-
-**Your opening script:**
-*"Hi [Name], I work with Sequoia Enterprise Solutions. We help business owners access commercial funding and employee wellness programs. I've found that a lot of your clients probably have questions about capital that you can't always help with directly. I'd love to set up a 15-minute call to show you what we do — if it's a fit, I can be a resource you refer clients to with full confidence."*
-
-**What to offer:**
-- A referral arrangement (you pay them for qualified leads)
-- A simple one-pager they can hand to clients
-- A shared Google intake form for easy warm referrals
-
-**Key insight:** Don't pitch the product first. Pitch the *partnership*. CPAs are protective of their client relationships — show them you're professional and they'll send you deal flow for years.
-
-Want me to help you draft a cold outreach email?`
-  }
-
-  if (lower.includes('ltv') || lower.includes('loan to value') || lower.includes('commercial')) {
-    return `Here are the **LTV guidelines** for our main commercial products:
-
-| Product | Max LTV | Notes |
-|---|---|---|
-| Multi-Family (5+ units) | 80% | Stabilized properties |
-| Mixed-Use | 75% | Depends on occupancy |
-| Office / Retail | 70–75% | Market-dependent |
-| Industrial / Warehouse | 70% | Strong fundamentals needed |
-| Bridge Loans | 70–75% | On stabilized as-is value |
-| DSCR Rental (1–4 unit) | 80% | Min 1.1 DSCR required |
-| Fix & Flip | 90% LTC | Up to 100% rehab |
-| Construction | 70% ARV | Draws on completion |
-| SBA 7(a) | Up to 90% | With SBA guarantee |
-
-**Important:** These are general guidelines. Every deal is reviewed on its merits — strong sponsors or cash-flowing properties can sometimes push above these benchmarks.
-
-Do you have a specific deal scenario you'd like help underwriting?`
-  }
-
-  if (lower.includes('dscr') || lower.includes('debt service')) {
-    return `**DSCR (Debt Service Coverage Ratio)** loans are one of our most popular rental property products.
-
-**What is DSCR?**
-DSCR measures whether a property generates enough income to cover the mortgage payment.
-
-*DSCR = Annual Net Operating Income ÷ Annual Debt Service*
-
-**Our DSCR Program:**
-- Minimum DSCR: 1.1x (some programs go down to 0.75x with compensating factors)
-- Property types: 1–4 unit residential investment properties
-- No income verification required — the property qualifies, not the borrower
-- Max LTV: 80%
-- Loan amounts: $75K – $3M+
-- Min credit score: 640+
-
-**Why clients love it:**
-Self-employed investors, foreign nationals, and people with complex tax returns often can't qualify conventionally. DSCR removes that barrier.
-
-Would you like help running a quick DSCR calculation for a client deal?`
-  }
-
-  if (lower.includes('sba') || lower.includes('small business')) {
-    return `Great topic! Here's a quick overview of **SBA loan options** available through Sequoia:
-
-**SBA 7(a) — Most popular:**
-- Best for: Business acquisition, working capital, equipment, real estate
-- Loan amounts: Up to $5M
-- Terms: 10–25 years depending on use of funds
-- Down payment: As low as 10%
-- Personal guarantee required
-
-**SBA 504 — Real estate / equipment heavy use:**
-- Best for: Owner-occupied commercial real estate or major equipment
-- Loan structure: 50% bank / 40% SBA / 10% borrower
-- Very competitive long-term fixed rates
-
-**Ideal SBA candidates:**
-- U.S.-based for-profit businesses
-- 2+ years in business (preferred)
-- Good credit (680+ preferred)
-- Can demonstrate ability to repay
-
-**Watch out for:** businesses in certain restricted industries (gambling, lending, multi-level marketing) are ineligible.
-
-Want me to walk you through how to identify a strong SBA candidate in your pipeline?`
-  }
-
-  if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-    return `Hi Todd! Great to see you in the portal. I'm your Sequoia AI assistant — here to help you close more deals and support your consulting business.
-
-You can ask me about:
-- **Loan products** — criteria, LTV, eligibility
-- **Sales strategy** — pitching, objection handling, referral partners
-- **The Wellness Program** — how it works, who to target
-- **Deal structuring** — how to package a file for underwriting
-
-What can I help you with today?`
-  }
-
-  if (lower.includes('pitch') || lower.includes('script') || lower.includes('how do i sell') || lower.includes('how to sell')) {
-    return `Here's a **universal opening pitch** that works across most Sequoia products:
-
----
-*"I work with a platform called Sequoia Enterprise Solutions. We help business owners and investors access capital and business services they typically can't get through a traditional bank — things like commercial real estate loans, working capital, and even no-cost employee wellness programs.*
-
-*I'm not here to sell you anything today. I just want to understand what you're working on and see if there's a fit. What's the biggest financial challenge your business is dealing with right now?"*
-
----
-
-**Why this works:**
-- You're not leading with a product
-- You're positioning yourself as a resource, not a salesperson
-- The open question invites them to qualify themselves
-
-**From there, listen for:**
-- "We need capital to expand" → commercial lending
-- "We can't afford benefits for our team" → EHMP
-- "I'm trying to grow my portfolio" → real estate loans
-
-Want a deeper script for a specific product or client type?`
-  }
-
-  // Generic fallback
-  return `I can help with that! Here's what I know about **"${input.slice(0, 40)}${input.length > 40 ? '...' : ''}"**:
-
-This touches on an important area of the Sequoia platform. Here are a few directions I can help you go:
-
-1. **Product criteria** — specific requirements, LTV limits, eligibility
-2. **Sales approach** — how to pitch this to a prospect or referral partner
-3. **Deal structuring** — how to package and submit a file
-4. **Common objections** — what clients push back on and how to handle it
-
-Try asking me something more specific — for example:
-- *"What's the minimum credit score for a working capital loan?"*
-- *"How do I pitch the wellness program to a restaurant owner?"*
-- *"What docs do I need for a commercial real estate submission?"*
-
-I'm here to help you close more deals.`
+  return FALLBACK_RESPONSE
 }
 
 function getTimestamp() {
   return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
+
+// ── localStorage helpers ──────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'sequoia-cea-chat-history'
+
+function loadChatHistory(): Message[] | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return null
+}
+
+function saveChatHistory(messages: Message[]) {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages))
+  } catch {
+    // ignore storage errors
+  }
 }
 
 // ── Welcome message ───────────────────────────────────────────────────────────
@@ -236,9 +151,97 @@ Here are a few things I can help with:
 - Sales scripts and pitch strategies
 - How the Wellness / EHMP program works
 - Objection handling for any product line
+- Commission and earnings potential
 
 What would you like to know?`,
   timestamp: getTimestamp(),
+}
+
+// ── Markdown renderer ─────────────────────────────────────────────────────────
+
+function renderMarkdown(text: string) {
+  const lines = text.split('\n')
+  const elements: React.ReactNode[] = []
+  let i = 0
+
+  while (i < lines.length) {
+    const line = lines[i]
+
+    // Empty line -> spacing
+    if (line.trim() === '') {
+      elements.push(<div key={i} className="h-2" />)
+      i++
+      continue
+    }
+
+    // Bullet points
+    if (line.trimStart().startsWith('- ')) {
+      const bulletItems: { content: string; index: number }[] = []
+      while (i < lines.length && lines[i].trimStart().startsWith('- ')) {
+        bulletItems.push({ content: lines[i].trimStart().slice(2), index: i })
+        i++
+      }
+      elements.push(
+        <ul key={`ul-${bulletItems[0].index}`} className="list-disc list-inside space-y-1 ml-1">
+          {bulletItems.map((item) => (
+            <li key={item.index}>{renderInline(item.content)}</li>
+          ))}
+        </ul>
+      )
+      continue
+    }
+
+    // Numbered list
+    if (/^\d+\.\s/.test(line.trimStart())) {
+      const listItems: { content: string; index: number }[] = []
+      while (i < lines.length && /^\d+\.\s/.test(lines[i].trimStart())) {
+        listItems.push({ content: lines[i].trimStart().replace(/^\d+\.\s/, ''), index: i })
+        i++
+      }
+      elements.push(
+        <ol key={`ol-${listItems[0].index}`} className="list-decimal list-inside space-y-1 ml-1">
+          {listItems.map((item) => (
+            <li key={item.index}>{renderInline(item.content)}</li>
+          ))}
+        </ol>
+      )
+      continue
+    }
+
+    // Regular line
+    elements.push(
+      <p key={i}>{renderInline(line)}</p>
+    )
+    i++
+  }
+
+  return <>{elements}</>
+}
+
+function renderInline(text: string): React.ReactNode {
+  // Split on bold markers (**text**)
+  const parts = text.split(/\*\*(.*?)\*\*/g)
+  return parts.map((part, j) =>
+    j % 2 === 1 ? (
+      <strong key={j} className="font-semibold">
+        {renderItalic(part)}
+      </strong>
+    ) : (
+      <span key={j}>{renderItalic(part)}</span>
+    ),
+  )
+}
+
+function renderItalic(text: string): React.ReactNode {
+  // Handle *italic* and \u201cquoted\u201d text
+  const parts = text.split(/\u201c(.*?)\u201d/g)
+  return parts.map((part, j) =>
+    j % 2 === 1 ? (
+      <span key={j} className="italic">&ldquo;{part}&rdquo;</span>
+    ) : (
+      part
+    )
+  )
 }
 
 // ── Message bubble ────────────────────────────────────────────────────────────
@@ -251,30 +254,6 @@ function MessageBubble({ message }: { message: Message }) {
     navigator.clipboard.writeText(message.content)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }
-
-  // Render simple markdown-like formatting
-  function renderContent(text: string) {
-    const lines = text.split('\n')
-    return lines.map((line, i) => {
-      // Bold (**text**)
-      const parts = line.split(/\*\*(.*?)\*\*/g)
-      const rendered = parts.map((part, j) =>
-        j % 2 === 1 ? (
-          <strong key={j} className="font-semibold">
-            {part}
-          </strong>
-        ) : (
-          part
-        ),
-      )
-      return (
-        <span key={i}>
-          {rendered}
-          {i < lines.length - 1 && <br />}
-        </span>
-      )
-    })
   }
 
   return (
@@ -298,7 +277,7 @@ function MessageBubble({ message }: { message: Message }) {
               : 'bg-white border border-[var(--neutral-200)] text-[var(--neutral-700)] rounded-tl-sm shadow-[var(--shadow-sm)]'
           }`}
         >
-          {renderContent(message.content)}
+          {isUser ? message.content : renderMarkdown(message.content)}
         </div>
 
         {/* Timestamp + copy */}
@@ -327,8 +306,25 @@ export default function AIPage() {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Load chat history from localStorage on mount
+  useEffect(() => {
+    const stored = loadChatHistory()
+    if (stored) {
+      setMessages(stored)
+    }
+    setHydrated(true)
+  }, [])
+
+  // Save chat history whenever messages change (after hydration)
+  useEffect(() => {
+    if (hydrated) {
+      saveChatHistory(messages)
+    }
+  }, [messages, hydrated])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

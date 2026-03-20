@@ -18,6 +18,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import FadeIn from '@/components/motion/FadeIn'
 import StaggerContainer from '@/components/motion/StaggerContainer'
 import StaggerItem from '@/components/motion/StaggerItem'
+import TrainingCountdown from '@/components/ui/TrainingCountdown'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -235,6 +236,10 @@ export default function ResourcesPage() {
   const [activeFilter, setActiveFilter] = useState<FilterKey>('All')
   const countdown = useNextWednesday()
 
+  useEffect(() => {
+    document.title = 'Training Library & Resources — Sequoia Enterprise Solutions'
+  }, [])
+
   const filtered =
     activeFilter === 'All'
       ? VIDEOS
@@ -280,6 +285,13 @@ export default function ResourcesPage() {
           </div>
         </FadeIn>
       </section>
+
+      {/* ── Training Countdown ────────────────────────────────────────── */}
+      <div className="bg-white pt-10">
+        <div className="container-brand flex justify-center">
+          <TrainingCountdown />
+        </div>
+      </div>
 
       {/* ── Filter Tabs + Video Grid ────────────────────────────────────── */}
       <section className="section-padding bg-white">
