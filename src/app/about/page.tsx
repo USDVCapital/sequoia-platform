@@ -69,12 +69,11 @@ const milestones = [
 ]
 
 const partnerships = [
-  { name: 'EXP Commercial Realty', category: 'Real Estate' },
-  { name: 'Keller Williams', category: 'Real Estate' },
-  { name: 'CPA Firms Network', category: 'Financial Services' },
-  { name: 'National ACE', category: 'Business Development' },
-  { name: 'Cal Asia Chamber of Commerce', category: 'Community' },
-  { name: 'Filipino Chamber of Commerce', category: 'Community' },
+  { name: 'EXP Commercial Realty', category: 'Real Estate', logo: '/logos/exp-commercial.svg' },
+  { name: 'Keller Williams', category: 'Real Estate', logo: '/logos/kw-commercial.png' },
+  { name: 'National ACE', category: 'Business Development', logo: '/logos/national-ace.jpg' },
+  { name: 'Cal Asia Chamber of Commerce', category: 'Community', logo: '/logos/calasian-chamber.svg' },
+  { name: 'Filipino Chamber of Commerce', category: 'Community', logo: '/logos/filipino-chamber.png' },
 ]
 
 export default function AboutPage() {
@@ -374,11 +373,17 @@ export default function AboutPage() {
           </FadeIn>
 
           <StaggerContainer className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {partnerships.map(({ name, category }) => (
+            {partnerships.map(({ name, category, logo }) => (
               <StaggerItem key={name}>
                 <Card className="flex items-center gap-4 p-5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sequoia-100">
-                    <Building2 size={18} className="text-sequoia-700" />
+                  <div className="flex h-12 w-20 shrink-0 items-center justify-center">
+                    <Image
+                      src={logo}
+                      alt={`${name} logo`}
+                      width={80}
+                      height={48}
+                      className="object-contain max-h-12"
+                    />
                   </div>
                   <div>
                     <p className="font-semibold text-sequoia-900">{name}</p>
@@ -393,8 +398,14 @@ export default function AboutPage() {
           <div className="mt-12 mx-auto max-w-2xl">
             <FadeIn direction="up" delay={0.1}>
               <Card className="flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-100 ring-2 ring-gold-300">
-                  <Award size={24} className="text-gold-700" />
+                <div className="flex h-14 w-20 shrink-0 items-center justify-center">
+                  <Image
+                    src="/logos/bbb.png"
+                    alt="BBB Accredited Business logo"
+                    width={80}
+                    height={56}
+                    className="object-contain"
+                  />
                 </div>
                 <div>
                   <p className="font-bold text-sequoia-900">BBB Accredited Business</p>

@@ -27,22 +27,22 @@ const consultantLinks = [
 const socialLinks = [
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com/company/sequoia-enterprise-solutions',
+    href: 'https://www.linkedin.com/company/seqsolution/',
     Icon: Linkedin,
   },
   {
     label: 'YouTube',
-    href: 'https://youtube.com/@sequoiaenterprise',
+    href: 'https://www.youtube.com/@seqsolution',
     Icon: Youtube,
   },
   {
     label: 'Instagram',
-    href: 'https://instagram.com/sequoiaenterprise',
+    href: 'https://www.instagram.com/seqsolution/',
     Icon: Instagram,
   },
   {
     label: 'Facebook',
-    href: 'https://facebook.com/sequoiaenterprise',
+    href: 'https://www.facebook.com/profile.php?id=100085730042712',
     Icon: Facebook,
   },
 ]
