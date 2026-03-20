@@ -203,27 +203,29 @@ body {
 
 /* ─── Typography Defaults ────────────────────────────────────────────────── */
 
-/* :where() gives specificity 0, so Tailwind utilities like text-white always win */
-:where(h1, h2, h3, h4, h5, h6) {
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: #000000;
-}
+/* All base typography in @layer base so @layer utilities wins in cascade */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #000000;
+  }
 
-:where(p) {
-  max-width: 70ch;
-}
+  p {
+    max-width: 70ch;
+  }
 
-:where(a) {
-  text-decoration-color: transparent;
-  text-underline-offset: 3px;
-  transition: color var(--duration-brand) var(--ease-brand),
-    text-decoration-color var(--duration-brand) var(--ease-brand);
-}
+  a {
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: color var(--duration-brand) var(--ease-brand),
+      text-decoration-color var(--duration-brand) var(--ease-brand);
+  }
 
-:where(a:hover) {
-  text-decoration-color: var(--gold-500);
+  a:hover {
+    text-decoration-color: var(--gold-500);
+  }
 }
 
 /* ─── Utility / Component Layer ──────────────────────────────────────────── */
