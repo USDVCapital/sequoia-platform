@@ -21,6 +21,8 @@ import {
   Shield,
   Copy,
   CheckCheck,
+  Link2,
+  ExternalLink,
 } from 'lucide-react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -146,6 +148,7 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
+  const [copiedLink, setCopiedLink] = useState<string | null>(null)
 
   const CONSULTANT_ID = 'SEQ-2025-7842'
 
@@ -165,6 +168,18 @@ export default function ProfilePage() {
     setCopiedId(true)
     setTimeout(() => setCopiedId(false), 2000)
   }
+
+  function copyLink(url: string) {
+    navigator.clipboard.writeText(url)
+    setCopiedLink(url)
+    setTimeout(() => setCopiedLink(null), 2000)
+  }
+
+  const REFERRAL_LINKS = [
+    { label: 'Personal Site', url: 'https://toddbillings.seqsolution.com' },
+    { label: 'EHMP Referral', url: 'https://seqsolution.com/wellness?ref=222902' },
+    { label: 'Funding Referral', url: 'https://seqsolution.com/apply?ref=222902' },
+  ]
 
   const earnedBadges = BADGES.filter((b) => b.earned)
   const unearnedBadges = BADGES.filter((b) => !b.earned)
@@ -471,6 +486,57 @@ export default function ProfilePage() {
                     <span className={`flex justify-center mb-2 ${stat.color}`}>{stat.icon}</span>
                     <p className={`text-2xl font-black ${stat.color}`}>{stat.value}</p>
                     <p className="text-xs text-[var(--neutral-500)] mt-1 leading-tight">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* My Referral Links */}
+            <div className="card-sequoia p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <Link2 size={18} className="text-sequoia-700" />
+                <h3 className="font-bold text-[var(--sequoia-900)] text-lg">My Referral Links</h3>
+              </div>
+              <p className="text-sm text-[var(--neutral-500)] mb-4">
+                Share these links to track referrals back to your account.
+              </p>
+              <div className="space-y-3">
+                {REFERRAL_LINKS.map((link) => (
+                  <div
+                    key={link.label}
+                    className="flex items-center gap-3 rounded-xl border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-[var(--sequoia-900)] mb-0.5">{link.label}</p>
+                      <p className="text-sm text-[var(--neutral-500)] truncate font-mono">{link.url}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors"
+                        title="Open link"
+                      >
+                        <ExternalLink size={14} />
+                      </a>
+                      <button
+                        onClick={() => copyLink(link.url)}
+                        className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors cursor-pointer"
+                        title="Copy link"
+                      >
+                        {copiedLink === link.url ? (
+                          <CheckCheck size={14} className="text-sequoia-600" />
+                        ) : (
+                          <Copy size={14} />
+                        )}
+                      </button>
+                    </div>
+                    {copiedLink === link.url && (
+                      <span className="text-xs font-semibold text-sequoia-600 animate-pulse">
+                        Copied!
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>

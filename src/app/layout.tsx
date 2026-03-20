@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import TrainingAnnouncementBar from "@/components/ui/TrainingAnnouncementBar";
 import ScrollToTop from "@/components/motion/ScrollToTop";
 import ScrollRestoration from "@/components/ScrollRestoration";
 import ClientProviders from "@/components/ClientProviders";
@@ -30,6 +31,13 @@ export const metadata: Metadata = {
     "commercial lending consultant",
     "Sequoia Enterprise Solutions",
   ],
+  openGraph: {
+    title: 'Sequoia Enterprise Solutions',
+    description: 'Your trusted partner for business solutions, commercial lending, and recurring income opportunities.',
+    url: 'https://sequoia-platform.vercel.app',
+    siteName: 'Sequoia Enterprise Solutions',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -45,6 +53,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ClientProviders>
           <ScrollRestoration />
+          <TrainingAnnouncementBar />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

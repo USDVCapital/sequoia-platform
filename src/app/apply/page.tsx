@@ -233,59 +233,24 @@ export default function ApplyPage() {
   }
 
   if (submitted) {
-    const fullName = `${step1Form.getValues('firstName')} ${step1Form.getValues('lastName')}`
-    const email = step1Form.getValues('email')
-    const businessName = step1Form.getValues('businessName')
-    const fundingType = step2Form.getValues('fundingType')
-    const estimatedAmount = step2Form.getValues('estimatedAmount')
+    const firstName = step1Form.getValues('firstName')
 
     return (
       <div className="min-h-screen bg-gradient-section flex items-center justify-center px-4 py-24">
         <div className="max-w-lg w-full text-center">
-          <div className="inline-flex size-20 items-center justify-center rounded-full bg-sequoia-100 mb-6">
-            <CheckCircle2 className="size-10 text-sequoia-700" />
+          <div className="inline-flex size-20 items-center justify-center rounded-full bg-green-100 mb-6">
+            <CheckCircle2 className="size-10 text-green-600" />
           </div>
           <h1 className="text-3xl font-bold text-sequoia-900 mb-4">
-            We&apos;ve received your inquiry
+            You&apos;re all set, {firstName}.
           </h1>
-          <p className="text-lg text-gray-600 leading-relaxed mb-2">
-            Thank you, <strong>{fullName}</strong>. A Sequoia advisor will review your
-            request and reach out within one business day.
-          </p>
-          <p className="text-sm text-gray-400 mb-10">
-            Check your inbox at <strong>{email}</strong> for a confirmation.
+          <p className="text-lg text-gray-600 leading-relaxed mb-10">
+            A Sequoia advisor will contact you within one business day.
           </p>
 
-          <div className="rounded-2xl bg-white border border-gray-100 shadow-sm p-6 text-left mb-8">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold-700 mb-3">
-              Your Submission Summary
-            </p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Solution Type</span>
-                <span className="font-medium text-gray-900">{fundingType || '—'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Estimated Amount</span>
-                <span className="font-medium text-gray-900">{estimatedAmount || '—'}</span>
-              </div>
-              {businessName && (
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Business</span>
-                  <span className="font-medium text-gray-900">{businessName}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button href="/solutions" variant="outline">
-              Explore More Solutions
-            </Button>
-            <Button href="/" variant="primary">
-              Return Home
-            </Button>
-          </div>
+          <Button href="/solutions" variant="primary" size="lg">
+            Explore Our Solutions
+          </Button>
         </div>
       </div>
     )

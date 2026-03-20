@@ -121,20 +121,36 @@ const successStories = [
 
 const faqs = [
   {
-    q: 'Do I need a license to join Sequoia?',
-    a: 'No. As a Sequoia consultant, you operate as a referral agent — not a licensed mortgage originator. You introduce clients to our lending partners and wellness program; our credentialed team handles the regulated activities. Always confirm any state-specific referral rules with your own legal counsel.',
+    q: 'Do I need a license to refer clients?',
+    a: 'No. Sequoia consultants refer clients — they do not originate loans. No mortgage license, securities license, or insurance license is required.',
   },
   {
-    q: 'How fast can I earn my first commission?',
-    a: 'The Employee Health & Wellness Management Program (EHMP) is the fastest path to your first paycheck. A single employer discovery session can result in an enrollment within days. Many new consultants earn their first wellness commission within their first 30 days.',
+    q: 'How quickly can I earn my first commission?',
+    a: 'Most consultants who follow the 30-Day Challenge close their first EHMP deal within 30 days. EHMP is the fastest path because it costs the employer nothing.',
   },
   {
-    q: 'What training and support is provided?',
-    a: 'You get access to weekly live Zoom trainings every Wednesday at 8 PM ET, a library of 190+ on-demand training videos, the CEA AI Assistant for instant product guidance, and a dedicated back office. You are never building this alone.',
+    q: 'What is the $29.99/month membership fee for?',
+    a: 'Access to 500+ lending partners, the full product suite, CEA AI assistant, 190+ training videos, weekly live training, your replicated website, and real-time deal tracking.',
   },
   {
-    q: 'Can I do this part-time alongside my current job?',
-    a: 'Absolutely. Most consultants start part-time, spending a few hours per week on discovery calls and referrals. The recurring nature of wellness commissions means income can compound even when you are not actively working. Many consultants transition full-time only after replacing their salary.',
+    q: 'Can I do this part-time?',
+    a: 'Absolutely. Many successful consultants started part-time. EHMP is designed for professionals who already have business owner relationships.',
+  },
+  {
+    q: 'Is there a money-back guarantee?',
+    a: 'Yes. Complete the 30-Day Challenge in full and don\'t close a deal — we refund your membership for that month.',
+  },
+  {
+    q: 'How does the revenue share work?',
+    a: 'When professionals you introduce enroll and produce, you earn a percentage of their commissions. Details in the Compensation 6.0 document in the training library.',
+  },
+  {
+    q: 'What support is available after I enroll?',
+    a: 'Weekly live training (Wed 8 PM ET), 190+ videos, CEA AI, community feed, and direct team access at 301-337-8035.',
+  },
+  {
+    q: 'What happens if I want to cancel?',
+    a: 'Cancel anytime with no penalty. Access continues through your current billing period. No contracts or fees.',
   },
 ]
 

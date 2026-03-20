@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
   FileText,
+  DollarSign,
   GraduationCap,
   Trophy,
   MessageSquare,
@@ -26,14 +28,16 @@ import {
 // ---------------------------------------------------------------------------
 
 const navItems = [
-  { label: 'Dashboard',    href: '/portal',            icon: LayoutDashboard },
-  { label: 'My Pipeline',  href: '/portal/pipeline',   icon: FileText        },
-  { label: 'Training',     href: '/portal/training',   icon: GraduationCap   },
-  { label: 'Leaderboard',  href: '/portal/leaderboard', icon: Trophy         },
-  { label: 'Community',    href: '/portal/community',  icon: MessageSquare   },
-  { label: 'Materials',    href: '/portal/materials',  icon: FolderOpen      },
-  { label: 'My Profile',   href: '/portal/profile',    icon: User            },
-  { label: 'CEA AI',       href: '/portal/ai',         icon: Bot             },
+  { label: 'Dashboard',      href: '/portal',                icon: LayoutDashboard },
+  { label: 'My Pipeline',    href: '/portal/pipeline',       icon: FileText        },
+  { label: 'Earnings',       href: '/portal/earnings',       icon: DollarSign      },
+  { label: 'Training',       href: '/portal/training',       icon: GraduationCap   },
+  { label: 'Leaderboard',    href: '/portal/leaderboard',    icon: Trophy          },
+  { label: 'Community',      href: '/portal/community',      icon: MessageSquare   },
+  { label: 'Materials',      href: '/portal/materials',      icon: FolderOpen      },
+  { label: 'CEA AI',         href: '/portal/ai',             icon: Bot             },
+  { label: 'Notifications',  href: '/portal/notifications',  icon: Bell            },
+  { label: 'My Profile',     href: '/portal/profile',        icon: User            },
 ]
 
 // ---------------------------------------------------------------------------
@@ -43,14 +47,16 @@ const navItems = [
 function getPageTitle(pathname: string): string {
   const segment = pathname.split('/').filter(Boolean).pop() ?? ''
   const map: Record<string, string> = {
-    portal:      'Dashboard',
-    pipeline:    'My Pipeline',
-    training:    'Training',
-    leaderboard: 'Leaderboard',
-    community:   'Community',
-    materials:   'Marketing Materials',
-    profile:     'My Profile',
-    ai:          'CEA AI',
+    portal:        'Dashboard',
+    pipeline:      'My Pipeline',
+    earnings:      'Earnings',
+    training:      'Training',
+    leaderboard:   'Leaderboard',
+    community:     'Community',
+    materials:     'Marketing Materials',
+    profile:       'My Profile',
+    ai:            'CEA AI',
+    notifications: 'Notifications',
   }
   return map[segment] ?? 'Dashboard'
 }
@@ -166,8 +172,26 @@ function Sidebar({ pathname, onClose }: SidebarProps) {
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isLoggedIn } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const pageTitle = getPageTitle(pathname)
+
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    // Give AuthContext time to hydrate from localStorage
+    const timer = setTimeout(() => {
+      setAuthChecked(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (authChecked && !isLoggedIn) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`)
+    }
+  }, [authChecked, isLoggedIn, pathname, router])
 
   // Prevent body scroll when mobile sidebar is open
   useEffect(() => {
@@ -179,6 +203,18 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     setMobileOpen(false)
   }, [pathname])
+
+  // Show loading state while checking auth
+  if (!authChecked || !isLoggedIn) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-sequoia-200 border-t-sequoia-700" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-neutral-50">

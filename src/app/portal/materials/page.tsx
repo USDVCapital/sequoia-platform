@@ -12,6 +12,10 @@ import {
   Layers,
   MapPin,
   Hammer,
+  Heart,
+  Banknote,
+  Zap,
+  Clock,
 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
@@ -25,6 +29,7 @@ interface Flyer {
   category: string
   description: string
   icon: React.ReactNode
+  comingSoon?: boolean
 }
 
 const flyers: Flyer[] = [
@@ -99,6 +104,90 @@ const flyers: Flyer[] = [
     category: 'Real Estate',
     description: 'Financing for properties combining residential and commercial uses — retail ground floor with apartments above, etc.',
     icon: <TreePine size={20} />,
+  },
+  // ── EHMP / Wellness ──────────────────────────────────────────────
+  {
+    id: 'ehmp-overview',
+    title: 'EHMP Program Overview',
+    filename: '',
+    category: 'EHMP / Wellness',
+    description: 'The zero-cost wellness benefit for employers',
+    icon: <Heart size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'ehmp-roi',
+    title: 'EHMP Employer ROI One-Pager',
+    filename: '',
+    category: 'EHMP / Wellness',
+    description: 'How your company saves $500\u2013$800 per employee per year',
+    icon: <Heart size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'ehmp-pitch',
+    title: 'EHMP Consultant Pitch Guide',
+    filename: '',
+    category: 'EHMP / Wellness',
+    description: 'How to introduce the EHMP in 60 seconds',
+    icon: <Heart size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'ehmp-welcome-call',
+    title: 'EHMP Welcome Call Script',
+    filename: '',
+    category: 'EHMP / Wellness',
+    description: 'What to say on your first employer call',
+    icon: <Heart size={20} />,
+    comingSoon: true,
+  },
+  // ── Business Funding ─────────────────────────────────────────────
+  {
+    id: 'biz-funding-overview',
+    title: 'Business Funding Overview',
+    filename: '',
+    category: 'Business Funding',
+    description: '8 programs for every stage of business growth',
+    icon: <Banknote size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'sba-loan-guide',
+    title: 'SBA Loan Guide',
+    filename: '',
+    category: 'Business Funding',
+    description: "Is your client SBA-eligible? Here\u2019s how to find out",
+    icon: <Banknote size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'working-capital',
+    title: 'Working Capital One-Pager',
+    filename: '',
+    category: 'Business Funding',
+    description: 'Fast funding for cash flow gaps',
+    icon: <Banknote size={20} />,
+    comingSoon: true,
+  },
+  // ── Clean Energy ─────────────────────────────────────────────────
+  {
+    id: 'commercial-solar',
+    title: 'Commercial Solar Overview',
+    filename: '',
+    category: 'Clean Energy',
+    description: 'How to save 50\u201375% on electricity costs',
+    icon: <Zap size={20} />,
+    comingSoon: true,
+  },
+  {
+    id: 'ev-charging',
+    title: 'EV Charging Station Guide',
+    filename: '',
+    category: 'Clean Energy',
+    description: 'Federal incentives + revenue generation',
+    icon: <Zap size={20} />,
+    comingSoon: true,
   },
 ]
 
@@ -188,9 +277,17 @@ export default function MaterialsPage() {
                 {flyer.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-neutral-900 text-sm leading-snug">
-                  {flyer.title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-neutral-900 text-sm leading-snug">
+                    {flyer.title}
+                  </h3>
+                  {flyer.comingSoon && (
+                    <span className="inline-flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      <Clock size={10} />
+                      Coming Soon
+                    </span>
+                  )}
+                </div>
                 <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wider text-gold-700 bg-gold-50 px-2 py-0.5 rounded">
                   {flyer.category}
                 </span>
@@ -202,23 +299,35 @@ export default function MaterialsPage() {
             </p>
 
             <div className="mt-4 flex items-center gap-3">
-              <a
-                href={`/Program Flyers/${flyer.filename}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors"
-              >
-                <Download size={14} />
-                Download PDF
-              </a>
-              <a
-                href={`/Program Flyers/${flyer.filename}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-medium text-neutral-500 hover:text-neutral-700 transition-colors"
-              >
-                Preview
-              </a>
+              {flyer.comingSoon ? (
+                <button
+                  disabled
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-200 px-3.5 py-2 text-xs font-semibold text-neutral-400 cursor-not-allowed"
+                >
+                  <Clock size={14} />
+                  Coming Soon
+                </button>
+              ) : (
+                <>
+                  <a
+                    href={`/Program Flyers/${flyer.filename}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors"
+                  >
+                    <Download size={14} />
+                    Download PDF
+                  </a>
+                  <a
+                    href={`/Program Flyers/${flyer.filename}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-neutral-500 hover:text-neutral-700 transition-colors"
+                  >
+                    Preview
+                  </a>
+                </>
+              )}
             </div>
           </div>
         ))}

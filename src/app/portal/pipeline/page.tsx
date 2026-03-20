@@ -15,101 +15,107 @@ import {
   Zap,
   Filter,
   ChevronRight,
+  ChevronDown,
+  Heart,
+  Users,
 } from 'lucide-react'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-type DealStatus = 'Application' | 'In Review' | 'Approved' | 'Funded' | 'Declined'
+type DealStatus = 'Application' | 'In Review' | 'Approved' | 'Funded' | 'Active'
 type TabKey = 'All' | DealStatus
 
 interface Deal {
   id: string
   client: string
   dealType: string
-  amount: number
+  amount: string
   status: DealStatus
   dateSubmitted: string
   icon: React.ReactNode
+  advisor: string
+  nextStep: string
+  estimatedClose: string
 }
 
 // ── Mock Data ─────────────────────────────────────────────────────────────────
 
 const DEALS: Deal[] = [
   {
-    id: 'D-1001',
-    client: 'ABC Properties LLC',
-    dealType: 'Multi-Family',
-    amount: 1_200_000,
+    id: 'D-2001',
+    client: 'Green Valley Dental Group',
+    dealType: 'EHMP Wellness',
+    amount: '47 employees',
+    status: 'Active',
+    dateSubmitted: '2026-03-01',
+    icon: <Heart size={16} />,
+    advisor: 'Marcus Rivera',
+    nextStep: 'Quarterly wellness review scheduled',
+    estimatedClose: 'Ongoing',
+  },
+  {
+    id: 'D-2002',
+    client: 'Sunrise Capital LLC',
+    dealType: 'Fix & Flip',
+    amount: '$425,000',
+    status: 'Funded',
+    dateSubmitted: '2026-02-15',
+    icon: <Home size={16} />,
+    advisor: 'Jessica Chen',
+    nextStep: 'Rehab draw #2 pending inspection',
+    estimatedClose: 'Funded Feb 15, 2026',
+  },
+  {
+    id: 'D-2003',
+    client: 'Metro Logistics Inc',
+    dealType: 'Working Capital',
+    amount: '$185,000',
+    status: 'Approved',
+    dateSubmitted: '2026-02-28',
+    icon: <Briefcase size={16} />,
+    advisor: 'David Park',
+    nextStep: 'Final docs to be signed by borrower',
+    estimatedClose: 'Mar 25, 2026',
+  },
+  {
+    id: 'D-2004',
+    client: 'Pacific Rim Realty',
+    dealType: 'Commercial RE',
+    amount: '$1,200,000',
     status: 'In Review',
     dateSubmitted: '2026-03-10',
     icon: <Building2 size={16} />,
+    advisor: 'Sarah Thompson',
+    nextStep: 'Appraisal ordered — awaiting report',
+    estimatedClose: 'Apr 10, 2026',
   },
   {
-    id: 'D-1002',
-    client: 'Smith Corp',
-    dealType: 'Working Capital',
-    amount: 150_000,
-    status: 'Funded',
-    dateSubmitted: '2026-02-28',
-    icon: <Briefcase size={16} />,
-  },
-  {
-    id: 'D-1003',
-    client: 'Greenview Estates',
-    dealType: 'Fix & Flip',
-    amount: 475_000,
-    status: 'Approved',
-    dateSubmitted: '2026-03-05',
-    icon: <Home size={16} />,
-  },
-  {
-    id: 'D-1004',
-    client: 'Titan Restaurant Group',
-    dealType: 'SBA 7(a)',
-    amount: 820_000,
-    status: 'Application',
-    dateSubmitted: '2026-03-15',
-    icon: <FileText size={16} />,
-  },
-  {
-    id: 'D-1005',
-    client: 'Harbor Logistics Co.',
-    dealType: 'Equipment Financing',
-    amount: 290_000,
-    status: 'Declined',
-    dateSubmitted: '2026-02-14',
-    icon: <Zap size={16} />,
-  },
-  {
-    id: 'D-1006',
-    client: 'Oakwood Mixed-Use Partners',
-    dealType: 'Bridge Loan',
-    amount: 2_100_000,
+    id: 'D-2005',
+    client: 'Oakwood Properties',
+    dealType: 'DSCR Rental',
+    amount: '$650,000',
     status: 'In Review',
     dateSubmitted: '2026-03-12',
-    icon: <Building2 size={16} />,
+    icon: <Home size={16} />,
+    advisor: 'Marcus Rivera',
+    nextStep: 'Rent roll verification in progress',
+    estimatedClose: 'Apr 15, 2026',
   },
   {
-    id: 'D-1007',
-    client: 'BluePeak Medical Group',
-    dealType: 'Working Capital',
-    amount: 95_000,
-    status: 'Funded',
-    dateSubmitted: '2026-02-20',
-    icon: <Briefcase size={16} />,
-  },
-  {
-    id: 'D-1008',
-    client: 'Ridgeline Solar LLC',
-    dealType: 'Clean Energy / PACE',
-    amount: 560_000,
-    status: 'Approved',
-    dateSubmitted: '2026-03-08',
-    icon: <Zap size={16} />,
+    id: 'D-2006',
+    client: 'TechStart Solutions',
+    dealType: 'SBA 7(a)',
+    amount: '$350,000',
+    status: 'Application',
+    dateSubmitted: '2026-03-18',
+    icon: <FileText size={16} />,
+    advisor: 'Jessica Chen',
+    nextStep: 'Collecting business tax returns (2023–2025)',
+    estimatedClose: 'May 1, 2026',
   },
 ]
 
-const TABS: TabKey[] = ['All', 'Application', 'In Review', 'Approved', 'Funded', 'Declined']
+const TABS: TabKey[] = ['All', 'Application', 'In Review', 'Approved', 'Funded', 'Active']
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -141,37 +147,34 @@ const STATUS_CONFIG: Record<
     text: 'text-sequoia-900',
     icon: <DollarSign size={12} />,
   },
-  Declined: {
-    label: 'Declined',
-    bg: 'bg-red-50',
-    text: 'text-red-700',
-    icon: <XCircle size={12} />,
+  Active: {
+    label: 'Active',
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    icon: <Heart size={12} />,
   },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function formatCurrency(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
-}
-
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function totalFunded(deals: Deal[]) {
-  return deals.filter((d) => d.status === 'Funded').reduce((sum, d) => sum + d.amount, 0)
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PipelinePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('All')
+  const [expandedDeal, setExpandedDeal] = useState<string | null>(null)
 
   const filtered = activeTab === 'All' ? DEALS : DEALS.filter((d) => d.status === activeTab)
 
   const tabCount = (tab: TabKey) =>
     tab === 'All' ? DEALS.length : DEALS.filter((d) => d.status === tab).length
+
+  const toggleExpand = (id: string) => {
+    setExpandedDeal((prev) => (prev === id ? null : id))
+  }
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -195,12 +198,14 @@ export default function PipelinePage() {
           </div>
 
           {/* Summary stats */}
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {[
-              { label: 'Total Deals', value: DEALS.length, sub: 'all time' },
-              { label: 'In Review', value: DEALS.filter((d) => d.status === 'In Review').length, sub: 'pending' },
-              { label: 'Approved', value: DEALS.filter((d) => d.status === 'Approved').length, sub: 'ready to fund' },
-              { label: 'Total Funded', value: formatCurrency(totalFunded(DEALS)), sub: 'volume' },
+              { label: 'Total Deals', value: '6', sub: 'all time' },
+              { label: 'In Review', value: '2', sub: 'pending' },
+              { label: 'Approved', value: '1', sub: 'ready to fund' },
+              { label: 'Funded', value: '1', sub: 'completed' },
+              { label: 'Application', value: '1', sub: 'new submission' },
+              { label: 'Active EHMP', value: '1', sub: 'wellness' },
             ].map((stat) => (
               <div key={stat.label} className="glass rounded-xl p-4">
                 <p className="text-sequoia-200 text-xs uppercase tracking-widest mb-1">{stat.label}</p>
@@ -270,43 +275,67 @@ export default function PipelinePage() {
                 <tbody className="divide-y divide-[var(--neutral-100)]">
                   {filtered.map((deal) => {
                     const status = STATUS_CONFIG[deal.status]
+                    const isExpanded = expandedDeal === deal.id
                     return (
-                      <tr
-                        key={deal.id}
-                        className="hover:bg-sequoia-50 transition-colors duration-100 group"
-                      >
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
-                            <span className="icon-box-sequoia w-8 h-8 text-sequoia-700 shrink-0">
-                              {deal.icon}
-                            </span>
-                            <div>
-                              <p className="font-semibold text-[var(--sequoia-900)]">{deal.client}</p>
-                              <p className="text-xs text-[var(--neutral-400)]">{deal.id}</p>
+                      <>
+                        <tr
+                          key={deal.id}
+                          onClick={() => toggleExpand(deal.id)}
+                          className="hover:bg-sequoia-50 transition-colors duration-100 group cursor-pointer"
+                        >
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              <span className="icon-box-sequoia w-8 h-8 text-sequoia-700 shrink-0">
+                                {deal.icon}
+                              </span>
+                              <div>
+                                <p className="font-semibold text-[var(--sequoia-900)]">{deal.client}</p>
+                                <p className="text-xs text-[var(--neutral-400)]">{deal.id}</p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-5 py-4 text-[var(--neutral-600)]">{deal.dealType}</td>
-                        <td className="px-5 py-4 text-right font-semibold text-[var(--sequoia-900)]">
-                          {formatCurrency(deal.amount)}
-                        </td>
-                        <td className="px-5 py-4">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.text}`}
-                          >
-                            {status.icon}
-                            {status.label}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 text-[var(--neutral-500)] text-sm">
-                          {formatDate(deal.dateSubmitted)}
-                        </td>
-                        <td className="px-5 py-4">
-                          <button className="flex items-center gap-1 text-sequoia-700 hover:text-sequoia-900 font-semibold text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer">
-                            View <ChevronRight size={13} />
-                          </button>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="px-5 py-4 text-[var(--neutral-600)]">{deal.dealType}</td>
+                          <td className="px-5 py-4 text-right font-semibold text-[var(--sequoia-900)]">
+                            {deal.amount}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.bg} ${status.text}`}
+                            >
+                              {status.icon}
+                              {status.label}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 text-[var(--neutral-500)] text-sm">
+                            {formatDate(deal.dateSubmitted)}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className={`flex items-center gap-1 text-sequoia-700 font-semibold text-xs transition-transform duration-200 ${isExpanded ? 'rotate-0' : ''}`}>
+                              {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+                            </span>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr key={`${deal.id}-details`} className="bg-sequoia-50/50">
+                            <td colSpan={6} className="px-5 py-4">
+                              <div className="grid grid-cols-3 gap-6 pl-11">
+                                <div>
+                                  <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider mb-1">Advisor Assigned</p>
+                                  <p className="text-sm font-semibold text-[var(--sequoia-900)]">{deal.advisor}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider mb-1">Next Step</p>
+                                  <p className="text-sm font-medium text-[var(--neutral-700)]">{deal.nextStep}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider mb-1">Est. Close Date</p>
+                                  <p className="text-sm font-semibold text-[var(--sequoia-900)]">{deal.estimatedClose}</p>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     )
                   })}
                 </tbody>
@@ -317,9 +346,13 @@ export default function PipelinePage() {
             <div className="md:hidden space-y-3">
               {filtered.map((deal) => {
                 const status = STATUS_CONFIG[deal.status]
+                const isExpanded = expandedDeal === deal.id
                 return (
                   <div key={deal.id} className="card-sequoia p-4">
-                    <div className="flex items-start justify-between gap-3 mb-3">
+                    <div
+                      className="flex items-start justify-between gap-3 mb-3 cursor-pointer"
+                      onClick={() => toggleExpand(deal.id)}
+                    >
                       <div className="flex items-center gap-3">
                         <span className="icon-box-sequoia w-9 h-9 shrink-0">{deal.icon}</span>
                         <div>
@@ -341,16 +374,39 @@ export default function PipelinePage() {
                       </div>
                       <div>
                         <p className="text-[var(--neutral-400)] text-xs">Amount</p>
-                        <p className="font-semibold text-[var(--sequoia-900)]">{formatCurrency(deal.amount)}</p>
+                        <p className="font-semibold text-[var(--sequoia-900)]">{deal.amount}</p>
                       </div>
                       <div>
                         <p className="text-[var(--neutral-400)] text-xs">Submitted</p>
                         <p className="font-medium text-[var(--neutral-700)]">{formatDate(deal.dateSubmitted)}</p>
                       </div>
                     </div>
-                    <button className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[var(--neutral-200)] text-sequoia-700 text-sm font-semibold hover:bg-sequoia-50 transition-colors cursor-pointer">
-                      View Details <ArrowRight size={14} />
+
+                    {/* Expandable details */}
+                    <button
+                      onClick={() => toggleExpand(deal.id)}
+                      className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-lg border border-[var(--neutral-200)] text-sequoia-700 text-sm font-semibold hover:bg-sequoia-50 transition-colors cursor-pointer"
+                    >
+                      {isExpanded ? 'Hide Details' : 'View Details'}
+                      {isExpanded ? <ChevronDown size={14} /> : <ArrowRight size={14} />}
                     </button>
+
+                    {isExpanded && (
+                      <div className="mt-3 pt-3 border-t border-[var(--neutral-100)] space-y-2.5">
+                        <div>
+                          <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider">Advisor Assigned</p>
+                          <p className="text-sm font-semibold text-[var(--sequoia-900)]">{deal.advisor}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider">Next Step</p>
+                          <p className="text-sm font-medium text-[var(--neutral-700)]">{deal.nextStep}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider">Est. Close Date</p>
+                          <p className="text-sm font-semibold text-[var(--sequoia-900)]">{deal.estimatedClose}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               })}
@@ -372,9 +428,7 @@ function EmptyState({ tab }: { tab: TabKey }) {
       </div>
       <h3 className="text-lg font-bold text-[var(--sequoia-900)] mb-2">No deals here yet</h3>
       <p className="text-[var(--neutral-500)] text-sm max-w-xs">
-        {tab === 'Declined'
-          ? "You don't have any declined deals. Keep it up!"
-          : `You don't have any deals with "${tab}" status right now.`}
+        {`You don't have any deals with "${tab}" status right now.`}
       </p>
       <button className="btn-gold mt-6 flex items-center gap-2">
         <PlusCircle size={16} />

@@ -358,13 +358,13 @@ export default function EnrollPage() {
   )
 }
 
-function SuccessState({ name, email }: { name: string; email: string }) {
+function SuccessState({ name }: { name: string; email: string }) {
   const firstName = name.split(' ')[0]
   return (
     <div className="card-sequoia p-10 text-center">
       <div className="flex justify-center mb-6">
-        <div className="w-20 h-20 rounded-full bg-sequoia-100 flex items-center justify-center">
-          <CheckCircle2 size={40} className="text-sequoia-700" />
+        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+          <CheckCircle2 size={40} className="text-green-600" />
         </div>
       </div>
 
@@ -372,39 +372,13 @@ function SuccessState({ name, email }: { name: string; email: string }) {
         Welcome to Sequoia, {firstName}!
       </h2>
       <p className="text-gray-600 text-sm leading-relaxed mb-1 max-w-sm mx-auto">
-        Your enrollment is confirmed. Check{' '}
-        <span className="font-semibold text-sequoia-700">{email}</span> for your
-        account details and onboarding instructions.
+        Your membership is being activated. Check your email for next steps.
       </p>
 
-      <div className="divider-gold my-7 mx-auto max-w-xs" />
-
-      <h3 className="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide">
-        Your Next Steps
-      </h3>
-      <ol className="space-y-3 text-left max-w-sm mx-auto">
-        {[
-          'Check your email for login credentials',
-          'Log in to your back office and complete your profile',
-          'Watch the New Consultant Quick-Start Guide',
-          'Join the next Wednesday live training at 8 PM ET',
-        ].map((step, i) => (
-          <li key={step} className="flex items-start gap-3 text-sm text-gray-700">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-sequoia-700 text-white text-xs font-bold flex items-center justify-center">
-              {i + 1}
-            </span>
-            {step}
-          </li>
-        ))}
-      </ol>
-
-      <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="/resources" className="btn-primary" style={{ color: '#FFFFFF' }}>
-          Go to Training Library
+      <div className="mt-8">
+        <a href="/resources" className="btn-primary inline-flex items-center gap-2" style={{ color: '#FFFFFF' }}>
+          Start Training
           <ArrowRight size={16} />
-        </a>
-        <a href="/opportunity" className="btn-outline" style={{ color: '#000000' }}>
-          Review the Opportunity
         </a>
       </div>
     </div>
