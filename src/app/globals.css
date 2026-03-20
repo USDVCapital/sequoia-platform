@@ -203,25 +203,19 @@ body {
 
 /* ─── Typography Defaults ────────────────────────────────────────────────── */
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* :where() gives specificity 0, so Tailwind utilities like text-white always win */
+:where(h1, h2, h3, h4, h5, h6) {
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: #000000;
 }
 
-p {
+:where(p) {
   max-width: 70ch;
 }
 
-/* :where() gives specificity 0, so Tailwind utilities like text-white always win */
 :where(a) {
-  color: inherit;
   text-decoration-color: transparent;
   text-underline-offset: 3px;
   transition: color var(--duration-brand) var(--ease-brand),
