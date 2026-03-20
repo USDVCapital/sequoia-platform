@@ -19,6 +19,7 @@ import {
   BarChart3,
   Zap,
 } from 'lucide-react'
+import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import SectionHeading from '@/components/ui/SectionHeading'
@@ -167,23 +168,7 @@ export default function OpportunityPage() {
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        {/* Background video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
-        >
-          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
-        </video>
-
-        {/* Dark overlay for text contrast */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-black/65"
-        />
+        <HeroVideo />
 
         <div className="container-brand section-padding-lg relative z-10">
           <div className="max-w-3xl">

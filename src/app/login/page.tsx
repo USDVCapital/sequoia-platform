@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import HeroVideo from '@/components/HeroVideo'
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,23 +36,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex">
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden">
-        {/* Background video */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden="true"
-        >
-          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
-        </video>
-
-        {/* Dark overlay for text contrast */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-black/65"
-        />
+        <HeroVideo />
 
         <div className="relative z-10 flex flex-col justify-center px-16">
           <div className="mb-12">
