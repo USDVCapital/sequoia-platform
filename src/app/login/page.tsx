@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { TreePine, Eye, EyeOff, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,9 +26,7 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    // Simulate auth — in production, this would call an API
     setTimeout(() => {
-      // Accept any credentials for demo
       router.push("/portal");
     }, 800);
   };
@@ -35,21 +34,26 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-sequoia-900 via-sequoia-800 to-sequoia-700 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-gold-400 blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-sequoia-400 blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-neutral-400 blur-3xl" />
         </div>
-        <div className="relative z-10 flex flex-col justify-center px-16 text-white">
-          <div className="flex items-center gap-3 mb-12">
-            <TreePine className="w-10 h-10 text-gold-400" />
-            <div>
-              <p className="text-2xl font-bold tracking-tight">SEQUOIA</p>
-              <p className="text-sm text-white/70">Enterprise Solutions</p>
-            </div>
+        <div className="relative z-10 flex flex-col justify-center px-16">
+          <div className="mb-12">
+            <Image
+              src="/logo-gold.png"
+              alt="Sequoia Enterprise Solutions"
+              width={200}
+              height={50}
+              style={{ height: "50px", width: "auto" }}
+            />
           </div>
 
-          <h1 className="text-4xl font-bold leading-tight mb-6">
+          <h1
+            className="text-4xl font-bold leading-tight mb-6"
+            style={{ color: "#FFFFFF" }}
+          >
             Your Consultant
             <br />
             <span className="text-gold-400">Command Center</span>
@@ -69,7 +73,7 @@ export default function LoginPage() {
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-gold-400 shrink-0" />
-                <p className="text-white">{item}</p>
+                <p style={{ color: "rgba(255,255,255,0.9)" }}>{item}</p>
               </div>
             ))}
           </div>
@@ -80,14 +84,14 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-neutral-50">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center gap-2 mb-10">
-            <TreePine className="w-8 h-8 text-sequoia-700" />
-            <div>
-              <p className="text-xl font-bold text-sequoia-900 tracking-tight">
-                SEQUOIA
-              </p>
-              <p className="text-xs text-neutral-500">Enterprise Solutions</p>
-            </div>
+          <div className="lg:hidden mb-10">
+            <Image
+              src="/logo-black.png"
+              alt="Sequoia Enterprise Solutions"
+              width={180}
+              height={45}
+              style={{ height: "45px", width: "auto" }}
+            />
           </div>
 
           <h2 className="text-2xl font-bold text-neutral-900 mb-2">
@@ -116,7 +120,7 @@ export default function LoginPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sequoia-500 focus:border-transparent transition"
+                className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition"
                 placeholder="you@example.com"
               />
             </div>
@@ -136,7 +140,7 @@ export default function LoginPage() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-sequoia-500 focus:border-transparent transition pr-12"
+                  className="w-full px-4 py-3 rounded-xl border border-neutral-300 bg-white text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition pr-12"
                   placeholder="Enter your password"
                 />
                 <button
@@ -157,13 +161,13 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-neutral-300 text-sequoia-600 focus:ring-sequoia-500"
+                  className="w-4 h-4 rounded border-neutral-300 text-neutral-800 focus:ring-gold-500"
                 />
                 <span className="text-sm text-neutral-600">Remember me</span>
               </label>
               <button
                 type="button"
-                className="text-sm text-sequoia-600 hover:text-sequoia-700 font-medium transition"
+                className="text-sm text-neutral-700 hover:text-black font-medium transition"
               >
                 Forgot password?
               </button>
@@ -172,7 +176,8 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-6 rounded-xl bg-sequoia-700 hover:bg-sequoia-800 text-white font-semibold transition flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full py-3 px-6 rounded-xl bg-black hover:bg-neutral-800 font-semibold transition flex items-center justify-center gap-2 disabled:opacity-60"
+              style={{ color: "#FFFFFF" }}
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -190,7 +195,7 @@ export default function LoginPage() {
               Not a consultant yet?{" "}
               <Link
                 href="/opportunity"
-                className="text-sequoia-600 hover:text-sequoia-700 font-medium transition"
+                className="text-neutral-800 hover:text-black font-medium transition underline underline-offset-2"
               >
                 Learn about the opportunity
               </Link>
@@ -199,7 +204,7 @@ export default function LoginPage() {
               or{" "}
               <Link
                 href="/enroll"
-                className="text-gold-600 hover:text-gold-700 font-medium transition"
+                className="text-gold-700 hover:text-gold-800 font-medium transition underline underline-offset-2"
               >
                 Enroll now for $29.99/month
               </Link>

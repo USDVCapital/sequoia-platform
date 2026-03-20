@@ -114,15 +114,23 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════════════════════════════════
           1. HERO
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="relative bg-gradient-hero overflow-hidden">
-        {/* Subtle radial highlight */}
+      <section className="relative overflow-hidden">
+        {/* Background video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/seq-hero-forest-web.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay for text contrast */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 60% 40%, color-mix(in srgb, var(--sequoia-700) 18%, transparent) 0%, transparent 70%)',
-          }}
+          className="absolute inset-0 bg-black/65"
         />
 
         <div className="container-brand relative z-10 section-padding-lg">
