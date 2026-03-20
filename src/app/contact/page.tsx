@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -80,6 +81,7 @@ const roleOptions = [
 ]
 
 export default function ContactPage() {
+  const { openBooking } = useBooking()
   const [status, setStatus] = useState<FormStatus>('idle')
 
   useEffect(() => {
@@ -393,6 +395,25 @@ export default function ContactPage() {
               </Card>
             </FadeIn>
           </div>
+        </div>
+      </section>
+
+      {/* ── Book a Call ────────────────────────────────────────────────── */}
+      <section className="py-12 bg-white">
+        <div className="container-brand">
+          <FadeIn direction="up">
+            <div className="mx-auto max-w-xl text-center">
+              <p className="text-sm font-semibold uppercase tracking-widest text-gold-700 mb-2">
+                Prefer to schedule directly?
+              </p>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                Skip the form and book a call with our team at a time that works for you.
+              </p>
+              <Button variant="secondary" size="lg" onClick={() => openBooking()}>
+                Book a Call
+              </Button>
+            </div>
+          </FadeIn>
         </div>
       </section>
 

@@ -14,6 +14,7 @@ import {
   Phone,
   Building2,
 } from 'lucide-react'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -95,6 +96,7 @@ const partnerLogos = [
 ]
 
 export default function PartnerPage() {
+  const { openBooking } = useBooking()
   const [submitted, setSubmitted] = useState(false)
 
   const {
@@ -139,10 +141,14 @@ export default function PartnerPage() {
             </FadeIn>
             <FadeIn direction="up" delay={0.3}>
               <div className="mt-10 flex flex-wrap gap-4">
-                <a href="#contact-form" className="inline-flex items-center justify-center rounded-md font-medium transition-colors duration-150 px-7 py-3.5 text-base gap-2.5 bg-gold-500 hover:bg-gold-600 shadow-sm cursor-pointer" style={{ color: '#000000' }}>
+                <button
+                  onClick={() => openBooking()}
+                  className="inline-flex items-center justify-center rounded-md font-medium transition-colors duration-150 px-7 py-3.5 text-base gap-2.5 bg-gold-500 hover:bg-gold-600 shadow-sm cursor-pointer"
+                  style={{ color: '#000000' }}
+                >
                   Schedule a Partnership Call
                   <ArrowRight className="size-4" />
-                </a>
+                </button>
                 <a href="#models" className="btn-ghost-light" style={{ color: '#FFFFFF' }}>
                   View Partnership Models
                 </a>

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Image from 'next/image'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -77,6 +78,7 @@ const partnerships = [
 ]
 
 export default function AboutPage() {
+  const { openBooking } = useBooking()
   useEffect(() => {
     document.title = 'About Sequoia Enterprise Solutions — Our Story & Mission'
   }, [])
@@ -235,7 +237,7 @@ export default function AboutPage() {
                     Explore Solutions
                     <ArrowRight size={18} />
                   </Button>
-                  <Button variant="outline" size="lg" href="/contact">
+                  <Button variant="outline" size="lg" onClick={() => openBooking()}>
                     Free Consultation
                   </Button>
                 </div>
