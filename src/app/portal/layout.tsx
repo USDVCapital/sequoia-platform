@@ -12,6 +12,7 @@ import {
   MessageSquare,
   User,
   Bot,
+  FolderOpen,
   Bell,
   PlusCircle,
   Menu,
@@ -30,6 +31,7 @@ const navItems = [
   { label: 'Training',     href: '/portal/training',   icon: GraduationCap   },
   { label: 'Leaderboard',  href: '/portal/leaderboard', icon: Trophy         },
   { label: 'Community',    href: '/portal/community',  icon: MessageSquare   },
+  { label: 'Materials',    href: '/portal/materials',  icon: FolderOpen      },
   { label: 'My Profile',   href: '/portal/profile',    icon: User            },
   { label: 'CEA AI',       href: '/portal/ai',         icon: Bot             },
 ]
@@ -46,6 +48,7 @@ function getPageTitle(pathname: string): string {
     training:    'Training',
     leaderboard: 'Leaderboard',
     community:   'Community',
+    materials:   'Marketing Materials',
     profile:     'My Profile',
     ai:          'CEA AI',
   }
