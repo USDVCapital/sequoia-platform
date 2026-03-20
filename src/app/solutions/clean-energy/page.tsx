@@ -10,6 +10,7 @@ import {
   Phone,
   CheckCircle2,
 } from 'lucide-react'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -73,6 +74,7 @@ const impactStats = [
 ]
 
 export default function CleanEnergyPage() {
+  const { openBooking } = useBooking()
   return (
     <>
       {/* Hero */}
@@ -101,7 +103,7 @@ export default function CleanEnergyPage() {
             </FadeIn>
             <FadeIn direction="up" delay={0.3}>
               <div className="mt-10 flex flex-wrap gap-4">
-                <Button href="/contact" variant="secondary" size="lg">
+                <Button variant="secondary" size="lg" onClick={() => openBooking()}>
                   Schedule a Consultation
                 </Button>
                 <a href="#products" className="btn-ghost-light" style={{ color: '#FFFFFF' }}>
@@ -191,13 +193,13 @@ export default function CleanEnergyPage() {
                       </div>
 
                       <div className="mt-auto pt-2">
-                        <a
-                          href="/contact"
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-sequoia-700 hover:text-sequoia-900 transition-colors group"
+                        <button
+                          onClick={() => openBooking()}
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-sequoia-700 hover:text-sequoia-900 transition-colors group cursor-pointer"
                         >
                           Schedule a Consultation
                           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </Card>
@@ -277,13 +279,17 @@ export default function CleanEnergyPage() {
           </FadeIn>
           <FadeIn direction="up" delay={0.3}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Button href="/contact" variant="secondary" size="lg">
+              <Button variant="secondary" size="lg" onClick={() => openBooking()}>
                 Schedule a Consultation
               </Button>
-              <a href="tel:+13013378035" className="btn-ghost-light inline-flex items-center gap-2" style={{ color: '#FFFFFF' }}>
+              <button
+                onClick={() => openBooking()}
+                className="btn-ghost-light inline-flex items-center gap-2 cursor-pointer"
+                style={{ color: '#FFFFFF' }}
+              >
                 <Phone className="size-4" />
                 Talk to an Advisor
-              </a>
+              </button>
             </div>
           </FadeIn>
         </div>

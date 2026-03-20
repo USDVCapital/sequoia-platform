@@ -14,6 +14,7 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -145,6 +146,7 @@ const stats = [
 ]
 
 export default function BusinessFundingPage() {
+  const { openBooking } = useBooking()
   return (
     <>
       {/* Hero */}
@@ -283,13 +285,17 @@ export default function BusinessFundingPage() {
           </FadeIn>
           <FadeIn direction="up" delay={0.3}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Button href="/apply" variant="secondary" size="lg">
+              <Button variant="secondary" size="lg" onClick={() => openBooking()}>
                 Request a Free Consultation
               </Button>
-              <a href="tel:+13013378035" className="btn-ghost-light inline-flex items-center gap-2" style={{ color: '#FFFFFF' }}>
+              <button
+                onClick={() => openBooking()}
+                className="btn-ghost-light inline-flex items-center gap-2 cursor-pointer"
+                style={{ color: '#FFFFFF' }}
+              >
                 <Phone className="size-4" />
                 Talk to an Advisor
-              </a>
+              </button>
             </div>
           </FadeIn>
         </div>

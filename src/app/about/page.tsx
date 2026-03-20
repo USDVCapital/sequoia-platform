@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
+import Image from 'next/image'
+import { useBooking } from '@/contexts/BookingContext'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -18,6 +20,7 @@ import {
   Leaf,
   Heart,
   ChevronRight,
+  ArrowRight,
 } from 'lucide-react'
 
 const milestones = [
@@ -75,6 +78,7 @@ const partnerships = [
 ]
 
 export default function AboutPage() {
+  const { openBooking } = useBooking()
   useEffect(() => {
     document.title = 'About Sequoia Enterprise Solutions — Our Story & Mission'
   }, [])
@@ -180,6 +184,69 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── Video Section ────────────────────────────────────────────────── */}
+      <section className="section-padding bg-white">
+        <div className="container-brand">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            {/* Video embed */}
+            <FadeIn direction="left">
+              <div className="relative w-full overflow-hidden rounded-2xl shadow-lg" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src="https://player.vimeo.com/video/797484104?h=0&title=0&byline=0&portrait=0"
+                  className="absolute inset-0 h-full w-full"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  title="Sequoia Enterprise Solutions — Company Overview"
+                />
+              </div>
+            </FadeIn>
+
+            {/* Video copy */}
+            <FadeIn direction="right">
+              <div>
+                <SectionHeading
+                  eyebrow="Watch Our Story"
+                  heading="Find the Right Solution for Your Business Needs"
+                  align="left"
+                />
+                <div className="mt-6 space-y-5 text-gray-600 leading-relaxed">
+                  <p>
+                    We understand that each business has unique funding and service requirements.
+                    At Sequoia Enterprise Solutions, our goal is to provide tailored options that
+                    meet your specific needs — whether for funding, business optimization, or
+                    clean energy solutions.
+                  </p>
+                  <p>
+                    Sequoia&apos;s mission has always been to empower business growth. By collaborating
+                    with businesses across diverse industries, we recognized a need for a broad
+                    array of tools and services for business optimization. This led us to offer
+                    solutions beyond lending, including equipment financing, cost segregation,
+                    tax appeal, green energy financing, and our unique wellness program that
+                    optimizes business finances.
+                  </p>
+                  <p>
+                    Today, Sequoia proudly partners with over 500 funding sources to deliver a
+                    comprehensive range of financing options and business solutions. Our platform
+                    also fosters a collaborative ecosystem for professionals to diversify their
+                    revenue streams.
+                  </p>
+                </div>
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <Button variant="primary" size="lg" href="/solutions">
+                    Explore Solutions
+                    <ArrowRight size={18} />
+                  </Button>
+                  <Button variant="outline" size="lg" onClick={() => openBooking()}>
+                    Free Consultation
+                  </Button>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
       {/* ── CEO Section ──────────────────────────────────────────────────── */}
       <section className="section-padding bg-gradient-section">
         <div className="container-brand">
@@ -190,11 +257,15 @@ export default function AboutPage() {
                 {/* CEO card */}
                 <div className="lg:col-span-2">
                   <Card className="overflow-hidden p-0">
-                    {/* Avatar placeholder with gradient */}
-                    <div className="flex h-64 items-center justify-center bg-gradient-sequoia">
-                      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/20 text-5xl font-bold text-white shadow-lg ring-4 ring-white/30">
-                        AW
-                      </div>
+                    {/* CEO headshot */}
+                    <div className="relative h-72 w-full">
+                      <Image
+                        src="/Allen Wu Headshot.png"
+                        alt="Allen Wu — CEO, Sequoia Enterprise Solutions"
+                        fill
+                        className="object-cover object-top"
+                        sizes="(max-width: 1024px) 100vw, 40vw"
+                      />
                     </div>
                     <div className="p-6 text-center">
                       <p className="text-xl font-bold text-sequoia-900">Allen Wu</p>
