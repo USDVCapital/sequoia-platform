@@ -150,7 +150,7 @@ const TODO_ITEMS: TodoItem[] = [
   {
     id: 'first-wellness-lead',
     text: 'Submit your first Wellness lead this week',
-    href: '/portal/pipeline/new',
+    href: '/apply',
     icon: <Send size={16} aria-hidden="true" />,
     cta: 'Submit Lead',
   },
@@ -302,7 +302,7 @@ function WelcomeBanner() {
 
         <div className="flex gap-2 sm:shrink-0">
           <Link
-            href="/portal/pipeline/new"
+            href="/apply"
             className="btn-gold inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl"
           >
             <Zap className="h-4 w-4" aria-hidden="true" />
