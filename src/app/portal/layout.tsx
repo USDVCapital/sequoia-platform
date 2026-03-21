@@ -280,15 +280,6 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
               </span>
             </button>
 
-            {/* Submit a Lead CTA */}
-            <Link
-              href="/apply"
-              className="btn-gold inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg"
-            >
-              <PlusCircle className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Submit a Lead</span>
-              <span className="sm:hidden">Lead</span>
-            </Link>
           </div>
         </header>
 
