@@ -319,11 +319,11 @@ export default function EnrollPage() {
                           />
                           <span className="text-sm text-gray-600 leading-relaxed">
                             I agree to the{' '}
-                            <a href="/terms" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                            <a href="#terms" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
                               Terms of Service
                             </a>{' '}
                             and{' '}
-                            <a href="/privacy" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                            <a href="#privacy" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
                               Privacy Policy
                             </a>
                             . <span className="text-red-500">*</span>

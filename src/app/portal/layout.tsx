@@ -282,7 +282,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
             {/* Submit a Lead CTA */}
             <Link
-              href="/portal/pipeline/new"
+              href="/apply"
               className="btn-gold inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg"
             >
               <PlusCircle className="h-4 w-4" aria-hidden="true" />
