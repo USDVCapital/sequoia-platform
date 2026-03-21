@@ -459,8 +459,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Portal secondary nav (only when logged in) */}
-      {isLoggedIn && <PortalSecondaryNav />}
 
       {/* Mobile drawer overlay */}
       {mobileOpen && (
