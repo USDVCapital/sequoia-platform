@@ -94,14 +94,12 @@ const testimonials = [
 ]
 
 const partners = [
-  'EXP Commercial Realty',
-  'Keller Williams Commercial',
-  'National ACE',
-  'Cal Asia Chamber of Commerce',
-  'Pacific Business Bank',
-  'Western Alliance Bank',
-  'SmartBiz Loans',
-  'Lendio',
+  { name: 'EXP Commercial Realty', logo: '/logos/exp-commercial.svg' },
+  { name: 'Keller Williams Commercial', logo: '/logos/kw-commercial.png' },
+  { name: 'National ACE', logo: '/logos/national-ace.jpg' },
+  { name: 'Cal Asia Chamber of Commerce', logo: '/logos/calasian-chamber.svg' },
+  { name: 'Filipino Chamber of Commerce', logo: '/logos/filipino-chamber.png' },
+  { name: 'BBB Accredited', logo: '/logos/bbb.png' },
 ]
 
 const wellnessFeatures = [
@@ -677,13 +675,16 @@ export default function HomePage() {
             />
           </FadeIn>
 
-          <StaggerContainer className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <StaggerContainer className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {partners.map((partner) => (
-              <StaggerItem key={partner} direction="up">
-                <div className="flex items-center justify-center rounded-xl border border-sequoia-100 bg-white px-6 py-5 shadow-sm text-center">
-                  <span className="text-xs sm:text-sm font-semibold text-sequoia-700 leading-snug">
-                    {partner}
-                  </span>
+              <StaggerItem key={partner.name} direction="up">
+                <div className="flex items-center justify-center rounded-xl border border-sequoia-100 bg-white px-4 py-5 shadow-sm h-24">
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="max-h-12 max-w-[120px] object-contain"
+                    loading="lazy"
+                  />
                 </div>
               </StaggerItem>
             ))}
