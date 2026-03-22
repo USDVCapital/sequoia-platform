@@ -402,7 +402,7 @@ export default function AboutPage() {
               <Card className="flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
                 <div className="flex h-14 w-20 shrink-0 items-center justify-center">
                   <Image
-                    src="/logos/bbb.png"
+                    src="/logos/bbb.svg"
                     alt="BBB Accredited Business logo"
                     width={80}
                     height={56}
