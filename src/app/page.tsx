@@ -99,7 +99,7 @@ const partners = [
   { name: 'National ACE', logo: '/logos/national-ace.jpg' },
   { name: 'Cal Asia Chamber of Commerce', logo: '/logos/calasian-chamber.svg' },
   { name: 'Filipino Chamber of Commerce', logo: '/logos/filipino-chamber.png' },
-  { name: 'BBB Accredited', logo: '/logos/bbb.png' },
+  { name: 'BBB Accredited', logo: '/logos/bbb.svg' },
 ]
 
 const wellnessFeatures = [
