@@ -255,7 +255,7 @@ export default function MaterialsPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="flex items-center gap-6 rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-3">
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6 rounded-xl border border-neutral-200 bg-neutral-50 px-5 py-3">
         <div className="flex items-center gap-2">
           <FileText size={16} className="text-gold-600" />
           <span className="text-sm font-semibold text-neutral-900">{flyers.length} Flyers</span>

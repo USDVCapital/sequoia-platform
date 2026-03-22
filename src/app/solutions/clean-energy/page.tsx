@@ -121,7 +121,7 @@ export default function CleanEnergyPage() {
           <StaggerContainer className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {impactStats.map((stat) => (
               <StaggerItem key={stat.label} direction="up">
-                <div className="rounded-2xl px-8 py-6 text-center bg-neutral-50 border border-neutral-200">
+                <div className="rounded-2xl px-4 sm:px-8 py-6 text-center bg-neutral-50 border border-neutral-200">
                   <p className="text-3xl font-extrabold tracking-tight text-black">
                     {stat.value}
                   </p>

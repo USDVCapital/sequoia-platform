@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
+import { submitApplication } from '@/lib/supabase/actions'
 
 // ─── Zod Schemas ────────────────────────────────────────────────────────────────
 
@@ -226,7 +227,18 @@ export default function ApplyPage() {
 
   function handleFinalSubmit(e: React.FormEvent) {
     e.preventDefault()
-    step2Form.handleSubmit(() => {
+    step2Form.handleSubmit(async (step2Data) => {
+      const step1Data = step1Form.getValues()
+      await submitApplication({
+        firstName: step1Data.firstName,
+        lastName: step1Data.lastName,
+        email: step1Data.email,
+        phone: step1Data.phone,
+        businessName: step1Data.businessName,
+        fundingType: step2Data.fundingType,
+        estimatedAmount: step2Data.estimatedAmount,
+        description: step2Data.description,
+      })
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     })()

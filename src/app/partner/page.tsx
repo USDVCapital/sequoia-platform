@@ -15,6 +15,7 @@ import {
   Building2,
 } from 'lucide-react'
 import { useBooking } from '@/contexts/BookingContext'
+import { submitPartnerInquiry } from '@/lib/supabase/actions'
 import HeroVideo from '@/components/HeroVideo'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
@@ -130,7 +131,16 @@ export default function PartnerPage() {
     defaultValues: { name: '', email: '', phone: '', role: '', clientCount: '', partnershipModel: '', message: '' },
   })
 
-  function onSubmit() {
+  async function onSubmit(data: PartnerFormData) {
+    await submitPartnerInquiry({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      role: data.role,
+      clientCount: data.clientCount,
+      partnershipModel: data.partnershipModel,
+      message: data.message,
+    })
     setSubmitted(true)
   }
 

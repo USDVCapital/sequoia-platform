@@ -110,14 +110,14 @@ function StatPill({
 }) {
   return (
     <div
-      className={`rounded-2xl px-8 py-6 text-center ${
+      className={`rounded-2xl px-4 sm:px-8 py-6 text-center ${
         accent
           ? 'bg-gold-100 border border-gold-300'
           : 'bg-sequoia-50 border border-sequoia-200'
       }`}
     >
       <p
-        className={`text-4xl font-extrabold tracking-tight ${
+        className={`text-2xl sm:text-4xl font-extrabold tracking-tight ${
           accent ? 'text-gold-800' : 'text-sequoia-900'
         }`}
       >

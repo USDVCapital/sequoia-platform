@@ -13,6 +13,7 @@ import FadeIn from '@/components/motion/FadeIn'
 import StaggerContainer from '@/components/motion/StaggerContainer'
 import StaggerItem from '@/components/motion/StaggerItem'
 import { MapPin, Phone, Mail, Clock, CheckCircle2, ChevronRight } from 'lucide-react'
+import { submitContact } from '@/lib/supabase/actions'
 
 // ─── Zod Schema ─────────────────────────────────────────────────────────────────
 
@@ -103,8 +104,13 @@ export default function ContactPage() {
   async function onSubmit(data: ContactFormData) {
     setStatus('submitting')
     setSubmittedName(data.name)
-    // Simulate network latency (no backend)
-    await new Promise((r) => setTimeout(r, 900))
+    await submitContact({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+      role: data.role,
+    })
     setStatus('success')
     reset()
   }

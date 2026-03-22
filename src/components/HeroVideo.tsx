@@ -24,6 +24,8 @@ export default function HeroVideo() {
         loop
         muted
         playsInline
+        preload="metadata"
+        poster="/seq-hero-poster.jpg"
         className="absolute inset-0 w-full h-full object-cover"
         aria-hidden="true"
       >

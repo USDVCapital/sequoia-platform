@@ -229,7 +229,7 @@ export default function OpportunityPage() {
               </StaggerItem>
 
               <StaggerItem direction="up">
-                <div className="mt-12 flex flex-wrap gap-6">
+                <div className="mt-12 grid grid-cols-2 sm:flex sm:flex-wrap gap-4 sm:gap-6">
                   {[
                     { value: '2,500+', label: 'Active Consultants' },
                     { value: '500+', label: 'Lending Partners' },
@@ -345,7 +345,7 @@ export default function OpportunityPage() {
                     Consultant Membership
                   </p>
                   <div className="flex items-end justify-center gap-1 my-4">
-                    <span className="text-6xl font-black text-sequoia-900">$29</span>
+                    <span className="text-5xl sm:text-6xl font-black text-sequoia-900">$29</span>
                     <span className="text-2xl font-bold text-sequoia-700 mb-2">.99</span>
                     <span className="text-gray-500 mb-2">/mo</span>
                   </div>

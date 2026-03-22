@@ -299,8 +299,8 @@ export default function CommunityPage() {
               <p className="text-sequoia-300 text-sm font-medium uppercase tracking-widest mb-1">
                 Consultant Portal
               </p>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                <Users size={28} className="text-sequoia-300" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                <Users size={28} className="text-sequoia-300 shrink-0" />
                 Community Feed
               </h1>
               <p className="text-sequoia-200 mt-1 text-sm">

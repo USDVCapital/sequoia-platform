@@ -65,16 +65,23 @@ const verticals = [
 const testimonials = [
   {
     quote:
-      "Sequoia found us a construction lender in under a week when three other brokers had given up. Allen's team actually understood our project and matched us with exactly the right partner.",
-    name: 'Marcus T.',
-    title: 'Real Estate Developer, Sacramento CA',
+      "I closed over $500,000 in commercial loans in my first six months. The training and the platform gave me everything I needed.",
+    name: 'Emily R.',
+    title: 'Insurance Agent turned Consultant',
     rating: 5,
   },
   {
     quote:
-      "I joined the consultant network skeptical about recurring income claims. Six months later I'm earning a consistent $4,200/month just from the Wellness Program placements. This is the real deal.",
-    name: 'Linda K.',
-    title: 'Independent Business Consultant, Orange County CA',
+      "My first deal was a $652,000 commercial loan. The team at Sequoia walked me through every step. I had no prior lending experience.",
+    name: 'Joseph Cordeira',
+    title: 'Independent Consultant',
+    rating: 5,
+  },
+  {
+    quote:
+      "Excellent customer service and a seamless funding process. We've closed multiple deals through Sequoia and will continue to.",
+    name: 'Fortune Homes Team',
+    title: 'Real Estate Investment Firm',
     rating: 5,
   },
   {
@@ -82,13 +89,6 @@ const testimonials = [
       "The EHMP program was the easiest conversation I've ever had with an employer client. The tax savings sell themselves — and we both win every single month.",
     name: 'Raymond S.',
     title: 'Sequoia Consultant, San Jose CA',
-    rating: 5,
-  },
-  {
-    quote:
-      'We had been turned down twice for an SBA loan. Sequoia restructured our application, connected us to the right lender, and we closed $1.2M in 45 days. Incredible outcome.',
-    name: 'Priya N.',
-    title: 'Restaurant Group Owner, Los Angeles CA',
     rating: 5,
   },
 ]
@@ -155,7 +155,7 @@ function LeadMagnetSection() {
                   Check your inbox — your guide is on its way.
                 </p>
               ) : (
-                <form onSubmit={handleClient} className="flex gap-2 mt-auto">
+                <form onSubmit={handleClient} className="flex flex-col sm:flex-row gap-2 mt-auto">
                   <input
                     type="email"
                     required
@@ -189,7 +189,7 @@ function LeadMagnetSection() {
                   Check your inbox — your kit is on its way.
                 </p>
               ) : (
-                <form onSubmit={handleConsultant} className="flex gap-2 mt-auto">
+                <form onSubmit={handleConsultant} className="flex flex-col sm:flex-row gap-2 mt-auto">
                   <input
                     type="email"
                     required

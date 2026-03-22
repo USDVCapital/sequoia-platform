@@ -3,15 +3,14 @@
 import { useState } from 'react'
 import {
   Play,
-  CheckCircle2,
   Clock,
   BookOpen,
   Sparkles,
   TrendingUp,
   RotateCcw,
-  Lock,
   Video,
   ChevronRight,
+  Filter,
 } from 'lucide-react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -19,238 +18,309 @@ import {
 type VideoCategory =
   | 'Agent Training'
   | 'Commercial Lending'
-  | 'Wellness / EHMP'
-  | 'Product Deep Dives'
+  | 'Wellness/EHMP'
   | 'Success Stories'
 
-type ProgressStatus = 'completed' | 'in-progress' | 'not-started' | 'locked'
-
 interface TrainingVideo {
-  id: number
+  id: string
   title: string
   category: VideoCategory
   duration: string
-  gradientFrom: string
-  gradientTo: string
-  description: string
+  thumbnail: string
   progress: number // 0–100
-  status: ProgressStatus
-  isNew?: boolean
-  recommendedFor?: string[]
+  isNew: boolean
+  isRecommended?: boolean
+  isContinueWatching?: boolean
 }
 
-// ── Mock Data ─────────────────────────────────────────────────────────────────
+// ── Video Data ────────────────────────────────────────────────────────────────
 
-const VIDEOS: TrainingVideo[] = [
-  // Continue watching
+const ALL_VIDEOS: TrainingVideo[] = [
+  // Continue Watching (first 3 with fake progress)
   {
-    id: 1,
-    title: 'Your First 30 Days as a Consultant',
+    id: 'RuWpu3IvhOk',
+    title: 'Case Studies: Recently Closed Deals',
     category: 'Agent Training',
-    duration: '29 min',
-    gradientFrom: 'from-sequoia-700',
-    gradientTo: 'to-sequoia-500',
-    description: 'Step-by-step onboarding roadmap: tools, first calls, first commissions.',
-    progress: 65,
-    status: 'in-progress',
-    isNew: false,
-  },
-  {
-    id: 2,
-    title: 'Compensation 6.0 Explained',
-    category: 'Agent Training',
-    duration: '18 min',
-    gradientFrom: 'from-gold-700',
-    gradientTo: 'to-gold-500',
-    description: 'A full walkthrough of how commissions, revenue share, and bonuses are calculated.',
-    progress: 42,
-    status: 'in-progress',
-    isNew: false,
-  },
-  {
-    id: 3,
-    title: 'EHMP Discovery Session: Live Demo',
-    category: 'Wellness / EHMP',
-    duration: '27 min',
-    gradientFrom: 'from-emerald-700',
-    gradientTo: 'to-emerald-500',
-    description: 'Watch a live employer discovery call from intro to close.',
-    progress: 15,
-    status: 'in-progress',
+    duration: '45:00',
+    thumbnail: 'https://img.youtube.com/vi/RuWpu3IvhOk/mqdefault.jpg',
+    progress: 40,
     isNew: true,
-  },
-  // Completed
-  {
-    id: 4,
-    title: 'Disrupting the Commercial Lending Industry',
-    category: 'Commercial Lending',
-    duration: '22 min',
-    gradientFrom: 'from-sequoia-800',
-    gradientTo: 'to-sequoia-600',
-    description: 'How Sequoia gives independent consultants access to institutional-grade lending.',
-    progress: 100,
-    status: 'completed',
-    isNew: false,
+    isContinueWatching: true,
   },
   {
-    id: 5,
-    title: 'Business Funding 101',
+    id: 'TKGUzP5GrBI',
+    title: 'Expediting Property Insurance Claims',
     category: 'Agent Training',
-    duration: '20 min',
-    gradientFrom: 'from-blue-700',
-    gradientTo: 'to-blue-500',
-    description: 'How to qualify a business for funding and set realistic expectations.',
-    progress: 100,
-    status: 'completed',
+    duration: '38:20',
+    thumbnail: 'https://img.youtube.com/vi/TKGUzP5GrBI/mqdefault.jpg',
+    progress: 75,
+    isNew: true,
+    isContinueWatching: true,
+  },
+  {
+    id: 'vuxR-DSjLlI',
+    title: 'SBA Eligibility: How to Avoid Common Pitfalls',
+    category: 'Agent Training',
+    duration: '42:15',
+    thumbnail: 'https://img.youtube.com/vi/vuxR-DSjLlI/mqdefault.jpg',
+    progress: 20,
+    isNew: true,
+    isContinueWatching: true,
+  },
+  // Recommended (4 EHMP/Wellness videos)
+  {
+    id: 'QTZFGrV1zW0',
+    title: 'Wellness Program (EHMP) Case Studies',
+    category: 'Wellness/EHMP',
+    duration: '18:40',
+    thumbnail: 'https://img.youtube.com/vi/QTZFGrV1zW0/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+    isRecommended: true,
+  },
+  {
+    id: 'QqbhPDwSUe4',
+    title: 'Wellness Program Process Explained',
+    category: 'Wellness/EHMP',
+    duration: '25:00',
+    thumbnail: 'https://img.youtube.com/vi/QqbhPDwSUe4/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+    isRecommended: true,
+  },
+  {
+    id: 'mYKGH21_9ew',
+    title: 'EHMP Deep Dive: A Closer Look',
+    category: 'Wellness/EHMP',
+    duration: '20:30',
+    thumbnail: 'https://img.youtube.com/vi/mYKGH21_9ew/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+    isRecommended: true,
+  },
+  {
+    id: 'Srq_Xf2K3_w',
+    title: 'How Employers Save More with EHMP',
+    category: 'Wellness/EHMP',
+    duration: '22:45',
+    thumbnail: 'https://img.youtube.com/vi/Srq_Xf2K3_w/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+    isRecommended: true,
+  },
+  // Remaining videos
+  {
+    id: 'YwBu61B50JY',
+    title: 'DSCR Loans Made Simple',
+    category: 'Commercial Lending',
+    duration: '28:15',
+    thumbnail: 'https://img.youtube.com/vi/YwBu61B50JY/mqdefault.jpg',
+    progress: 0,
     isNew: false,
   },
   {
-    id: 6,
-    title: 'Agent Success Story: Emily',
+    id: 'M7THwiRrItA',
+    title: 'Innovating Insurance Claims for Property Owners',
+    category: 'Agent Training',
+    duration: '35:40',
+    thumbnail: 'https://img.youtube.com/vi/M7THwiRrItA/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: '93SSkY3KunA',
+    title: 'SBA Loans Explained: How SBA Lending Works',
+    category: 'Commercial Lending',
+    duration: '32:10',
+    thumbnail: 'https://img.youtube.com/vi/93SSkY3KunA/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'tekFBzCrmB4',
+    title: 'The Year of the Hero | 2026 Strategy',
+    category: 'Agent Training',
+    duration: '52:30',
+    thumbnail: 'https://img.youtube.com/vi/tekFBzCrmB4/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'Rv8JeFqpOlI',
+    title: '2025 Year in Review & 2026 Vision',
+    category: 'Agent Training',
+    duration: '58:30',
+    thumbnail: 'https://img.youtube.com/vi/Rv8JeFqpOlI/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'xtDxU9gHfrI',
+    title: 'Non-Traditional Funding for Real Estate Investors',
+    category: 'Commercial Lending',
+    duration: '34:15',
+    thumbnail: 'https://img.youtube.com/vi/xtDxU9gHfrI/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'qs2bHkLCjms',
+    title: 'Funding Solutions for Land Development',
+    category: 'Commercial Lending',
+    duration: '29:00',
+    thumbnail: 'https://img.youtube.com/vi/qs2bHkLCjms/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'QJYI8H_0oSQ',
+    title: 'How Emily Closed $500K+ in Commercial Loans',
     category: 'Success Stories',
-    duration: '14 min',
-    gradientFrom: 'from-gold-800',
-    gradientTo: 'to-gold-600',
-    description: 'How Emily closed $500K+ in commercial volume in her first year.',
-    progress: 100,
-    status: 'completed',
+    duration: '12:45',
+    thumbnail: 'https://img.youtube.com/vi/QJYI8H_0oSQ/mqdefault.jpg',
+    progress: 0,
     isNew: false,
   },
-  // Recommended / not started
   {
-    id: 7,
-    title: 'Why Loans Get Denied — and How to Prevent It',
+    id: '15MuBpRAGiI',
+    title: '1-Minute Guide: How to Access SEA',
+    category: 'Wellness/EHMP',
+    duration: '1:30',
+    thumbnail: 'https://img.youtube.com/vi/15MuBpRAGiI/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'FULGTSH5knA',
+    title: '100% Fix and Flip Loan',
     category: 'Commercial Lending',
-    duration: '31 min',
-    gradientFrom: 'from-sequoia-900',
-    gradientTo: 'to-sequoia-700',
-    description: 'Common deal-killers in commercial lending and the pre-qualification checklist.',
+    duration: '19:45',
+    thumbnail: 'https://img.youtube.com/vi/FULGTSH5knA/mqdefault.jpg',
     progress: 0,
-    status: 'not-started',
     isNew: false,
-    recommendedFor: ['Active', 'Senior'],
   },
   {
-    id: 8,
-    title: 'EHMP: Objection Handling Masterclass',
-    category: 'Wellness / EHMP',
-    duration: '24 min',
-    gradientFrom: 'from-teal-700',
-    gradientTo: 'to-teal-500',
-    description: 'The 10 most common employer objections and how to handle every one of them.',
-    progress: 0,
-    status: 'not-started',
-    isNew: false,
-    recommendedFor: ['Active', 'Senior'],
-  },
-  {
-    id: 9,
-    title: 'SBA Loans: Eligibility & the Application',
+    id: 'UU0iWIKVJdE',
+    title: 'Gap Funding Explained',
     category: 'Commercial Lending',
-    duration: '33 min',
-    gradientFrom: 'from-indigo-700',
-    gradientTo: 'to-indigo-500',
-    description: 'A practical guide to identifying SBA-eligible clients and preparing a strong file.',
+    duration: '23:10',
+    thumbnail: 'https://img.youtube.com/vi/UU0iWIKVJdE/mqdefault.jpg',
     progress: 0,
-    status: 'not-started',
-    isNew: true,
-    recommendedFor: ['Active', 'Senior'],
-  },
-  // New this week
-  {
-    id: 10,
-    title: 'Clean Energy Financing Explained',
-    category: 'Product Deep Dives',
-    duration: '19 min',
-    gradientFrom: 'from-green-700',
-    gradientTo: 'to-green-500',
-    description: 'Solar, LED retrofits, and PACE financing — clean energy lending opportunities.',
-    progress: 0,
-    status: 'not-started',
-    isNew: true,
+    isNew: false,
   },
   {
-    id: 11,
-    title: 'The Real Estate Product Suite Deep Dive',
-    category: 'Product Deep Dives',
-    duration: '35 min',
-    gradientFrom: 'from-sequoia-800',
-    gradientTo: 'to-sequoia-500',
-    description: 'Fix-and-flip, DSCR, bridge loans, construction — every RE product explained.',
+    id: 'K7vX7QIQfvE',
+    title: 'How to Enroll Clients in EHMP',
+    category: 'Wellness/EHMP',
+    duration: '17:20',
+    thumbnail: 'https://img.youtube.com/vi/K7vX7QIQfvE/mqdefault.jpg',
     progress: 0,
-    status: 'not-started',
-    isNew: true,
+    isNew: false,
   },
   {
-    id: 12,
-    title: 'Joseph Cordeira: The $652K Deal Story',
+    id: '91mLzmXHX0E',
+    title: 'Case Study: The Wellness Program',
+    category: 'Wellness/EHMP',
+    duration: '14:55',
+    thumbnail: 'https://img.youtube.com/vi/91mLzmXHX0E/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'hhMmDcxK45E',
+    title: '$652,000 Deal — Joseph Cordeira',
     category: 'Success Stories',
-    duration: '11 min',
-    gradientFrom: 'from-gold-900',
-    gradientTo: 'to-gold-700',
-    description: 'Joseph shares how he found, qualified, and funded a $652,000 commercial deal.',
+    duration: '8:20',
+    thumbnail: 'https://img.youtube.com/vi/hhMmDcxK45E/mqdefault.jpg',
     progress: 0,
-    status: 'not-started',
-    isNew: true,
+    isNew: false,
+  },
+  {
+    id: 'OnR0ChPOwnc',
+    title: 'EHMP: The Wellness Program Overview',
+    category: 'Wellness/EHMP',
+    duration: '22:15',
+    thumbnail: 'https://img.youtube.com/vi/OnR0ChPOwnc/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'EbdF1guVcWQ',
+    title: 'How to Use TitanFile for File Collection',
+    category: 'Agent Training',
+    duration: '11:40',
+    thumbnail: 'https://img.youtube.com/vi/EbdF1guVcWQ/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'QTtiOX-lDy8',
+    title: 'Top 10 Reasons Commercial Loans Fail',
+    category: 'Commercial Lending',
+    duration: '24:30',
+    thumbnail: 'https://img.youtube.com/vi/QTtiOX-lDy8/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 're_L5_njqWM',
+    title: 'Sequoia Loan Process Made Simple',
+    category: 'Commercial Lending',
+    duration: '16:50',
+    thumbnail: 'https://img.youtube.com/vi/re_L5_njqWM/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
+  },
+  {
+    id: 'YIc43aEYlZU',
+    title: 'Live Interview with Sequoia Agents',
+    category: 'Success Stories',
+    duration: '35:10',
+    thumbnail: 'https://img.youtube.com/vi/YIc43aEYlZU/mqdefault.jpg',
+    progress: 0,
+    isNew: false,
   },
 ]
 
 const CATEGORY_COLORS: Record<VideoCategory, string> = {
   'Agent Training': 'bg-sequoia-100 text-sequoia-800',
   'Commercial Lending': 'bg-blue-50 text-blue-700',
-  'Wellness / EHMP': 'bg-teal-50 text-teal-700',
-  'Product Deep Dives': 'bg-purple-50 text-purple-700',
+  'Wellness/EHMP': 'bg-teal-50 text-teal-700',
   'Success Stories': 'bg-gold-100 text-gold-800',
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const continueWatching = VIDEOS.filter((v) => v.status === 'in-progress')
-const completed = VIDEOS.filter((v) => v.status === 'completed')
-const recommended = VIDEOS.filter((v) => v.status === 'not-started' && v.recommendedFor)
-const newThisWeek = VIDEOS.filter((v) => v.isNew && v.status === 'not-started')
+const continueWatching = ALL_VIDEOS.filter((v) => v.isContinueWatching)
+const recommended = ALL_VIDEOS.filter((v) => v.isRecommended)
+const newThisWeek = ALL_VIDEOS.filter((v) => v.isNew && !v.isContinueWatching)
 
-const completedCount = completed.length
-const totalCount = VIDEOS.length
+const completedCount = 3
+const totalCount = ALL_VIDEOS.length
 
 // ── Video Card ────────────────────────────────────────────────────────────────
 
 function VideoCard({ video }: { video: TrainingVideo }) {
-  const [localStatus, setLocalStatus] = useState<ProgressStatus>(video.status)
-
-  function handleClick() {
-    if (localStatus === 'not-started') setLocalStatus('in-progress')
-  }
-
   return (
-    <div
-      className={`card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer ${
-        localStatus === 'completed' ? 'ring-1 ring-sequoia-300' : ''
-      }`}
-      onClick={handleClick}
+    <a
+      href={`https://www.youtube.com/watch?v=${video.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer"
     >
       {/* Thumbnail */}
-      <div
-        className={`relative h-40 bg-gradient-to-br ${video.gradientFrom} ${video.gradientTo} flex items-center justify-center overflow-hidden`}
-      >
-        {/* Decorative circles */}
-        <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/5" />
-        <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full bg-white/5" />
+      <div className="relative h-40 bg-gray-900 flex items-center justify-center overflow-hidden">
+        <img
+          src={video.thumbnail}
+          alt={video.title}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
 
-        {/* Status overlay */}
-        {localStatus === 'completed' ? (
-          <div className="relative z-10 w-12 h-12 rounded-full bg-sequoia-700/80 border-2 border-sequoia-300 flex items-center justify-center">
-            <CheckCircle2 size={22} className="text-white fill-white/20" />
-          </div>
-        ) : localStatus === 'locked' ? (
-          <div className="relative z-10 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center">
-            <Lock size={18} className="text-white/60" />
-          </div>
-        ) : (
-          <div className="relative z-10 w-12 h-12 rounded-full bg-white/15 border border-white/30 flex items-center justify-center group-hover:bg-white/25 transition-colors duration-200">
-            <Play size={18} className="text-white ml-0.5 fill-white" />
-          </div>
-        )}
+        {/* Play button */}
+        <div className="relative z-10 w-12 h-12 rounded-full bg-black/40 border border-white/30 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-200">
+          <Play size={18} className="text-white ml-0.5 fill-white" />
+        </div>
 
         {/* Duration */}
         <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/40 rounded-full px-2 py-0.5 text-white text-xs font-medium">
@@ -259,28 +329,19 @@ function VideoCard({ video }: { video: TrainingVideo }) {
         </div>
 
         {/* New badge */}
-        {video.isNew && localStatus !== 'completed' && (
+        {video.isNew && (
           <div className="absolute top-2 left-2 bg-gold-500 text-sequoia-950 text-xs font-bold px-2 py-0.5 rounded-full">
             NEW
           </div>
         )}
-
-        {/* Completed checkmark overlay */}
-        {localStatus === 'completed' && (
-          <div className="absolute inset-0 bg-sequoia-900/20" />
-        )}
       </div>
 
       {/* Progress bar */}
-      {(localStatus === 'in-progress' || localStatus === 'completed') && (
+      {video.progress > 0 && (
         <div className="h-1 bg-[var(--neutral-100)]">
           <div
-            className={`h-full transition-all duration-300 ${
-              localStatus === 'completed'
-                ? 'bg-sequoia-500 w-full'
-                : 'bg-gold-500'
-            }`}
-            style={{ width: localStatus === 'completed' ? '100%' : `${video.progress}%` }}
+            className="h-full transition-all duration-300 bg-gold-500"
+            style={{ width: `${video.progress}%` }}
           />
         </div>
       )}
@@ -293,21 +354,15 @@ function VideoCard({ video }: { video: TrainingVideo }) {
           >
             {video.category}
           </span>
-          {localStatus === 'completed' && (
-            <CheckCircle2 size={16} className="text-sequoia-600 shrink-0 mt-0.5" />
-          )}
-          {localStatus === 'in-progress' && (
+          {video.progress > 0 && (
             <span className="text-xs text-gold-700 font-semibold shrink-0">{video.progress}%</span>
           )}
         </div>
         <h3 className="font-bold text-[var(--sequoia-900)] text-sm leading-snug line-clamp-2">
           {video.title}
         </h3>
-        <p className="text-xs text-[var(--neutral-500)] leading-relaxed line-clamp-2 flex-1">
-          {video.description}
-        </p>
       </div>
-    </div>
+    </a>
   )
 }
 
@@ -334,6 +389,76 @@ function Section({
         </div>
       </div>
       {children}
+    </section>
+  )
+}
+
+// ── Full Library with Filters ─────────────────────────────────────────────────
+
+type LibraryFilter = 'All' | VideoCategory
+
+const LIBRARY_FILTERS: LibraryFilter[] = [
+  'All',
+  'Agent Training',
+  'Commercial Lending',
+  'Wellness/EHMP',
+  'Success Stories',
+]
+
+function FullLibrary() {
+  const [filter, setFilter] = useState<LibraryFilter>('All')
+
+  const filtered =
+    filter === 'All'
+      ? ALL_VIDEOS
+      : ALL_VIDEOS.filter((v) => v.category === filter)
+
+  return (
+    <section className="mb-12">
+      <div className="flex items-center gap-3 mb-5">
+        <span className="icon-box-sequoia w-9 h-9"><Filter size={18} /></span>
+        <div>
+          <h2 className="text-lg font-bold text-[var(--sequoia-900)]">Full Library</h2>
+          <p className="text-sm text-[var(--neutral-400)]">{ALL_VIDEOS.length} videos</p>
+        </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="flex flex-wrap gap-2 mb-6" role="tablist" aria-label="Filter training videos">
+        {LIBRARY_FILTERS.map((f) => (
+          <button
+            key={f}
+            role="tab"
+            aria-selected={filter === f}
+            onClick={() => setFilter(f)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-150 cursor-pointer border ${
+              filter === f
+                ? 'bg-sequoia-700 text-white border-sequoia-700'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-sequoia-300 hover:text-sequoia-700'
+            }`}
+          >
+            {f}
+            {f !== 'All' && (
+              <span className="ml-1.5 opacity-60 text-xs">
+                ({ALL_VIDEOS.filter((v) => v.category === f).length})
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {filtered.map((v) => (
+          <VideoCard key={v.id} video={v} />
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-16 text-gray-400">
+          <Video size={40} className="mx-auto mb-3 opacity-40" />
+          <p className="font-medium">No videos in this category yet.</p>
+        </div>
+      )}
     </section>
   )
 }
@@ -410,7 +535,7 @@ export default function TrainingPage() {
           title="Recommended for You"
           subtitle="Based on your Active tier and recent activity"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {recommended.map((v) => (
               <VideoCard key={v.id} video={v} />
             ))}
@@ -430,30 +555,8 @@ export default function TrainingPage() {
           </div>
         </Section>
 
-        {/* ── Completed ─────────────────────────────────────────────── */}
-        <Section
-          icon={<CheckCircle2 size={18} />}
-          title="Completed"
-          subtitle={`${completedCount} videos finished`}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {completed.map((v) => (
-              <VideoCard key={v.id} video={v} />
-            ))}
-          </div>
-        </Section>
-
-        {/* ── Browse All CTA ─────────────────────────────────────────── */}
-        <div className="text-center pt-4 pb-8">
-          <p className="text-[var(--neutral-500)] text-sm mb-4">
-            Showing 12 of 190+ training videos
-          </p>
-          <button className="btn-primary flex items-center gap-2 mx-auto">
-            <BookOpen size={16} />
-            Browse Full Library
-            <ChevronRight size={16} />
-          </button>
-        </div>
+        {/* ── Full Library ─────────────────────────────────────────── */}
+        <FullLibrary />
       </div>
     </div>
   )

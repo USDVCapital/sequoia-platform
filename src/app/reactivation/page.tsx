@@ -161,7 +161,7 @@ export default function ReactivationPage() {
               const Icon = stat.icon
               return (
                 <StaggerItem key={stat.label} direction="up">
-                  <div className="rounded-2xl px-8 py-6 text-center bg-neutral-50 border border-neutral-200">
+                  <div className="rounded-2xl px-4 sm:px-8 py-6 text-center bg-neutral-50 border border-neutral-200">
                     <div className="flex justify-center mb-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700">
                         <Icon className="size-5" />

@@ -267,7 +267,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Earned */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                 {earnedBadges.map((badge) => (
                   <div key={badge.id} className="flex flex-col items-center gap-1.5 group">
                     <div
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                   <p className="text-xs text-[var(--neutral-400)] font-semibold uppercase tracking-wider mb-3">
                     Locked
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {unearnedBadges.map((badge) => (
                       <div key={badge.id} className="flex flex-col items-center gap-1.5 group">
                         <div

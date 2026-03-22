@@ -198,7 +198,7 @@ export default function PipelinePage() {
           </div>
 
           {/* Summary stats */}
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {[
               { label: 'Total Deals', value: '6', sub: 'all time' },
               { label: 'In Review', value: '2', sub: 'pending' },
@@ -207,7 +207,7 @@ export default function PipelinePage() {
               { label: 'Application', value: '1', sub: 'new submission' },
               { label: 'Active EHMP', value: '1', sub: 'wellness' },
             ].map((stat) => (
-              <div key={stat.label} className="glass rounded-xl p-4">
+              <div key={stat.label} className="glass rounded-xl p-3 sm:p-4">
                 <p className="text-sequoia-200 text-xs uppercase tracking-widest mb-1">{stat.label}</p>
                 <p className="text-white text-2xl font-bold">{stat.value}</p>
                 <p className="text-sequoia-300 text-xs mt-0.5">{stat.sub}</p>
@@ -318,7 +318,7 @@ export default function PipelinePage() {
                         {isExpanded && (
                           <tr key={`${deal.id}-details`} className="bg-sequoia-50/50">
                             <td colSpan={6} className="px-5 py-4">
-                              <div className="grid grid-cols-3 gap-6 pl-11">
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pl-11">
                                 <div>
                                   <p className="text-xs text-[var(--neutral-400)] uppercase tracking-wider mb-1">Advisor Assigned</p>
                                   <p className="text-sm font-semibold text-[var(--sequoia-900)]">{deal.advisor}</p>
@@ -367,7 +367,7 @@ export default function PipelinePage() {
                         {status.label}
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
                         <p className="text-[var(--neutral-400)] text-xs">Type</p>
                         <p className="font-medium text-[var(--neutral-700)]">{deal.dealType}</p>
@@ -376,7 +376,7 @@ export default function PipelinePage() {
                         <p className="text-[var(--neutral-400)] text-xs">Amount</p>
                         <p className="font-semibold text-[var(--sequoia-900)]">{deal.amount}</p>
                       </div>
-                      <div>
+                      <div className="col-span-2">
                         <p className="text-[var(--neutral-400)] text-xs">Submitted</p>
                         <p className="font-medium text-[var(--neutral-700)]">{formatDate(deal.dateSubmitted)}</p>
                       </div>
