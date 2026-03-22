@@ -108,6 +108,7 @@ export default function Footer() {
                 alt="Sequoia Enterprise Solutions"
                 width={144}
                 height={36}
+                loading="lazy"
                 style={{ height: '36px', width: 'auto' }}
               />
             </Link>

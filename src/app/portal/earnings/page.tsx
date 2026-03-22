@@ -142,7 +142,8 @@ export default function EarningsPage() {
           </h3>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-neutral-100 bg-brand-neutral-50/50">
@@ -177,6 +178,35 @@ export default function EarningsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card list */}
+        <div className="md:hidden divide-y divide-brand-neutral-100">
+          {earningsData.map((row, i) => (
+            <div key={i} className="p-4 space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-brand-neutral-800 leading-snug">{row.dealSource}</p>
+                  <p className="text-xs text-brand-neutral-500 mt-0.5">{row.type}</p>
+                </div>
+                <p className="text-base font-bold text-sequoia-900 shrink-0">{row.amount}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-brand-neutral-400">{row.date}</span>
+                {row.status === 'Paid' ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                    <CheckCircle2 size={12} aria-hidden="true" />
+                    Paid
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200">
+                    <Clock size={12} aria-hidden="true" />
+                    Pending
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

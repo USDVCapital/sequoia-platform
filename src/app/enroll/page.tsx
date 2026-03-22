@@ -20,6 +20,7 @@ import {
 import HeroVideo from '@/components/HeroVideo'
 import SectionHeading from '@/components/ui/SectionHeading'
 import FadeIn from '@/components/motion/FadeIn'
+import { submitEnrollment } from '@/lib/supabase/actions'
 
 // ─── Zod Schema ─────────────────────────────────────────────────────────────────
 
@@ -83,7 +84,14 @@ export default function EnrollPage() {
     },
   })
 
-  function onSubmit() {
+  async function onSubmit(data: EnrollFormData) {
+    await submitEnrollment({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      background: data.background,
+    })
     setSubmitted(true)
   }
 
@@ -122,7 +130,7 @@ export default function EnrollPage() {
                     Consultant Membership
                   </p>
                   <div className="flex items-end justify-center gap-1">
-                    <span className="text-5xl font-black text-white">$29</span>
+                    <span className="text-4xl sm:text-5xl font-black text-white">$29</span>
                     <span className="text-xl font-bold text-white/70 mb-1">.99</span>
                     <span className="text-white/70 mb-1">/month</span>
                   </div>
@@ -319,11 +327,11 @@ export default function EnrollPage() {
                           />
                           <span className="text-sm text-gray-600 leading-relaxed">
                             I agree to the{' '}
-                            <a href="#terms" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                            <a href="/terms" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
                               Terms of Service
                             </a>{' '}
                             and{' '}
-                            <a href="#privacy" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
+                            <a href="/privacy" className="font-semibold text-sequoia-700 hover:text-sequoia-800 underline underline-offset-2">
                               Privacy Policy
                             </a>
                             . <span className="text-red-500">*</span>

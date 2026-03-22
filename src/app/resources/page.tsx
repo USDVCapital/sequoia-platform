@@ -25,17 +25,16 @@ import TrainingCountdown from '@/components/ui/TrainingCountdown'
 type FilterKey =
   | 'All'
   | 'Agent Training'
-  | 'Product Deep Dives'
   | 'Success Stories'
-  | 'Wellness / EHMP'
+  | 'Wellness/EHMP'
+  | 'Commercial Lending'
 
 interface VideoCard {
-  id: number
+  id: string
   title: string
   category: FilterKey
   duration: string
-  color: string
-  description: string
+  thumbnail: string
 }
 
 // ── Data ─────────────────────────────────────────────────────────────────────
@@ -43,107 +42,95 @@ interface VideoCard {
 const FILTERS: FilterKey[] = [
   'All',
   'Agent Training',
-  'Product Deep Dives',
   'Success Stories',
-  'Wellness / EHMP',
+  'Wellness/EHMP',
+  'Commercial Lending',
 ]
 
 const VIDEOS: VideoCard[] = [
   {
-    id: 1,
-    title: 'Your First 30 Days at Sequoia',
+    id: 'Rv8JeFqpOlI',
+    title: '2025 Year in Review & 2026 Vision',
     category: 'Agent Training',
+    duration: '58:30',
+    thumbnail: 'https://img.youtube.com/vi/Rv8JeFqpOlI/mqdefault.jpg',
+  },
+  {
+    id: 'QJYI8H_0oSQ',
+    title: 'How Emily Closed $500K+ in Commercial Loans',
+    category: 'Success Stories',
     duration: '12:45',
-    color: 'from-sequoia-800 to-sequoia-600',
-    description: 'Step-by-step onboarding roadmap: tools, first calls, first commissions.',
+    thumbnail: 'https://img.youtube.com/vi/QJYI8H_0oSQ/mqdefault.jpg',
   },
   {
-    id: 2,
-    title: 'How to Present EHMP to Employers',
-    category: 'Wellness / EHMP',
-    duration: '18:30',
-    color: 'from-emerald-700 to-emerald-500',
-    description: 'The complete framework for introducing the EHMP wellness benefit to employer prospects.',
-  },
-  {
-    id: 3,
-    title: 'Fix & Flip Loan Criteria Explained',
-    category: 'Product Deep Dives',
-    duration: '15:20',
-    color: 'from-sequoia-900 to-sequoia-700',
-    description: 'Eligibility, LTV limits, draw schedules, and how to set expectations with investor clients.',
-  },
-  {
-    id: 4,
-    title: 'SBA Loans: Eligibility & Application',
-    category: 'Product Deep Dives',
-    duration: '22:10',
-    color: 'from-indigo-700 to-indigo-500',
-    description: 'A practical guide to identifying SBA-eligible clients and preparing a strong file.',
-  },
-  {
-    id: 5,
-    title: "Joseph's $652K First Deal",
+    id: 'hhMmDcxK45E',
+    title: '$652,000 Deal Closed — Joseph Cordeira',
     category: 'Success Stories',
-    duration: '8:45',
-    color: 'from-gold-900 to-gold-700',
-    description: 'Joseph shares how he found, qualified, and funded a $652,000 commercial deal.',
+    duration: '8:20',
+    thumbnail: 'https://img.youtube.com/vi/hhMmDcxK45E/mqdefault.jpg',
   },
   {
-    id: 6,
-    title: "Emily's Path to $500K in 6 Months",
+    id: 'YIc43aEYlZU',
+    title: 'Live Interview with Sequoia Agents',
     category: 'Success Stories',
-    duration: '11:30',
-    color: 'from-gold-800 to-gold-600',
-    description: "How Emily closed $500K+ in commercial volume in her first six months as a Sequoia consultant.",
+    duration: '35:10',
+    thumbnail: 'https://img.youtube.com/vi/YIc43aEYlZU/mqdefault.jpg',
   },
   {
-    id: 7,
-    title: 'DSCR Rental Loans Made Simple',
-    category: 'Product Deep Dives',
-    duration: '14:15',
-    color: 'from-sequoia-800 to-sequoia-500',
-    description: 'Everything you need to know about DSCR rental loans — qualification, ratios, and pricing.',
+    id: 'OnR0ChPOwnc',
+    title: 'EHMP: The Wellness Program Overview',
+    category: 'Wellness/EHMP',
+    duration: '22:15',
+    thumbnail: 'https://img.youtube.com/vi/OnR0ChPOwnc/mqdefault.jpg',
   },
   {
-    id: 8,
-    title: 'Building Your EHMP Pipeline',
-    category: 'Wellness / EHMP',
-    duration: '16:40',
-    color: 'from-teal-700 to-teal-500',
-    description: 'Strategies for building a consistent pipeline of employer wellness prospects.',
+    id: 'QTZFGrV1zW0',
+    title: 'Wellness Program (EHMP) Case Studies',
+    category: 'Wellness/EHMP',
+    duration: '18:40',
+    thumbnail: 'https://img.youtube.com/vi/QTZFGrV1zW0/mqdefault.jpg',
   },
   {
-    id: 9,
-    title: 'Commercial Real Estate 101',
-    category: 'Agent Training',
-    duration: '20:05',
-    color: 'from-blue-700 to-blue-500',
-    description: 'A comprehensive introduction to commercial real estate financing for new consultants.',
+    id: 'QqbhPDwSUe4',
+    title: 'Wellness Program Process Explained',
+    category: 'Wellness/EHMP',
+    duration: '25:00',
+    thumbnail: 'https://img.youtube.com/vi/QqbhPDwSUe4/mqdefault.jpg',
   },
   {
-    id: 10,
-    title: 'The Wellness Program Tax Savings',
-    category: 'Wellness / EHMP',
-    duration: '13:20',
-    color: 'from-green-700 to-green-500',
-    description: 'How EHMP saves employers $500-$800 per employee per year through IRS-compliant wellness benefits.',
+    id: 'YwBu61B50JY',
+    title: 'DSCR Loans Made Simple: The Investor Loan You Should Know',
+    category: 'Commercial Lending',
+    duration: '28:15',
+    thumbnail: 'https://img.youtube.com/vi/YwBu61B50JY/mqdefault.jpg',
   },
   {
-    id: 11,
-    title: 'Weekly Training Recap: March 2026',
-    category: 'Agent Training',
-    duration: '45:00',
-    color: 'from-sequoia-700 to-sequoia-500',
-    description: 'Full recording of the latest weekly training session covering new products and strategies.',
+    id: '93SSkY3KunA',
+    title: 'SBA Loans Explained: How SBA Lending Works',
+    category: 'Commercial Lending',
+    duration: '32:10',
+    thumbnail: 'https://img.youtube.com/vi/93SSkY3KunA/mqdefault.jpg',
   },
   {
-    id: 12,
-    title: 'How to Use the CEA AI Assistant',
-    category: 'Agent Training',
-    duration: '7:30',
-    color: 'from-gold-700 to-gold-500',
-    description: 'A quick tutorial on using the Sequoia AI assistant to qualify leads and answer client questions.',
+    id: 'FULGTSH5knA',
+    title: '100% Fix and Flip Loan',
+    category: 'Commercial Lending',
+    duration: '19:45',
+    thumbnail: 'https://img.youtube.com/vi/FULGTSH5knA/mqdefault.jpg',
+  },
+  {
+    id: 'QTtiOX-lDy8',
+    title: 'Top 10 Reasons Commercial Loans Fail to Close',
+    category: 'Commercial Lending',
+    duration: '24:30',
+    thumbnail: 'https://img.youtube.com/vi/QTtiOX-lDy8/mqdefault.jpg',
+  },
+  {
+    id: 're_L5_njqWM',
+    title: 'Sequoia Loan Process Made Simple',
+    category: 'Commercial Lending',
+    duration: '16:50',
+    thumbnail: 'https://img.youtube.com/vi/re_L5_njqWM/mqdefault.jpg',
   },
 ]
 
@@ -183,9 +170,9 @@ const QUICK_START = [
 const categoryBadgeVariant: Record<FilterKey, 'success' | 'warning' | 'info' | 'neutral'> = {
   'All': 'neutral',
   'Agent Training': 'success',
-  'Product Deep Dives': 'info',
   'Success Stories': 'warning',
-  'Wellness / EHMP': 'info',
+  'Wellness/EHMP': 'info',
+  'Commercial Lending': 'info',
 }
 
 // ── Countdown hook ───────────────────────────────────────────────────────────
@@ -258,18 +245,18 @@ export default function ResourcesPage() {
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
               Your Training Library
             </h1>
-            <p className="text-white/80 text-xl max-w-2xl mx-auto">
+            <p className="text-white/80 text-lg sm:text-xl max-w-2xl mx-auto">
               190+ videos, guides, and resources to help you succeed as a Sequoia consultant.
             </p>
 
             {/* Live training countdown */}
-            <div className="mt-10 inline-flex items-center gap-3 glass rounded-full px-5 py-3">
+            <div className="mt-10 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 glass rounded-2xl sm:rounded-full px-4 sm:px-5 py-3">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gold-400" />
               </span>
               <Wifi size={16} className="text-white/70" />
-              <span className="text-white font-semibold text-sm">
+              <span className="text-white font-semibold text-xs sm:text-sm">
                 Next Live Training: Wednesday 8 PM ET
               </span>
               {countdown && (
@@ -465,17 +452,23 @@ export default function ResourcesPage() {
 
 function VideoCard({ video }: { video: VideoCard }) {
   return (
-    <div className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer">
+    <a
+      href={`https://www.youtube.com/watch?v=${video.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer"
+    >
       {/* Thumbnail */}
-      <div
-        className={`relative h-44 bg-gradient-to-br ${video.color} flex items-center justify-center overflow-hidden`}
-      >
-        {/* Decorative circle */}
-        <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/5" />
-        <div className="absolute -top-4 -left-4 w-16 h-16 rounded-full bg-white/5" />
+      <div className="relative h-44 bg-gray-900 flex items-center justify-center overflow-hidden">
+        <img
+          src={video.thumbnail}
+          alt={video.title}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
 
-        {/* Play button */}
-        <div className="relative z-10 w-14 h-14 rounded-full bg-white/15 border border-white/30 flex items-center justify-center group-hover:bg-white/25 transition-colors duration-200">
+        {/* Play button overlay */}
+        <div className="relative z-10 w-14 h-14 rounded-full bg-black/40 border border-white/30 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-200">
           <Play size={20} className="text-white ml-0.5 fill-white" />
         </div>
 
@@ -494,10 +487,7 @@ function VideoCard({ video }: { video: VideoCard }) {
         <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">
           {video.title}
         </h3>
-        <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 flex-1">
-          {video.description}
-        </p>
       </div>
-    </div>
+    </a>
   )
 }

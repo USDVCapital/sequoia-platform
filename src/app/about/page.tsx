@@ -171,7 +171,7 @@ export default function AboutPage() {
                 ].map(({ value, label }) => (
                   <div
                     key={label}
-                    className="card-sequoia flex flex-col items-center justify-center p-8 text-center"
+                    className="card-sequoia flex flex-col items-center justify-center p-4 sm:p-8 text-center"
                   >
                     <p className="stat-number">{value}</p>
                     <p className="stat-label mt-2">{label}</p>
@@ -262,6 +262,7 @@ export default function AboutPage() {
                         src="/Allen Wu Headshot.png"
                         alt="Allen Wu — CEO, Sequoia Enterprise Solutions"
                         fill
+                        loading="lazy"
                         className="object-cover object-top"
                         sizes="(max-width: 1024px) 100vw, 40vw"
                       />
@@ -382,6 +383,7 @@ export default function AboutPage() {
                       alt={`${name} logo`}
                       width={80}
                       height={48}
+                      loading="lazy"
                       className="object-contain max-h-12"
                     />
                   </div>
@@ -404,6 +406,7 @@ export default function AboutPage() {
                     alt="BBB Accredited Business logo"
                     width={80}
                     height={56}
+                    loading="lazy"
                     className="object-contain"
                   />
                 </div>
