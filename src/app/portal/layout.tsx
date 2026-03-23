@@ -223,7 +223,6 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
   const handleLogout = async () => {
     await logout()
-    router.push('/login')
   }
 
   // Show loading state while checking auth

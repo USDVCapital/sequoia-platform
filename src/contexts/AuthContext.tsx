@@ -150,9 +150,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    // Sign out client-side first
     await supabase.auth.signOut()
     setUser(null)
     setSession(null)
+    // Hit server-side logout route to clear cookies, then hard redirect
+    window.location.href = '/auth/logout'
   }
 
   return (
