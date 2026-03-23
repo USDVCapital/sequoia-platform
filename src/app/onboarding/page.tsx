@@ -178,19 +178,29 @@ export default function OnboardingPage() {
 
   const handleEnterPortal = async () => {
     setSaving(true)
+    // Try server action first
     try {
       await markStepDone(6)
       await completeOnboarding(consultantId)
     } catch (err) {
-      console.error('[Onboarding] Completion save error (non-blocking):', err)
+      console.error('[Onboarding] Server action failed, trying client-side:', err)
     }
-    // Always redirect to portal, even if save failed
+    // Also set it client-side as a fallback in case RLS blocks the server action
+    try {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      await supabase
+        .from('consultants')
+        .update({ onboarding_completed: true, onboarding_completed_at: new Date().toISOString() })
+        .eq('id', consultantId)
+    } catch {
+      // Non-blocking
+    }
     try {
       await refreshUser()
     } catch {
       // Non-blocking
     }
-    // Hard redirect to ensure we leave onboarding
     window.location.href = '/portal'
   }
 
