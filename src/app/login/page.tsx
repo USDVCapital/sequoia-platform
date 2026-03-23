@@ -1,49 +1,71 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Suspense, useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { Eye, EyeOff, ArrowRight } from "lucide-react"
 import HeroVideo from '@/components/HeroVideo'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { isLoggedIn, login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-sequoia-200 border-t-sequoia-700" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
+  )
+}
+
+function LoginContent() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { isLoggedIn, isLoading, login } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
   const [form, setForm] = useState({
     email: "",
     password: "",
-  });
+  })
+
+  const redirectTo = searchParams.get('redirect') || '/portal'
 
   useEffect(() => {
-    document.title = 'Consultant Login — Sequoia Enterprise Solutions';
-  }, []);
+    document.title = 'Consultant Login — Sequoia Enterprise Solutions'
+  }, [])
 
   useEffect(() => {
-    if (isLoggedIn) {
-      router.push("/portal");
+    if (!isLoading && isLoggedIn) {
+      router.push(redirectTo)
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, isLoading, router, redirectTo])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
 
     if (!form.email || !form.password) {
-      setError("Please fill in all fields.");
-      return;
+      setError("Please fill in all fields.")
+      return
     }
 
-    setIsLoading(true);
-    login(form.email);
-    setTimeout(() => {
-      router.push("/portal");
-    }, 800);
-  };
+    setIsSubmitting(true)
+    const result = await login(form.email, form.password)
+
+    if (result.error) {
+      setError(result.error === 'Invalid login credentials'
+        ? 'Invalid email or password. Please try again.'
+        : result.error
+      )
+      setIsSubmitting(false)
+    } else {
+      router.push(redirectTo)
+    }
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -187,11 +209,11 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full py-3 px-6 rounded-xl bg-black hover:bg-neutral-800 font-semibold transition flex items-center justify-center gap-2 disabled:opacity-60"
               style={{ color: "#FFFFFF" }}
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
@@ -222,12 +244,8 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-
-          <p className="mt-12 text-xs text-neutral-400 text-center">
-            Demo mode: Enter any email and password to explore the portal.
-          </p>
         </div>
       </div>
     </div>
-  );
+  )
 }

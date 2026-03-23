@@ -7,37 +7,34 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
+  Users,
   FileText,
   DollarSign,
-  GraduationCap,
-  Trophy,
-  MessageSquare,
-  User,
-  Bot,
-  FolderOpen,
-  Bell,
+  Heart,
+  ClipboardCheck,
+  Inbox,
+  Film,
+  BarChart3,
   Menu,
   X,
   LogOut,
   ChevronRight,
-  Shield,
+  ArrowLeftRight,
 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Nav config
 // ---------------------------------------------------------------------------
 
-const navItems = [
-  { label: 'Dashboard',      href: '/portal',                icon: LayoutDashboard },
-  { label: 'My Pipeline',    href: '/portal/pipeline',       icon: FileText        },
-  { label: 'Earnings',       href: '/portal/earnings',       icon: DollarSign      },
-  { label: 'Training',       href: '/portal/training',       icon: GraduationCap   },
-  { label: 'Leaderboard',    href: '/portal/leaderboard',    icon: Trophy          },
-  { label: 'Community',      href: '/portal/community',      icon: MessageSquare   },
-  { label: 'Materials',      href: '/portal/materials',      icon: FolderOpen      },
-  { label: 'CEA AI',         href: '/portal/ai',             icon: Bot             },
-  { label: 'Notifications',  href: '/portal/notifications',  icon: Bell            },
-  { label: 'My Profile',     href: '/portal/profile',        icon: User            },
+const adminNavItems = [
+  { label: 'Dashboard',    href: '/admin',              icon: LayoutDashboard },
+  { label: 'Consultants',  href: '/admin/consultants',  icon: Users           },
+  { label: 'Deals',        href: '/admin/deals',        icon: FileText        },
+  { label: 'Enrollments',  href: '/admin/enrollments',  icon: Heart           },
+  { label: 'Commissions',  href: '/admin/commissions',  icon: DollarSign      },
+  { label: 'Submissions',  href: '/admin/submissions',  icon: Inbox           },
+  { label: 'Content',      href: '/admin/content',      icon: Film            },
+  { label: 'Analytics',    href: '/admin/analytics',    icon: BarChart3       },
 ]
 
 // ---------------------------------------------------------------------------
@@ -45,40 +42,39 @@ const navItems = [
 // ---------------------------------------------------------------------------
 
 function getPageTitle(pathname: string): string {
-  const segment = pathname.split('/').filter(Boolean).pop() ?? ''
+  const segment = pathname.split('/').filter(Boolean)
+  // /admin/consultants/[id] -> "Consultant Detail"
+  if (segment.length >= 3 && segment[1] === 'consultants') return 'Consultant Detail'
+  const last = segment.pop() ?? 'admin'
   const map: Record<string, string> = {
-    portal:        'Dashboard',
-    pipeline:      'My Pipeline',
-    earnings:      'Earnings',
-    training:      'Training',
-    leaderboard:   'Leaderboard',
-    community:     'Community',
-    materials:     'Marketing Materials',
-    profile:       'My Profile',
-    ai:            'CEA AI',
-    notifications: 'Notifications',
+    admin:        'Dashboard',
+    consultants:  'Consultants',
+    deals:        'Deals',
+    enrollments:  'Enrollments',
+    commissions:  'Commissions',
+    submissions:  'Submissions',
+    content:      'Content',
+    analytics:    'Analytics',
   }
-  return map[segment] ?? 'Dashboard'
+  return map[last] ?? 'Admin'
 }
 
 // ---------------------------------------------------------------------------
-// Sidebar
+// Admin Sidebar
 // ---------------------------------------------------------------------------
 
 interface SidebarProps {
   pathname: string
   userName: string
   userInitials: string
-  userId: string
-  isAdmin: boolean
   onClose?: () => void
   onLogout: () => void
 }
 
-function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, onLogout }: SidebarProps) {
+function AdminSidebar({ pathname, userName, userInitials, onClose, onLogout }: SidebarProps) {
   return (
     <aside className="flex flex-col h-full w-64 bg-sequoia-900 text-white">
-      {/* Logo */}
+      {/* Logo & Branding */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-sequoia-800/60">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sequoia-700/50 shrink-0">
           <Image
@@ -93,11 +89,10 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
           <span className="block text-base font-extrabold tracking-tight text-white">
             SEQUOIA
           </span>
-          <span className="block text-[0.6rem] font-medium uppercase tracking-widest text-sequoia-400">
-            Consultant Portal
+          <span className="block text-[0.6rem] font-medium uppercase tracking-widest" style={{ color: '#C8A84E' }}>
+            Admin Panel
           </span>
         </div>
-        {/* Mobile close button */}
         {onClose && (
           <button
             type="button"
@@ -111,11 +106,11 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5" aria-label="Portal navigation">
-        {navItems.map(({ label, href, icon: Icon }) => {
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5" aria-label="Admin navigation">
+        {adminNavItems.map(({ label, href, icon: Icon }) => {
           const isActive =
-            href === '/portal'
-              ? pathname === '/portal' || pathname === '/portal/'
+            href === '/admin'
+              ? pathname === '/admin' || pathname === '/admin/'
               : pathname.startsWith(href)
 
           return (
@@ -145,20 +140,16 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
           )
         })}
 
-        {/* Admin link (only for admin users) */}
-        {isAdmin && (
-          <>
-            <div className="my-3 border-t border-sequoia-800/60" />
-            <Link
-              href="/admin"
-              onClick={onClose}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gold-400 hover:bg-sequoia-800 hover:text-gold-300 transition-all duration-150 group"
-            >
-              <Shield className="h-4.5 w-4.5 shrink-0 text-gold-500 group-hover:text-gold-400" size={18} aria-hidden="true" />
-              Admin Panel
-            </Link>
-          </>
-        )}
+        {/* Switch to Portal */}
+        <div className="my-3 border-t border-sequoia-800/60" />
+        <Link
+          href="/portal"
+          onClick={onClose}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gold-400 hover:bg-sequoia-800 hover:text-gold-300 transition-all duration-150 group"
+        >
+          <ArrowLeftRight className="h-4.5 w-4.5 shrink-0 text-gold-500 group-hover:text-gold-400" size={18} aria-hidden="true" />
+          Switch to Portal
+        </Link>
       </nav>
 
       {/* User footer */}
@@ -169,7 +160,7 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{userName}</p>
-            <p className="text-xs text-sequoia-400 truncate">ID: {userId}</p>
+            <p className="text-xs text-sequoia-400 truncate">Administrator</p>
           </div>
         </div>
         <button
@@ -186,10 +177,10 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
 }
 
 // ---------------------------------------------------------------------------
-// Portal Layout
+// Admin Layout
 // ---------------------------------------------------------------------------
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { isLoggedIn, isLoading, user, logout } = useAuth()
@@ -203,10 +194,10 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
     }
   }, [isLoading, isLoggedIn, pathname, router])
 
-  // Redirect to onboarding if not completed
+  // Role guard: redirect non-admins to portal
   useEffect(() => {
-    if (!isLoading && isLoggedIn && user && !user.onboardingCompleted) {
-      router.replace('/onboarding')
+    if (!isLoading && isLoggedIn && user && user.role !== 'admin') {
+      router.replace('/portal')
     }
   }, [isLoading, isLoggedIn, user, router])
 
@@ -227,7 +218,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }
 
   // Show loading state while checking auth
-  if (isLoading || !isLoggedIn || !user) {
+  if (isLoading || !isLoggedIn || !user || user.role !== 'admin') {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
         <div className="flex flex-col items-center gap-3">
@@ -240,20 +231,17 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-neutral-50">
-
-      {/* ── Desktop sidebar (always visible >= lg) ── */}
+      {/* Desktop sidebar */}
       <div className="hidden lg:flex lg:shrink-0">
-        <Sidebar
+        <AdminSidebar
           pathname={pathname}
           userName={user.name}
           userInitials={user.initials}
-          userId={user.consultantId}
-          isAdmin={user.role === 'admin'}
           onLogout={handleLogout}
         />
       </div>
 
-      {/* ── Mobile sidebar overlay ── */}
+      {/* Mobile sidebar overlay */}
       {mobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -262,31 +250,27 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         />
       )}
 
-      {/* ── Mobile sidebar drawer ── */}
+      {/* Mobile sidebar drawer */}
       <div
         className={`fixed inset-y-0 left-0 z-50 flex lg:hidden transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        aria-label="Mobile portal navigation"
+        aria-label="Mobile admin navigation"
       >
-        <Sidebar
+        <AdminSidebar
           pathname={pathname}
           userName={user.name}
           userInitials={user.initials}
-          userId={user.consultantId}
-          isAdmin={user.role === 'admin'}
           onClose={() => setMobileOpen(false)}
           onLogout={handleLogout}
         />
       </div>
 
-      {/* ── Main content area ── */}
+      {/* Main content area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-
         {/* Top bar */}
         <header className="shrink-0 flex items-center justify-between h-16 px-4 sm:px-6 bg-white border-b border-brand-neutral-200 shadow-sm">
           <div className="flex items-center gap-3">
-            {/* Mobile hamburger */}
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
@@ -296,26 +280,12 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
             </button>
-            {/* Page title */}
             <h1 className="text-lg font-bold text-sequoia-900 tracking-tight">
               {pageTitle}
             </h1>
           </div>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Notification bell */}
-            <Link
-              href="/portal/notifications"
-              className="relative p-2 rounded-lg text-brand-neutral-500 hover:bg-brand-neutral-100 hover:text-brand-neutral-700 transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" aria-hidden="true" />
-              {/* Unread badge */}
-              <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-600" />
-              </span>
-            </Link>
+          <div className="flex items-center gap-2">
+            <span className="badge-gold text-xs">Admin</span>
           </div>
         </header>
 

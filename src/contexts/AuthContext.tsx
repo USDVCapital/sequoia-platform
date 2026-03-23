@@ -1,56 +1,180 @@
-'use client';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+'use client'
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  user: { name: string; email: string; id: string; tier: string; initials: string } | null;
-  login: (email: string) => void;
-  logout: () => void;
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import type { Consultant, ConsultantRole } from '@/lib/supabase/types'
+import type { User, Session } from '@supabase/supabase-js'
+
+interface AuthUser {
+  id: string
+  email: string
+  name: string
+  initials: string
+  consultantId: string
+  tier: string
+  role: ConsultantRole
+  avatarUrl: string | null
+  avatarColor: string | null
+  onboardingCompleted: boolean
+  consultant: Consultant | null
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType {
+  isLoggedIn: boolean
+  isLoading: boolean
+  user: AuthUser | null
+  session: Session | null
+  login: (email: string, password: string) => Promise<{ error?: string }>
+  signup: (email: string, password: string, fullName: string) => Promise<{ error?: string }>
+  logout: () => Promise<void>
+  refreshUser: () => Promise<void>
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+function formatTier(tier: string): string {
+  return tier
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+function buildAuthUser(supabaseUser: User, consultant: Consultant | null): AuthUser {
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email ?? '',
+    name: consultant?.full_name ?? supabaseUser.email?.split('@')[0] ?? 'User',
+    initials: consultant ? getInitials(consultant.full_name) : 'U',
+    consultantId: consultant?.consultant_id ?? '',
+    tier: consultant ? formatTier(consultant.tier) : 'Associate',
+    role: consultant?.role ?? 'consultant',
+    avatarUrl: consultant?.avatar_url ?? null,
+    avatarColor: consultant?.avatar_color ?? null,
+    onboardingCompleted: consultant?.onboarding_completed ?? false,
+    consultant,
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<AuthContextType['user']>(null);
+  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
 
-  useEffect(() => {
-    const stored = localStorage.getItem('seq_auth');
-    if (stored) {
-      const data = JSON.parse(stored);
-      setIsLoggedIn(true);
-      setUser(data);
+  const supabase = createClient()
+
+  const fetchConsultant = useCallback(async (authUserId: string): Promise<Consultant | null> => {
+    const { data } = await supabase
+      .from('consultants')
+      .select('*')
+      .eq('auth_user_id', authUserId)
+      .single()
+    return data
+  }, [supabase])
+
+  const refreshUser = useCallback(async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession()
+    if (currentSession?.user) {
+      const consultant = await fetchConsultant(currentSession.user.id)
+      setUser(buildAuthUser(currentSession.user, consultant))
+      setSession(currentSession)
     }
-  }, []);
+  }, [supabase, fetchConsultant])
 
-  const login = (email: string) => {
-    const userData = {
-      name: 'Todd Billings',
+  // Initialize auth state
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession()
+        if (initialSession?.user) {
+          const consultant = await fetchConsultant(initialSession.user.id)
+          setUser(buildAuthUser(initialSession.user, consultant))
+          setSession(initialSession)
+        }
+      } catch (err) {
+        console.error('[Sequoia] Auth init error:', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    initAuth()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (event === 'SIGNED_IN' && newSession?.user) {
+        const consultant = await fetchConsultant(newSession.user.id)
+        setUser(buildAuthUser(newSession.user, consultant))
+        setSession(newSession)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setSession(null)
+      } else if (event === 'TOKEN_REFRESHED' && newSession?.user) {
+        setSession(newSession)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [supabase, fetchConsultant])
+
+  const login = async (email: string, password: string): Promise<{ error?: string }> => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      return { error: error.message }
+    }
+    return {}
+  }
+
+  const signup = async (email: string, password: string, fullName: string): Promise<{ error?: string }> => {
+    const { error } = await supabase.auth.signUp({
       email,
-      id: '222902',
-      tier: 'Active Consultant',
-      initials: 'TB',
-    };
-    localStorage.setItem('seq_auth', JSON.stringify(userData));
-    setIsLoggedIn(true);
-    setUser(userData);
-  };
+      password,
+      options: {
+        data: { full_name: fullName },
+      },
+    })
+    if (error) {
+      return { error: error.message }
+    }
+    return {}
+  }
 
-  const logout = () => {
-    localStorage.removeItem('seq_auth');
-    setIsLoggedIn(false);
-    setUser(null);
-  };
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    setSession(null)
+  }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: !!user,
+        isLoading,
+        user,
+        session,
+        login,
+        signup,
+        logout,
+        refreshUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
-  );
+  )
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  return ctx
 }

@@ -9,9 +9,11 @@ import ScrollToTop from '@/components/motion/ScrollToTop'
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isPortal = pathname.startsWith('/portal')
+  const isAdmin = pathname.startsWith('/admin')
+  const isOnboarding = pathname.startsWith('/onboarding')
 
-  if (isPortal) {
-    // Portal pages have their own layout (sidebar + header) — no navbar/footer
+  if (isPortal || isAdmin || isOnboarding) {
+    // Portal, admin, and onboarding pages have their own layouts — no navbar/footer
     return <>{children}</>
   }
 
