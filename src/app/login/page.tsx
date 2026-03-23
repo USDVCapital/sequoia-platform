@@ -54,16 +54,23 @@ function LoginContent() {
     }
 
     setIsSubmitting(true)
-    const result = await login(form.email, form.password)
+    try {
+      const result = await login(form.email, form.password)
 
-    if (result.error) {
-      setError(result.error === 'Invalid login credentials'
-        ? 'Invalid email or password. Please try again.'
-        : result.error
-      )
+      if (result.error) {
+        setError(result.error === 'Invalid login credentials'
+          ? 'Invalid email or password. Please try again.'
+          : result.error
+        )
+        setIsSubmitting(false)
+      } else {
+        // Successful login — redirect via hard navigation to ensure clean state
+        window.location.href = redirectTo
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
       setIsSubmitting(false)
-    } else {
-      router.push(redirectTo)
+      console.error('[Sequoia] Login error:', err)
     }
   }
 
