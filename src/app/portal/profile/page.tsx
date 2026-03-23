@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   User,
   Mail,
@@ -45,15 +46,7 @@ interface Badge {
   earnedDate?: string
 }
 
-// ── Mock Data ─────────────────────────────────────────────────────────────────
-
-const INITIAL_FORM: ProfileForm = {
-  name: 'Todd Billings',
-  email: 'todd.billings@example.com',
-  phone: '(555) 214-8830',
-  bio: 'Commercial lending consultant with a background in financial services. Passionate about helping small business owners and real estate investors access the capital they need to grow.',
-  background: 'Former branch manager at a regional bank. Transitioned to Sequoia after 8 years in traditional banking to provide clients with more flexible financing options.',
-}
+// ── Badge definitions (static) ──────────────────────────────────────────────
 
 const BADGES: Badge[] = [
   {
@@ -111,46 +104,39 @@ const BADGES: Badge[] = [
 ]
 
 const STATS = [
-  {
-    label: 'Total Funded Volume',
-    value: '$4,250,000',
-    icon: <DollarSign size={20} />,
-    color: 'text-sequoia-700',
-    bg: 'bg-sequoia-50',
-  },
-  {
-    label: 'Wellness Enrollees',
-    value: '88',
-    icon: <Users size={20} />,
-    color: 'text-teal-700',
-    bg: 'bg-teal-50',
-  },
-  {
-    label: 'Active Since',
-    value: 'Nov 2025',
-    icon: <Calendar size={20} />,
-    color: 'text-gold-700',
-    bg: 'bg-gold-50',
-  },
-  {
-    label: 'Deals Funded',
-    value: '14',
-    icon: <CheckCircle2 size={20} />,
-    color: 'text-blue-700',
-    bg: 'bg-blue-50',
-  },
+  { label: 'Total Funded Volume', value: '$4,250,000', icon: <DollarSign size={20} />, color: 'text-sequoia-700', bg: 'bg-sequoia-50' },
+  { label: 'Wellness Enrollees', value: '88', icon: <Users size={20} />, color: 'text-teal-700', bg: 'bg-teal-50' },
+  { label: 'Active Since', value: 'Nov 2025', icon: <Calendar size={20} />, color: 'text-gold-700', bg: 'bg-gold-50' },
+  { label: 'Deals Funded', value: '14', icon: <CheckCircle2 size={20} />, color: 'text-blue-700', bg: 'bg-blue-50' },
 ]
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const [form, setForm] = useState<ProfileForm>(INITIAL_FORM)
+  const { user } = useAuth()
+
+  // Initialize form from auth context (real data) with fallbacks
+  const [form, setForm] = useState<ProfileForm>({
+    name: user?.consultant?.full_name ?? user?.name ?? 'Consultant',
+    email: user?.consultant?.email ?? user?.email ?? '',
+    phone: user?.consultant?.phone ?? '',
+    bio: user?.consultant?.bio ?? '',
+    background: user?.consultant?.professional_background ?? '',
+  })
+
   const [saved, setSaved] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [copiedId, setCopiedId] = useState(false)
   const [copiedLink, setCopiedLink] = useState<string | null>(null)
 
-  const CONSULTANT_ID = 'SEQ-2025-7842'
+  const consultantId = user?.consultant?.consultant_id ?? user?.consultantId ?? ''
+  const avatarUrl = user?.consultant?.avatar_url ?? user?.avatarUrl ?? null
+  const initials = user?.initials ?? 'U'
+  const tier = user?.tier ?? 'Associate'
+  const referralCode = user?.consultant?.referral_code ?? ''
+  const memberSince = user?.consultant?.created_at
+    ? new Date(user.consultant.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : 'Nov 2025'
 
   function handleChange(field: keyof ProfileForm, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -164,7 +150,7 @@ export default function ProfilePage() {
   }
 
   function copyId() {
-    navigator.clipboard.writeText(CONSULTANT_ID)
+    navigator.clipboard.writeText(consultantId)
     setCopiedId(true)
     setTimeout(() => setCopiedId(false), 2000)
   }
@@ -176,9 +162,9 @@ export default function ProfilePage() {
   }
 
   const REFERRAL_LINKS = [
-    { label: 'Personal Site', url: 'https://toddbillings.seqsolution.com' },
-    { label: 'EHMP Referral', url: 'https://seqsolution.com/wellness?ref=222902' },
-    { label: 'Funding Referral', url: 'https://seqsolution.com/apply?ref=222902' },
+    { label: 'Personal Site', url: `https://${form.name.toLowerCase().replace(/\s+/g, '')}.seqsolution.com` },
+    { label: 'EHMP Referral', url: `https://seqsolution.com/wellness?ref=${referralCode}` },
+    { label: 'Funding Referral', url: `https://seqsolution.com/apply?ref=${referralCode}` },
   ]
 
   const earnedBadges = BADGES.filter((b) => b.earned)
@@ -208,22 +194,29 @@ export default function ProfilePage() {
             {/* Profile card */}
             <div className="card-sequoia p-6 text-center">
               {/* Avatar */}
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sequoia-700 to-sequoia-900 flex items-center justify-center text-white text-2xl font-black mx-auto mb-4 shadow-[var(--shadow-md)]">
-                TB
-              </div>
+              {avatarUrl ? (
+                <div className="w-20 h-20 rounded-full mx-auto mb-4 shadow-[var(--shadow-md)] overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={avatarUrl} alt={form.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sequoia-700 to-sequoia-900 flex items-center justify-center text-white text-2xl font-black mx-auto mb-4 shadow-[var(--shadow-md)]">
+                  {initials}
+                </div>
+              )}
 
               <h2 className="text-xl font-bold text-[var(--sequoia-900)]">{form.name}</h2>
 
               {/* Tier badge */}
               <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-semibold">
                 <Award size={13} />
-                Active Consultant
+                {tier}
               </div>
 
               {/* Consultant ID */}
               <div className="mt-4 flex items-center justify-center gap-2">
                 <code className="text-xs text-[var(--neutral-500)] bg-[var(--neutral-50)] border border-[var(--neutral-200)] rounded px-2.5 py-1 font-mono">
-                  {CONSULTANT_ID}
+                  {consultantId}
                 </code>
                 <button
                   onClick={copyId}
@@ -234,7 +227,7 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              <p className="text-xs text-[var(--neutral-400)] mt-1">Member since November 2025</p>
+              <p className="text-xs text-[var(--neutral-400)] mt-1">Member since {memberSince}</p>
 
               <div className="divider-sequoia my-5" />
 
@@ -258,9 +251,7 @@ export default function ProfilePage() {
             <div className="card-sequoia p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Star size={16} className="text-gold-600" />
-                <h3 className="font-bold text-[var(--sequoia-900)]">
-                  Your Badges
-                </h3>
+                <h3 className="font-bold text-[var(--sequoia-900)]">Your Badges</h3>
                 <span className="ml-auto text-xs text-[var(--neutral-400)]">
                   {earnedBadges.length}/{BADGES.length} earned
                 </span>
@@ -317,9 +308,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Edit3 size={18} className="text-sequoia-600" />
-                  <h3 className="font-bold text-[var(--sequoia-900)] text-lg">
-                    Profile Information
-                  </h3>
+                  <h3 className="font-bold text-[var(--sequoia-900)] text-lg">Profile Information</h3>
                 </div>
                 {!isEditing && (
                   <button
@@ -336,22 +325,12 @@ export default function ProfilePage() {
                 {/* Name */}
                 <div>
                   <label className="block text-sm font-semibold text-[var(--sequoia-900)] mb-1.5">
-                    <span className="flex items-center gap-1.5">
-                      <User size={14} />
-                      Full Name
-                    </span>
+                    <span className="flex items-center gap-1.5"><User size={14} /> Full Name</span>
                   </label>
                   {isEditing ? (
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      className="input-brand"
-                    />
+                    <input type="text" value={form.name} onChange={(e) => handleChange('name', e.target.value)} className="input-brand" />
                   ) : (
-                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">
-                      {form.name}
-                    </p>
+                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">{form.name}</p>
                   )}
                 </div>
 
@@ -359,42 +338,22 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold text-[var(--sequoia-900)] mb-1.5">
-                      <span className="flex items-center gap-1.5">
-                        <Mail size={14} />
-                        Email Address
-                      </span>
+                      <span className="flex items-center gap-1.5"><Mail size={14} /> Email Address</span>
                     </label>
                     {isEditing ? (
-                      <input
-                        type="email"
-                        value={form.email}
-                        onChange={(e) => handleChange('email', e.target.value)}
-                        className="input-brand"
-                      />
+                      <input type="email" value={form.email} onChange={(e) => handleChange('email', e.target.value)} className="input-brand" />
                     ) : (
-                      <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">
-                        {form.email}
-                      </p>
+                      <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">{form.email}</p>
                     )}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-[var(--sequoia-900)] mb-1.5">
-                      <span className="flex items-center gap-1.5">
-                        <Phone size={14} />
-                        Phone Number
-                      </span>
+                      <span className="flex items-center gap-1.5"><Phone size={14} /> Phone Number</span>
                     </label>
                     {isEditing ? (
-                      <input
-                        type="tel"
-                        value={form.phone}
-                        onChange={(e) => handleChange('phone', e.target.value)}
-                        className="input-brand"
-                      />
+                      <input type="tel" value={form.phone} onChange={(e) => handleChange('phone', e.target.value)} className="input-brand" />
                     ) : (
-                      <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">
-                        {form.phone}
-                      </p>
+                      <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm">{form.phone}</p>
                     )}
                   </div>
                 </div>
@@ -402,62 +361,35 @@ export default function ProfilePage() {
                 {/* Bio */}
                 <div>
                   <label className="block text-sm font-semibold text-[var(--sequoia-900)] mb-1.5">
-                    <span className="flex items-center gap-1.5">
-                      <FileText size={14} />
-                      Bio
-                    </span>
+                    <span className="flex items-center gap-1.5"><FileText size={14} /> Bio</span>
                   </label>
                   {isEditing ? (
-                    <textarea
-                      value={form.bio}
-                      onChange={(e) => handleChange('bio', e.target.value)}
-                      rows={4}
-                      className="input-brand resize-none"
-                    />
+                    <textarea value={form.bio} onChange={(e) => handleChange('bio', e.target.value)} rows={4} className="input-brand resize-none" />
                   ) : (
-                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm leading-relaxed">
-                      {form.bio}
-                    </p>
+                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm leading-relaxed">{form.bio}</p>
                   )}
                 </div>
 
                 {/* Professional Background */}
                 <div>
                   <label className="block text-sm font-semibold text-[var(--sequoia-900)] mb-1.5">
-                    <span className="flex items-center gap-1.5">
-                      <Briefcase size={14} />
-                      Professional Background
-                    </span>
+                    <span className="flex items-center gap-1.5"><Briefcase size={14} /> Professional Background</span>
                   </label>
                   {isEditing ? (
-                    <textarea
-                      value={form.background}
-                      onChange={(e) => handleChange('background', e.target.value)}
-                      rows={3}
-                      className="input-brand resize-none"
-                    />
+                    <textarea value={form.background} onChange={(e) => handleChange('background', e.target.value)} rows={3} className="input-brand resize-none" />
                   ) : (
-                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm leading-relaxed">
-                      {form.background}
-                    </p>
+                    <p className="text-[var(--neutral-700)] py-2 px-3 bg-[var(--neutral-50)] rounded-lg border border-[var(--neutral-100)] text-sm leading-relaxed">{form.background}</p>
                   )}
                 </div>
 
                 {/* Action buttons */}
                 {isEditing && (
                   <div className="flex items-center gap-3 pt-2">
-                    <button
-                      onClick={handleSave}
-                      className="btn-primary flex items-center gap-2"
-                    >
-                      <Save size={15} />
-                      Save Changes
+                    <button onClick={handleSave} className="btn-primary flex items-center gap-2">
+                      <Save size={15} /> Save Changes
                     </button>
                     <button
-                      onClick={() => {
-                        setForm(INITIAL_FORM)
-                        setIsEditing(false)
-                      }}
+                      onClick={() => { setForm({ name: user?.consultant?.full_name ?? '', email: user?.consultant?.email ?? '', phone: user?.consultant?.phone ?? '', bio: user?.consultant?.bio ?? '', background: user?.consultant?.professional_background ?? '' }); setIsEditing(false) }}
                       className="btn-outline px-4 py-2.5 text-sm"
                     >
                       Cancel
@@ -502,40 +434,21 @@ export default function ProfilePage() {
               </p>
               <div className="space-y-3">
                 {REFERRAL_LINKS.map((link) => (
-                  <div
-                    key={link.label}
-                    className="flex items-center gap-3 rounded-xl border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3"
-                  >
+                  <div key={link.label} className="flex items-center gap-3 rounded-xl border border-[var(--neutral-200)] bg-[var(--neutral-50)] p-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-[var(--sequoia-900)] mb-0.5">{link.label}</p>
                       <p className="text-sm text-[var(--neutral-500)] truncate font-mono">{link.url}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors"
-                        title="Open link"
-                      >
+                      <a href={link.url} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors" title="Open link">
                         <ExternalLink size={14} />
                       </a>
-                      <button
-                        onClick={() => copyLink(link.url)}
-                        className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors cursor-pointer"
-                        title="Copy link"
-                      >
-                        {copiedLink === link.url ? (
-                          <CheckCheck size={14} className="text-sequoia-600" />
-                        ) : (
-                          <Copy size={14} />
-                        )}
+                      <button onClick={() => copyLink(link.url)} className="p-1.5 rounded-lg text-[var(--neutral-400)] hover:text-sequoia-700 hover:bg-white transition-colors cursor-pointer" title="Copy link">
+                        {copiedLink === link.url ? <CheckCheck size={14} className="text-sequoia-600" /> : <Copy size={14} />}
                       </button>
                     </div>
                     {copiedLink === link.url && (
-                      <span className="text-xs font-semibold text-sequoia-600 animate-pulse">
-                        Copied!
-                      </span>
+                      <span className="text-xs font-semibold text-sequoia-600 animate-pulse">Copied!</span>
                     )}
                   </div>
                 ))}
