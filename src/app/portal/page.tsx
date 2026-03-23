@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   DollarSign,
   Wallet,
@@ -266,6 +267,8 @@ function saveGoals(goals: GoalsData) {
 // ---------------------------------------------------------------------------
 
 function WelcomeBanner() {
+  const { user } = useAuth()
+  const firstName = user?.name?.split(' ')[0] ?? 'Consultant'
   const now = new Date()
   const dateStr = now.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -293,7 +296,7 @@ function WelcomeBanner() {
             <p className="text-sequoia-300 text-sm font-medium">{dateStr}</p>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Welcome back, Todd!
+            Welcome back, {firstName}!
           </h2>
           <p className="mt-1.5 text-sequoia-200 text-sm sm:text-base max-w-lg">
             You&rsquo;re 3 enrollees away from Senior tier. Keep the momentum going — your pipeline is looking strong.
