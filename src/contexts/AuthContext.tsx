@@ -72,11 +72,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const supabase = createClient()
 
   const fetchConsultant = useCallback(async (authUserId: string): Promise<Consultant | null> => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('consultants')
       .select('*')
       .eq('auth_user_id', authUserId)
       .single()
+    if (error) {
+      console.error('[Sequoia] Failed to fetch consultant:', error.message)
+    }
     return data
   }, [supabase])
 

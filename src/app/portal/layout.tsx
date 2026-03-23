@@ -204,8 +204,10 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   }, [isLoading, isLoggedIn, pathname, router])
 
   // Redirect to onboarding if not completed
+  // Only redirect if we have a consultant record (consultant !== null)
+  // If consultant is null, RLS may be blocking — don't redirect to avoid loops
   useEffect(() => {
-    if (!isLoading && isLoggedIn && user && !user.onboardingCompleted) {
+    if (!isLoading && isLoggedIn && user && user.consultant && !user.onboardingCompleted) {
       router.replace('/onboarding')
     }
   }, [isLoading, isLoggedIn, user, router])
