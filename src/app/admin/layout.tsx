@@ -212,19 +212,36 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setMobileOpen(false)
   }, [pathname])
 
-  const handleLogout = async () => {
-    await logout()
-    router.push('/login')
+  const handleLogout = () => {
+    logout()
   }
 
-  // Show loading state while checking auth
-  if (isLoading || !isLoggedIn || !user || user.role !== 'admin') {
+  // Show loading state only while auth is initializing
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-sequoia-200 border-t-sequoia-700" />
           <p className="text-sm text-gray-500">Loading...</p>
         </div>
+      </div>
+    )
+  }
+
+  // Not logged in — redirect handled by useEffect above
+  if (!isLoggedIn || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
+        <p className="text-sm text-gray-500">Redirecting to login...</p>
+      </div>
+    )
+  }
+
+  // Not admin — redirect handled by useEffect above
+  if (user.role !== 'admin') {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
+        <p className="text-sm text-gray-500">Access denied. Redirecting...</p>
       </div>
     )
   }
