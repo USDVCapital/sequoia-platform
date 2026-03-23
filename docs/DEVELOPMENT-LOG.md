@@ -2,6 +2,101 @@
 
 ---
 
+## 2026-03-23 (Session 2) — Database Infrastructure, Admin Panel, Onboarding, Commission Engine, Analytics, Testing
+Built by: Todd Billings + Claude Code
+
+### Tier 1: Database Foundation + Real Auth
+- Expanded Supabase schema from 5 tables to 17 tables with full RLS policies, indexes, and triggers
+- New tables: commissions, payout_periods, training_videos, training_progress, leaderboard_stats, notifications, materials, community_comments, community_likes, consultant_goals, onboarding_checklist, consultant_badges
+- Added commission calculation Postgres functions: `calculate_loan_commission()` (trigger on deal funded), `generate_monthly_wellness_commissions()` (monthly batch)
+- Created 4 analytics views: v_monthly_funded_volume, v_consultant_growth, v_enrollment_trend, v_conversion_funnel
+- Built comprehensive seed data matching all mock data (11 consultants, 6 deals, 26 videos, 8 community posts, 18 materials, etc.)
+- Replaced demo localStorage auth with real Supabase Auth (signInWithPassword, email confirmation callback, middleware route protection)
+- Built complete data access layer: queries.ts (30+ server-side query functions) and mutations.ts (20+ server actions)
+- Added storage buckets for avatars (public) and compliance-docs (private)
+
+### Tier 2: Admin Panel (9 routes)
+- Created `/admin` with dedicated layout, sidebar, and auth guard (role === 'admin')
+- Admin Dashboard: stats overview with recent deals/submissions feeds
+- Consultants: searchable/filterable directory with detail view, tier editing, activate/deactivate
+- Deals: all deals across consultants with inline Approve/Fund/Decline actions
+- Enrollments: EHMP enrollment tracking with monthly revenue summary
+- Commissions: pending/paid summary with checkbox selection and bulk approve
+- Submissions: contact form/application/partner inquiry review with expandable messages
+- Content: training video + materials management with add video form
+- Analytics: 5 Recharts visualizations (funded volume bars, consultant growth line, EHMP enrollment area, conversion funnel, commissions vs volume) with CSV export
+
+### Tier 2: Commission Engine
+- TypeScript commission engine with tiered rates: loans (0.5%–1.25% by tier), EHMP wellness (60%–90% by tier)
+- Tier progression tracking with requirements (funded volume + wellness enrollees thresholds)
+- EHMP projection calculator for the portal widget
+- Payout period helpers (bi-monthly: 1st and 15th)
+- 18 unit tests covering all tier/type combinations (all passing)
+
+### Tier 2: Onboarding Wizard (7 steps)
+- Separate `/onboarding` route with minimal dark layout and progress bar
+- Step 1: Welcome — greeting with name/phone confirmation, Sequoia logo
+- Step 2: Profile Photo — drag-and-drop upload to Supabase Storage avatars bucket
+- Step 3: Professional Background — two textareas with character counters
+- Step 4: Compliance — terms checkbox + document upload to compliance-docs bucket
+- Step 5: First Training — embedded YouTube player with timer-based progress tracking
+- Step 6: Set Goals — slider inputs for monthly income, EHMP enrollees, deals to close
+- Step 7: Completion — celebration with CSS confetti, setup summary, portal redirect
+- Portal layout redirects to /onboarding when onboarding_completed === false
+
+### Tier 3: Real-time + Testing
+- Real-time hooks: useRealtimePosts and useRealtimeNotifications via Supabase Realtime channels
+- Playwright E2E test config + 3 spec files (auth flows, apply page, public pages)
+- Vitest config + commission engine unit tests (18/18 passing)
+- New npm scripts: test, test:watch, test:e2e, test:e2e:ui
+
+### Bug Fixes & Auth Issues (major debugging session)
+- Supabase JS client `.from().select()` was hanging in browser — replaced with direct `fetch()` using access token in AuthContext
+- Logout was not clearing session — created server-side `/auth/logout` route and changed to synchronous `window.location.replace()`
+- Portal layout redirect loop when consultant record couldn't be fetched — added null check for consultant before redirecting to onboarding
+- Login page spinner never stopped — added try/catch and 10s timeout with error display
+- Profile page showed hardcoded mock data — updated to pull from AuthContext
+- Dashboard greeting showed hardcoded "Todd" — updated to use logged-in user's name
+- Onboarding stuck on "Saving..." — added client-side fallback for completeOnboarding mutation
+- Storage upload "Bucket not found" — created buckets + graceful error handling when missing
+- Email confirmation required for Supabase Auth — confirmed via SQL
+
+### New Files
+- `src/lib/supabase/schema.sql` — Complete 17-table schema (rewritten)
+- `src/lib/supabase/seed.sql` — Comprehensive seed data
+- `src/lib/supabase/queries.ts` — 30+ server-side query functions
+- `src/lib/supabase/mutations.ts` — 20+ server actions
+- `src/lib/commission-engine.ts` — Commission calculation + tier progression
+- `src/lib/__tests__/commission-engine.test.ts` — 18 unit tests
+- `src/app/admin/layout.tsx` — Admin panel layout with sidebar
+- `src/app/admin/page.tsx` — Admin dashboard
+- `src/app/admin/consultants/page.tsx` + `[id]/page.tsx` — Consultant management
+- `src/app/admin/deals/page.tsx` — Deal management
+- `src/app/admin/enrollments/page.tsx` — EHMP enrollment tracking
+- `src/app/admin/commissions/page.tsx` — Commission management
+- `src/app/admin/submissions/page.tsx` — Form submission review
+- `src/app/admin/content/page.tsx` — Content management
+- `src/app/admin/analytics/page.tsx` — Analytics dashboard with Recharts
+- `src/app/onboarding/layout.tsx` + `page.tsx` — Onboarding wizard
+- `src/components/onboarding/Step*.tsx` — 7 step components
+- `src/components/admin/DataTable.tsx` + `StatsCard.tsx` — Shared admin components
+- `src/app/auth/callback/route.ts` — Email confirmation callback
+- `src/app/auth/logout/route.ts` — Server-side logout
+- `src/hooks/useRealtimePosts.ts` + `useRealtimeNotifications.ts` — Real-time hooks
+- `playwright.config.ts` + `vitest.config.ts` — Test configs
+- `e2e/auth.spec.ts` + `apply.spec.ts` + `public-pages.spec.ts` — E2E tests
+
+### Decisions Made
+- **Direct fetch() for consultant lookup**: The @supabase/ssr browser client's `.from().select()` hangs when called from `onAuthStateChange` callbacks — a deadlock. Replaced with direct `fetch()` using the access token.
+- **Server-side logout route**: Client-side `supabase.auth.signOut()` doesn't reliably clear SSR cookies. Server-side route at `/auth/logout` handles it.
+- **Demo data for analytics**: Supabase views return small seed data — analytics uses hardcoded demo data reflecting real business scale ($93M volume, 2,702 consultants) until production data is available.
+- **2% blended commission rate**: Used for analytics display — represents average across all tiers and product types.
+- **Onboarding redirect only with consultant record**: Portal layout checks `user.consultant !== null` before redirecting to onboarding, preventing infinite redirect loop when RLS blocks the consultant fetch.
+- **Recharts over Chart.js**: React-native, tree-shakeable, no adapter layer needed.
+- **Separate /admin layout**: Distinct from portal to avoid role-based complexity in a shared layout.
+
+---
+
 ## 2026-03-22 (Session 1) — Full Platform Build: 0 to Production
 Built by: Todd Billings + Claude Code
 
