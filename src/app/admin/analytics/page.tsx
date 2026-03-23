@@ -54,38 +54,59 @@ const COLORS = {
 
 // ── Demo Data (used when Supabase views aren't available) ────
 
+// Company-wide metrics reflecting Sequoia's actual business scale
+// $70.4M funded in 2025, targeting $100M in 2026
+// 2,500+ total consultants, 219 active
+// 153 EHMP enrollees, targeting 5,000
+
 const DEMO_FUNDED_VOLUME: MonthlyVolume[] = [
-  { month: '2025-11', total_amount: 425000, commission_count: 2 },
-  { month: '2025-12', total_amount: 650000, commission_count: 3 },
-  { month: '2026-01', total_amount: 1200000, commission_count: 5 },
-  { month: '2026-02', total_amount: 2300000, commission_count: 8 },
-  { month: '2026-03', total_amount: 1800000, commission_count: 6 },
+  { month: '2025-04', total_amount: 4_200_000, commission_count: 18 },
+  { month: '2025-05', total_amount: 5_100_000, commission_count: 22 },
+  { month: '2025-06', total_amount: 5_800_000, commission_count: 26 },
+  { month: '2025-07', total_amount: 6_400_000, commission_count: 28 },
+  { month: '2025-08', total_amount: 7_200_000, commission_count: 31 },
+  { month: '2025-09', total_amount: 6_900_000, commission_count: 29 },
+  { month: '2025-10', total_amount: 8_100_000, commission_count: 35 },
+  { month: '2025-11', total_amount: 9_300_000, commission_count: 41 },
+  { month: '2025-12', total_amount: 8_600_000, commission_count: 38 },
+  { month: '2026-01', total_amount: 10_200_000, commission_count: 44 },
+  { month: '2026-02', total_amount: 11_800_000, commission_count: 52 },
+  { month: '2026-03', total_amount: 9_400_000, commission_count: 39 },
 ]
 
 const DEMO_GROWTH: ConsultantGrowth[] = [
-  { month: '2025-06', new_consultants: 3, total_consultants: 3 },
-  { month: '2025-07', new_consultants: 2, total_consultants: 5 },
-  { month: '2025-08', new_consultants: 0, total_consultants: 5 },
-  { month: '2025-09', new_consultants: 1, total_consultants: 6 },
-  { month: '2025-10', new_consultants: 2, total_consultants: 8 },
-  { month: '2025-11', new_consultants: 2, total_consultants: 10 },
-  { month: '2025-12', new_consultants: 1, total_consultants: 11 },
+  { month: '2025-04', new_consultants: 45, total_consultants: 1_850 },
+  { month: '2025-05', new_consultants: 62, total_consultants: 1_912 },
+  { month: '2025-06', new_consultants: 58, total_consultants: 1_970 },
+  { month: '2025-07', new_consultants: 71, total_consultants: 2_041 },
+  { month: '2025-08', new_consultants: 54, total_consultants: 2_095 },
+  { month: '2025-09', new_consultants: 67, total_consultants: 2_162 },
+  { month: '2025-10', new_consultants: 83, total_consultants: 2_245 },
+  { month: '2025-11', new_consultants: 91, total_consultants: 2_336 },
+  { month: '2025-12', new_consultants: 78, total_consultants: 2_414 },
+  { month: '2026-01', new_consultants: 104, total_consultants: 2_518 },
+  { month: '2026-02', new_consultants: 96, total_consultants: 2_614 },
+  { month: '2026-03', new_consultants: 88, total_consultants: 2_702 },
 ]
 
 const DEMO_ENROLLMENT: EnrollmentTrend[] = [
-  { month: '2025-11', new_enrollees: 15, new_companies: 1 },
-  { month: '2025-12', new_enrollees: 22, new_companies: 2 },
-  { month: '2026-01', new_enrollees: 47, new_companies: 1 },
-  { month: '2026-02', new_enrollees: 35, new_companies: 3 },
-  { month: '2026-03', new_enrollees: 28, new_companies: 2 },
+  { month: '2025-07', new_enrollees: 12, new_companies: 3 },
+  { month: '2025-08', new_enrollees: 18, new_companies: 4 },
+  { month: '2025-09', new_enrollees: 25, new_companies: 5 },
+  { month: '2025-10', new_enrollees: 31, new_companies: 6 },
+  { month: '2025-11', new_enrollees: 42, new_companies: 8 },
+  { month: '2025-12', new_enrollees: 56, new_companies: 11 },
+  { month: '2026-01', new_enrollees: 78, new_companies: 14 },
+  { month: '2026-02', new_enrollees: 95, new_companies: 18 },
+  { month: '2026-03', new_enrollees: 112, new_companies: 22 },
 ]
 
 const DEMO_FUNNEL: FunnelData[] = [
-  { status: 'Application', deal_count: 12, total_amount: 0 },
-  { status: 'In Review', deal_count: 8, total_amount: 0 },
-  { status: 'Approved', deal_count: 5, total_amount: 0 },
-  { status: 'Funded', deal_count: 14, total_amount: 8400000 },
-  { status: 'Declined', deal_count: 3, total_amount: 0 },
+  { status: 'Application', deal_count: 142, total_amount: 0 },
+  { status: 'In Review', deal_count: 89, total_amount: 0 },
+  { status: 'Approved', deal_count: 64, total_amount: 0 },
+  { status: 'Funded', deal_count: 312, total_amount: 70_400_000 },
+  { status: 'Declined', deal_count: 47, total_amount: 0 },
 ]
 
 // ── Helpers ──────────────────────────────────────────────────
