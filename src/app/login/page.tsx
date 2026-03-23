@@ -55,7 +55,12 @@ function LoginContent() {
 
     setIsSubmitting(true)
     try {
-      const result = await login(form.email, form.password)
+      // Add timeout to prevent infinite spinner
+      const loginPromise = login(form.email, form.password)
+      const timeoutPromise = new Promise<{ error: string }>((resolve) =>
+        setTimeout(() => resolve({ error: 'Login timed out. Please check your connection and try again.' }), 10000)
+      )
+      const result = await Promise.race([loginPromise, timeoutPromise])
 
       if (result.error) {
         setError(result.error === 'Invalid login credentials'
@@ -68,9 +73,9 @@ function LoginContent() {
         window.location.href = redirectTo
       }
     } catch (err) {
+      console.error('[Sequoia] Login error:', err)
       setError('Something went wrong. Please try again.')
       setIsSubmitting(false)
-      console.error('[Sequoia] Login error:', err)
     }
   }
 
