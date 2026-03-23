@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Clock, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
+import { Clock, ArrowRight } from 'lucide-react'
 
 interface StepWelcomeProps {
   userName: string
@@ -20,7 +21,7 @@ export default function StepWelcome({ userName, userPhone, onNext }: StepWelcome
       {/* Hero greeting */}
       <div className="text-center mb-10">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gold-500/10 mb-6">
-          <Sparkles className="w-8 h-8 text-gold-500" />
+          <Image src="/logo-gold.png" alt="Sequoia" width={40} height={40} className="object-contain" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
           Welcome to Sequoia, {userName.split(' ')[0]}!

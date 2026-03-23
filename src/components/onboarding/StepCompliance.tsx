@@ -41,6 +41,11 @@ export default function StepCompliance({ consultantId, onNext }: StepComplianceP
           .upload(path, file, { contentType: file.type })
 
         if (uploadError) {
+          if (uploadError.message.includes('Bucket not found') || uploadError.message.includes('bucket')) {
+            setError('Document storage is not yet configured. You can skip this step and upload later.')
+            setUploading(false)
+            return
+          }
           setError(uploadError.message)
           continue
         }

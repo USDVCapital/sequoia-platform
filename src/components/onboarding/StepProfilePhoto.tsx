@@ -67,7 +67,14 @@ export default function StepProfilePhoto({ consultantId, currentAvatarUrl, onNex
 
       onNext(publicUrl)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
+      const msg = err instanceof Error ? err.message : 'Upload failed'
+      if (msg.includes('Bucket not found') || msg.includes('bucket')) {
+        // Storage bucket not configured yet — skip upload, continue onboarding
+        console.warn('[Onboarding] Avatar bucket not found, skipping upload')
+        onNext(null)
+        return
+      }
+      setError(msg)
     } finally {
       setUploading(false)
     }
