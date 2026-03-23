@@ -5,7 +5,6 @@ import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
-import { createClient } from '@/lib/supabase/client'
 import {
   TrendingUp,
   Users,
@@ -133,31 +132,13 @@ export default function AdminAnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchData() {
-      const supabase = createClient()
-
-      try {
-        const [volumeRes, growthRes, enrollmentRes, funnelRes] = await Promise.all([
-          supabase.from('v_monthly_funded_volume').select('*').order('month', { ascending: true }),
-          supabase.from('v_consultant_growth').select('*').order('month', { ascending: true }),
-          supabase.from('v_enrollment_trend').select('*').order('month', { ascending: true }),
-          supabase.from('v_conversion_funnel').select('*'),
-        ])
-
-        if (volumeRes.data?.length) setFundedVolume(volumeRes.data)
-        if (growthRes.data?.length) setGrowth(growthRes.data)
-        if (enrollmentRes.data?.length) setEnrollment(enrollmentRes.data)
-        if (funnelRes.data?.length) setFunnel(funnelRes.data)
-      } catch {
-        // Views may not exist yet — use demo data
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchData()
+    // Use demo data for now — will switch to live Supabase data once
+    // the platform has enough real production data to be meaningful
+    setIsLoading(false)
   }, [])
 
   const totalFundedVolume = fundedVolume.reduce((s, v) => s + Number(v.total_amount), 0)
+  const totalCommissions = Math.round(totalFundedVolume * 0.02)
   const totalDeals = fundedVolume.reduce((s, v) => s + v.commission_count, 0)
   const totalConsultants = growth.length ? growth[growth.length - 1].total_consultants : 0
   const totalEnrollees = enrollment.reduce((s, e) => s + e.new_enrollees, 0)
@@ -194,12 +175,13 @@ export default function AdminAnalyticsPage() {
         </div>
 
         {/* Summary stats */}
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
             { label: 'Funded Volume', value: formatCurrency(totalFundedVolume), icon: DollarSign },
+            { label: 'Commissions', value: formatCurrency(totalCommissions), icon: DollarSign },
             { label: 'Total Deals', value: totalDeals.toString(), icon: TrendingUp },
-            { label: 'Consultants', value: totalConsultants.toString(), icon: Users },
-            { label: 'EHMP Enrollees', value: totalEnrollees.toString(), icon: Heart },
+            { label: 'Consultants', value: totalConsultants.toLocaleString(), icon: Users },
+            { label: 'EHMP Enrollees', value: totalEnrollees.toLocaleString(), icon: Heart },
           ].map((stat) => (
             <div key={stat.label} className="glass rounded-xl p-3 sm:p-4">
               <div className="flex items-center gap-2 mb-1">
@@ -306,7 +288,7 @@ export default function AdminAnalyticsPage() {
             <BarChart data={fundedVolume.map((v) => ({
               month: formatMonth(v.month),
               funded: Number(v.total_amount),
-              commissions: Math.round(Number(v.total_amount) * 0.0075),
+              commissions: Math.round(Number(v.total_amount) * 0.02),
             }))}>
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
               <XAxis dataKey="month" tick={{ fontSize: 12 }} />
