@@ -26,7 +26,7 @@ interface AuthContextType {
   session: Session | null
   login: (email: string, password: string) => Promise<{ error?: string }>
   signup: (email: string, password: string, fullName: string) => Promise<{ error?: string }>
-  logout: () => Promise<void>
+  logout: () => void
   refreshUser: () => Promise<void>
 }
 
