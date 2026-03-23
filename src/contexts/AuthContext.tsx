@@ -71,22 +71,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const supabase = createClient()
 
-  const fetchConsultant = useCallback(async (authUserId: string): Promise<Consultant | null> => {
-    const { data, error } = await supabase
-      .from('consultants')
-      .select('*')
-      .eq('auth_user_id', authUserId)
-      .single()
-    if (error) {
-      console.error('[Sequoia] Failed to fetch consultant:', error.message)
+  const fetchConsultant = useCallback(async (authUserId: string, accessToken?: string): Promise<Consultant | null> => {
+    try {
+      const token = accessToken || (await supabase.auth.getSession()).data.session?.access_token
+      if (!token) {
+        console.error('[Sequoia] No access token for consultant fetch')
+        return null
+      }
+
+      const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/consultants?auth_user_id=eq.${authUserId}&select=*`
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 8000)
+
+      const response = await fetch(url, {
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          'Authorization': `Bearer ${token}`,
+        },
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+
+      if (!response.ok) {
+        console.error('[Sequoia] Consultant fetch HTTP error:', response.status)
+        return null
+      }
+
+      const rows = await response.json()
+      return rows.length > 0 ? rows[0] : null
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        console.error('[Sequoia] Consultant fetch timed out')
+      } else {
+        console.error('[Sequoia] Consultant fetch error:', err)
+      }
+      return null
     }
-    return data
   }, [supabase])
 
   const refreshUser = useCallback(async () => {
     const { data: { session: currentSession } } = await supabase.auth.getSession()
     if (currentSession?.user) {
-      const consultant = await fetchConsultant(currentSession.user.id)
+      const consultant = await fetchConsultant(currentSession.user.id, currentSession.access_token)
       setUser(buildAuthUser(currentSession.user, consultant))
       setSession(currentSession)
     }
@@ -98,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { session: initialSession } } = await supabase.auth.getSession()
         if (initialSession?.user) {
-          const consultant = await fetchConsultant(initialSession.user.id)
+          const consultant = await fetchConsultant(initialSession.user.id, initialSession.access_token)
           setUser(buildAuthUser(initialSession.user, consultant))
           setSession(initialSession)
         }
@@ -114,7 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (event === 'SIGNED_IN' && newSession?.user) {
-        const consultant = await fetchConsultant(newSession.user.id)
+        const consultant = await fetchConsultant(newSession.user.id, newSession.access_token)
         setUser(buildAuthUser(newSession.user, consultant))
         setSession(newSession)
       } else if (event === 'SIGNED_OUT') {
