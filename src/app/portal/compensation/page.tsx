@@ -15,6 +15,7 @@ import {
   DollarSign,
   ArrowUpRight,
   CheckCircle2,
+  Award,
 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
@@ -223,53 +224,74 @@ function EhmpTab() {
 }
 
 function RealEstateTab() {
-  const products = [
-    { name: 'Bridge Loans',    rate: '1.5%' },
-    { name: 'Hard Money',      rate: '1.5%' },
-    { name: 'Fix & Flip',      rate: '1.5%' },
-    { name: 'DSCR',            rate: '1.0%' },
-    { name: 'Commercial',      rate: '1.0%' },
-    { name: 'SBA',             rate: '1.0%' },
-    { name: 'Construction',    rate: '1.5%' },
-    { name: 'Ground-Up',       rate: '1.5%' },
-  ]
-
   const levels: PyramidLevel[] = [
-    { level: 1, rate: '10%' },
-    { level: 2, rate: '8%' },
-    { level: 3, rate: '5%' },
-    { level: 4, rate: '4%' },
-    { level: 5, rate: '3%' },
-    { level: 6, rate: '2%' },
+    { level: 1, rate: '10%', detail: 'Requires 1+ PQLC' },
+    { level: 2, rate: '5%', detail: 'Requires 3+ PQLC' },
+    { level: 3, rate: '3%', detail: 'Requires 5+ PQLC' },
+    { level: 4, rate: '1.5%', detail: 'Requires 8+ PQLC' },
+    { level: 5, rate: '1.5%', detail: 'Requires 12+ PQLC' },
+    { level: 6, rate: '1%', detail: 'Requires 15+ PQLC' },
   ]
 
   return (
     <div className="space-y-6">
-      {/* Product rates */}
-      <div className="rounded-xl border border-neutral-200 bg-white p-5">
-        <h3 className="mb-4 text-base font-semibold text-sequoia-900">
-          Agent Commission by Product
-        </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {products.map((p) => (
-            <div
-              key={p.name}
-              className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-center"
-            >
-              <p className="text-xs text-neutral-500">{p.name}</p>
-              <p className="mt-1 text-lg font-bold text-gold-700">{p.rate}</p>
+      {/* Two commission tiers */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="rounded-xl border border-neutral-200 bg-white p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="rounded-lg bg-gold-100 p-2">
+              <DollarSign size={18} className="text-gold-700" />
             </div>
-          ))}
+            <h3 className="text-base font-semibold text-sequoia-900">Referral Commission</h3>
+          </div>
+          <p className="text-4xl font-extrabold text-gold-600 mb-2">23%</p>
+          <p className="text-sm text-neutral-500 leading-relaxed">
+            For new LCs who refer business but don&apos;t get involved with the project.
+            First 3 deals require working with a Loan Advisor for Certification Training.
+          </p>
+          <div className="mt-3 rounded-lg bg-neutral-50 border border-neutral-200 p-3">
+            <p className="text-xs text-neutral-500">Example: $1M loan at 2 points</p>
+            <p className="text-sm font-semibold text-sequoia-900">Total Commission: $20,000</p>
+            <p className="text-sm font-bold text-gold-700">Your Referral: $4,600</p>
+          </div>
+        </div>
+
+        <div className="rounded-xl border-2 border-gold-400 bg-white p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="rounded-lg bg-gold-100 p-2">
+              <Award size={18} className="text-gold-700" />
+            </div>
+            <h3 className="text-base font-semibold text-sequoia-900">Personal Commission</h3>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gold-700 bg-gold-100 px-2 py-0.5 rounded-full">After Certification</span>
+          </div>
+          <p className="text-4xl font-extrabold text-gold-600 mb-2">46%</p>
+          <p className="text-sm text-neutral-500 leading-relaxed">
+            After completing Sequoia On Job Training (3 deals with advisor) and actively working the project —
+            follow up, collect documents, set up meetings, etc. Double the commission.
+          </p>
+          <div className="mt-3 rounded-lg bg-gold-50 border border-gold-200 p-3">
+            <p className="text-xs text-gold-700">Example: $1M loan at 2 points</p>
+            <p className="text-sm font-semibold text-sequoia-900">Total Commission: $20,000</p>
+            <p className="text-sm font-bold text-gold-700">Your Commission: $9,200</p>
+          </div>
         </div>
       </div>
 
-      {/* Override pyramid */}
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+        <p className="text-sm text-neutral-600">
+          <strong>Note:</strong> Agent commission rates vary by deal — loan type, size, and lender terms
+          determine the total points charged. Common products include Bridge Loans, Hard Money, Fix &amp; Flip,
+          DSCR, Commercial, SBA, Construction, and Ground-Up.
+        </p>
+      </div>
+
+      {/* Revenue sharing pyramid */}
       <div className="rounded-xl border border-neutral-200 bg-white p-5">
         <h3 className="mb-2 text-base font-semibold text-sequoia-900">
-          6-Level Override Pyramid
+          Revenue Sharing — 6 Levels
         </h3>
         <p className="mb-4 text-sm text-neutral-500">
-          Percentage of the agent&apos;s commission paid as override
+          Percentage of team revenue paid as override. Requires Personal Qualifying Loan Consultants (PQLC) at each level.
         </p>
         <OverridePyramid levels={levels} />
       </div>
@@ -279,12 +301,12 @@ function RealEstateTab() {
 
 function BusinessFundingTab() {
   const levels: PyramidLevel[] = [
-    { level: 1, rate: '10%' },
-    { level: 2, rate: '8%' },
-    { level: 3, rate: '5%' },
-    { level: 4, rate: '4%' },
-    { level: 5, rate: '3%' },
-    { level: 6, rate: '2%' },
+    { level: 1, rate: '10%', detail: 'Requires 1+ PQLC' },
+    { level: 2, rate: '5%', detail: 'Requires 3+ PQLC' },
+    { level: 3, rate: '3%', detail: 'Requires 5+ PQLC' },
+    { level: 4, rate: '1.5%', detail: 'Requires 8+ PQLC' },
+    { level: 5, rate: '1.5%', detail: 'Requires 12+ PQLC' },
+    { level: 6, rate: '1%', detail: 'Requires 15+ PQLC' },
   ]
 
   return (
@@ -371,12 +393,12 @@ function PropertyRestorationTab() {
 
 function CleanEnergyTab() {
   const levels: PyramidLevel[] = [
-    { level: 1, rate: '10%' },
-    { level: 2, rate: '8%' },
-    { level: 3, rate: '5%' },
-    { level: 4, rate: '4%' },
-    { level: 5, rate: '3%' },
-    { level: 6, rate: '2%' },
+    { level: 1, rate: '10%', detail: 'Requires 1+ PQLC' },
+    { level: 2, rate: '5%', detail: 'Requires 3+ PQLC' },
+    { level: 3, rate: '3%', detail: 'Requires 5+ PQLC' },
+    { level: 4, rate: '1.5%', detail: 'Requires 8+ PQLC' },
+    { level: 5, rate: '1.5%', detail: 'Requires 12+ PQLC' },
+    { level: 6, rate: '1%', detail: 'Requires 15+ PQLC' },
   ]
 
   return (

@@ -131,12 +131,12 @@ export const REAL_ESTATE_LOAN_PRODUCTS = [
 ]
 
 export const REAL_ESTATE_OVERRIDES = [
-  { level: 1, rate: 0.10 },
-  { level: 2, rate: 0.08 },
-  { level: 3, rate: 0.05 },
-  { level: 4, rate: 0.04 },
-  { level: 5, rate: 0.03 },
-  { level: 6, rate: 0.02 },
+  { level: 1, rate: 0.10, minPQLCs: 1 },
+  { level: 2, rate: 0.05, minPQLCs: 3 },
+  { level: 3, rate: 0.03, minPQLCs: 5 },
+  { level: 4, rate: 0.015, minPQLCs: 8 },
+  { level: 5, rate: 0.015, minPQLCs: 12 },
+  { level: 6, rate: 0.01, minPQLCs: 15 },
 ]
 
 export function calculateRealEstateCommission(input: {
@@ -165,12 +165,12 @@ export function calculateRealEstateCommission(input: {
 export const BUSINESS_FUNDING_AGENT_RATE = 0.065 // average 5-8%
 
 export const BUSINESS_FUNDING_OVERRIDES = [
-  { level: 1, rate: 0.10 },
-  { level: 2, rate: 0.08 },
-  { level: 3, rate: 0.05 },
-  { level: 4, rate: 0.04 },
-  { level: 5, rate: 0.03 },
-  { level: 6, rate: 0.02 },
+  { level: 1, rate: 0.10, minPQLCs: 1 },
+  { level: 2, rate: 0.05, minPQLCs: 3 },
+  { level: 3, rate: 0.03, minPQLCs: 5 },
+  { level: 4, rate: 0.015, minPQLCs: 8 },
+  { level: 5, rate: 0.015, minPQLCs: 12 },
+  { level: 6, rate: 0.01, minPQLCs: 15 },
 ]
 
 export function calculateBusinessFundingCommission(input: {
@@ -210,12 +210,12 @@ export const PROPERTY_RESTORATION_OVERRIDES = [
 export const CLEAN_ENERGY_COMMISSION_RANGE = { min: 500, max: 2000, avg: 1250 }
 
 export const CLEAN_ENERGY_OVERRIDES = [
-  { level: 1, rate: 0.10 },
-  { level: 2, rate: 0.08 },
-  { level: 3, rate: 0.05 },
-  { level: 4, rate: 0.04 },
-  { level: 5, rate: 0.03 },
-  { level: 6, rate: 0.02 },
+  { level: 1, rate: 0.10, minPQLCs: 1 },
+  { level: 2, rate: 0.05, minPQLCs: 3 },
+  { level: 3, rate: 0.03, minPQLCs: 5 },
+  { level: 4, rate: 0.015, minPQLCs: 8 },
+  { level: 5, rate: 0.015, minPQLCs: 12 },
+  { level: 6, rate: 0.01, minPQLCs: 15 },
 ]
 
 // ── 7. Business Services ────────────────────────────────────
