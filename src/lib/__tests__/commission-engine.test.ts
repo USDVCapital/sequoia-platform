@@ -92,21 +92,21 @@ describe('Commission Engine — SPM Comp Plan 7.5 (Complete)', () => {
   })
 
   describe('Real Estate Loan Overrides', () => {
-    it('has correct 6-level override rates (10/8/5/4/3/2%)', () => {
+    it('has correct 6-level override rates (10/5/3/1.5/1.5/1%)', () => {
       expect(REAL_ESTATE_OVERRIDES[0].rate).toBe(0.10)
-      expect(REAL_ESTATE_OVERRIDES[1].rate).toBe(0.08)
-      expect(REAL_ESTATE_OVERRIDES[2].rate).toBe(0.05)
-      expect(REAL_ESTATE_OVERRIDES[3].rate).toBe(0.04)
-      expect(REAL_ESTATE_OVERRIDES[4].rate).toBe(0.03)
-      expect(REAL_ESTATE_OVERRIDES[5].rate).toBe(0.02)
+      expect(REAL_ESTATE_OVERRIDES[1].rate).toBe(0.05)
+      expect(REAL_ESTATE_OVERRIDES[2].rate).toBe(0.03)
+      expect(REAL_ESTATE_OVERRIDES[3].rate).toBe(0.015)
+      expect(REAL_ESTATE_OVERRIDES[4].rate).toBe(0.015)
+      expect(REAL_ESTATE_OVERRIDES[5].rate).toBe(0.01)
     })
   })
 
   describe('Business Funding Overrides', () => {
-    it('has correct 6-level override rates', () => {
+    it('has correct 6-level override rates (10/5/3/1.5/1.5/1%)', () => {
       expect(BUSINESS_FUNDING_OVERRIDES).toHaveLength(6)
       expect(BUSINESS_FUNDING_OVERRIDES[0].rate).toBe(0.10)
-      expect(BUSINESS_FUNDING_OVERRIDES[5].rate).toBe(0.02)
+      expect(BUSINESS_FUNDING_OVERRIDES[5].rate).toBe(0.01)
     })
   })
 
