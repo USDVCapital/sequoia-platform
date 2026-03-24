@@ -21,6 +21,9 @@ import {
   LogOut,
   ChevronRight,
   Shield,
+  Users,
+  Award,
+  Calculator,
 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
@@ -28,16 +31,19 @@ import {
 // ---------------------------------------------------------------------------
 
 const navItems = [
-  { label: 'Dashboard',      href: '/portal',                icon: LayoutDashboard },
-  { label: 'My Pipeline',    href: '/portal/pipeline',       icon: FileText        },
-  { label: 'Earnings',       href: '/portal/earnings',       icon: DollarSign      },
-  { label: 'Training',       href: '/portal/training',       icon: GraduationCap   },
-  { label: 'Leaderboard',    href: '/portal/leaderboard',    icon: Trophy          },
-  { label: 'Community',      href: '/portal/community',      icon: MessageSquare   },
-  { label: 'Materials',      href: '/portal/materials',      icon: FolderOpen      },
-  { label: 'CEA AI',         href: '/portal/ai',             icon: Bot             },
-  { label: 'Notifications',  href: '/portal/notifications',  icon: Bell            },
-  { label: 'My Profile',     href: '/portal/profile',        icon: User            },
+  { label: 'Dashboard',         href: '/portal',                   icon: LayoutDashboard },
+  { label: 'My Team',           href: '/portal/team',              icon: Users           },
+  { label: 'My Pipeline',       href: '/portal/pipeline',          icon: FileText        },
+  { label: 'Earnings',          href: '/portal/earnings',          icon: DollarSign      },
+  { label: 'Comp Plan',         href: '/portal/compensation',      icon: Award           },
+  { label: 'Income Projector',  href: '/portal/income-calculator', icon: Calculator      },
+  { label: 'Training',          href: '/portal/training',          icon: GraduationCap   },
+  { label: 'Leaderboard',       href: '/portal/leaderboard',       icon: Trophy          },
+  { label: 'Community',         href: '/portal/community',         icon: MessageSquare   },
+  { label: 'Materials',         href: '/portal/materials',          icon: FolderOpen      },
+  { label: 'CEA AI',            href: '/portal/ai',                icon: Bot             },
+  { label: 'Notifications',     href: '/portal/notifications',     icon: Bell            },
+  { label: 'My Profile',        href: '/portal/profile',           icon: User            },
 ]
 
 // ---------------------------------------------------------------------------
@@ -47,16 +53,19 @@ const navItems = [
 function getPageTitle(pathname: string): string {
   const segment = pathname.split('/').filter(Boolean).pop() ?? ''
   const map: Record<string, string> = {
-    portal:        'Dashboard',
-    pipeline:      'My Pipeline',
-    earnings:      'Earnings',
-    training:      'Training',
-    leaderboard:   'Leaderboard',
-    community:     'Community',
-    materials:     'Marketing Materials',
-    profile:       'My Profile',
-    ai:            'CEA AI',
-    notifications: 'Notifications',
+    portal:              'Dashboard',
+    team:                'My Team',
+    pipeline:            'My Pipeline',
+    earnings:            'Earnings',
+    compensation:        'Compensation Plan',
+    'income-calculator': 'Income Projector',
+    training:            'Training',
+    leaderboard:         'Leaderboard',
+    community:           'Community',
+    materials:           'Marketing Materials',
+    profile:             'My Profile',
+    ai:                  'CEA AI',
+    notifications:       'Notifications',
   }
   return map[segment] ?? 'Dashboard'
 }

@@ -39,3 +39,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Large design/print files (not web-servable, exceed GitHub limits)
+*.eps
+*.ai
+*.psd
+*.zip
+
+# Specific oversized files (>50MB) excluded from git
+public/Program Flyers/06. Company Materials/01. Company Presentation/SES Presentation -Updated 032825.pptx
+public/Program Flyers/06. Company Materials/01. Company Presentation/SES Presentation-Updated 032825-中文.pptx
+public/Program Flyers/06. Company Materials/03. Successful Cases/Sequoia Successful Cases 043025.pptx
+public/Program Flyers/06. Company Materials/04. One-Pager/Chinese/(Fillable Chinese)SES Company One Pager 2025 4.19.25.pdf
+public/Program Flyers/06. Company Materials/07. Z-Fold Brochure (Agent Recruiting)/Z-Fold Brochure.pdf
+public/Program Flyers/06. Company Materials/09. Business Card Template/Business Card Template 010725.pdf
+public/Program Flyers/03. EHMP (Workplace Wellness)/Intro Flyer/Spanish/Combined Workplace Wellness Flyers 2025-SPANISH Fillable.pdf
+public/Program Flyers/03. EHMP (Workplace Wellness)/Intro Flyer/Spanish/Workplace Wellness Flyers 2025-SPANISH Fillable_1.pdf
+public/Program Flyers/03. EHMP (Workplace Wellness)/Intro Flyer/Spanish/Workplace Wellness Flyers 2025-SPANISH Fillable_2.pdf
+public/Program Flyers/03. EHMP (Workplace Wellness)/Intro Flyer/Spanish/Workplace Wellness Flyers 2025-SPANISH Fillable_3.pdf

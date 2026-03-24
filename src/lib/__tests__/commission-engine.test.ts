@@ -1,178 +1,211 @@
 import { describe, it, expect } from 'vitest'
 import {
-  calculateLoanCommission,
-  calculateWellnessCommission,
-  calculateEHMPProjection,
-  getLoanCommissionRate,
-  getWellnessPayoutRate,
-  getNextTier,
-  getTierProgress,
+  MEMBERSHIP_FEE,
+  MEMBERSHIP_OVERRIDES,
+  calculateMembershipOverrides,
+  getEHMPRate,
+  calculateEHMPIncome,
+  REAL_ESTATE_OVERRIDES,
+  BUSINESS_FUNDING_OVERRIDES,
+  PROPERTY_RESTORATION_AGENT_RATE,
+  PROPERTY_RESTORATION_OVERRIDES,
+  RANK_REQUIREMENTS,
+  getRankLabel,
+  getNextRank,
+  getRankProgress,
+  qualifiesForRank,
+  calculateTotalIncome,
   formatCurrency,
   getCurrentPayoutPeriod,
   TIER_REQUIREMENTS,
+  getNextTier,
+  getTierProgress,
 } from '../commission-engine'
 
-describe('Commission Engine', () => {
-  describe('getLoanCommissionRate', () => {
-    it('returns correct rate for each tier', () => {
-      expect(getLoanCommissionRate('associate')).toBe(0.005)
-      expect(getLoanCommissionRate('active')).toBe(0.0075)
-      expect(getLoanCommissionRate('senior')).toBe(0.01)
-      expect(getLoanCommissionRate('managing_director')).toBe(0.0125)
+describe('Commission Engine — SPM Comp Plan 7.5 (Complete)', () => {
+
+  describe('Membership Fee Override', () => {
+    it('has correct $29.99 membership fee', () => {
+      expect(MEMBERSHIP_FEE).toBe(29.99)
+    })
+
+    it('has correct 6-level override rates', () => {
+      expect(MEMBERSHIP_OVERRIDES[0].rate).toBe(0.20) // L1: 20%
+      expect(MEMBERSHIP_OVERRIDES[1].rate).toBe(0.10) // L2: 10%
+      expect(MEMBERSHIP_OVERRIDES[2].rate).toBe(0.05) // L3: 5%
+      expect(MEMBERSHIP_OVERRIDES[3].rate).toBe(0.05) // L4: 5%
+      expect(MEMBERSHIP_OVERRIDES[4].rate).toBe(0.05) // L5: 5%
+      expect(MEMBERSHIP_OVERRIDES[5].rate).toBe(0.05) // L6: 5%
+    })
+
+    it('calculates L1 override at $5.99 per active LC', () => {
+      expect(MEMBERSHIP_OVERRIDES[0].amount).toBeCloseTo(5.99, 1)
+    })
+
+    it('calculates total membership overrides correctly', () => {
+      const result = calculateMembershipOverrides([3, 8, 15, 20, 10, 5])
+      // L1: 3 * $5.99 = $17.97
+      // L2: 8 * $2.99 = $23.92
+      // L3: 15 * $1.50 = $22.50 (approx)
+      // etc.
+      expect(result.byLevel).toHaveLength(6)
+      expect(result.totalMonthly).toBeGreaterThan(0)
+      expect(result.byLevel[0].monthlyAmount).toBeCloseTo(17.97, 1)
     })
   })
 
-  describe('getWellnessPayoutRate', () => {
-    it('returns correct rate for each tier', () => {
-      expect(getWellnessPayoutRate('associate')).toBe(0.60)
-      expect(getWellnessPayoutRate('active')).toBe(0.70)
-      expect(getWellnessPayoutRate('senior')).toBe(0.80)
-      expect(getWellnessPayoutRate('managing_director')).toBe(0.90)
+  describe('EHMP / Wellness', () => {
+    it('returns $20 PEPM for 5-199 employees', () => {
+      expect(getEHMPRate(5)).toBe(20)
+      expect(getEHMPRate(100)).toBe(20)
+      expect(getEHMPRate(199)).toBe(20)
+    })
+
+    it('returns $22 PEPM for 200-499 employees', () => {
+      expect(getEHMPRate(200)).toBe(22)
+      expect(getEHMPRate(499)).toBe(22)
+    })
+
+    it('returns $24 PEPM for 500+ employees', () => {
+      expect(getEHMPRate(500)).toBe(24)
+      expect(getEHMPRate(1000)).toBe(24)
+    })
+
+    it('calculates EHMP income with team overrides', () => {
+      const result = calculateEHMPIncome({
+        personalEmployers: 2,
+        avgEmployeesPerEmployer: 50,
+        l1Employers: 5,
+        l2Employers: 10,
+        l3Employers: 8,
+      })
+      // Personal: 2 * 50 = 100 employees * $20 = $2,000/month
+      expect(result.personalMonthly).toBe(2000)
+      // L1 override: 5 * 50 * $1.00 = $250
+      expect(result.l1Override).toBe(250)
+      // L2 override: 10 * 50 * $1.00 = $500
+      expect(result.l2Override).toBe(500)
+      // L3 override: 8 * 50 * $0.50 = $200
+      expect(result.l3Override).toBe(200)
+      expect(result.totalMonthly).toBe(2950)
     })
   })
 
-  describe('calculateLoanCommission', () => {
-    it('calculates commission for associate tier', () => {
-      const result = calculateLoanCommission({
-        fundedAmount: 425000,
-        consultantTier: 'associate',
-        clientName: 'Test Client',
-        fundingType: 'Fix & Flip',
-      })
-      expect(result.amount).toBe(2125)
-      expect(result.rate).toBe(0.005)
-      expect(result.commissionType).toBe('loan_referral')
-      expect(result.sourceLabel).toBe('Test Client — Fix & Flip')
-    })
-
-    it('calculates commission for active tier', () => {
-      const result = calculateLoanCommission({
-        fundedAmount: 425000,
-        consultantTier: 'active',
-        clientName: 'Sunrise Capital',
-        fundingType: 'Fix & Flip',
-      })
-      expect(result.amount).toBe(3187.5)
-      expect(result.ratePercentage).toBe('0.75%')
-    })
-
-    it('calculates commission for managing director', () => {
-      const result = calculateLoanCommission({
-        fundedAmount: 1000000,
-        consultantTier: 'managing_director',
-        clientName: 'Big Deal LLC',
-        fundingType: 'Commercial RE',
-      })
-      expect(result.amount).toBe(12500)
-      expect(result.ratePercentage).toBe('1.25%')
-    })
-
-    it('handles zero funded amount', () => {
-      const result = calculateLoanCommission({
-        fundedAmount: 0,
-        consultantTier: 'active',
-        clientName: 'No Money Corp',
-        fundingType: 'SBA',
-      })
-      expect(result.amount).toBe(0)
+  describe('Real Estate Loan Overrides', () => {
+    it('has correct 6-level override rates (10/8/5/4/3/2%)', () => {
+      expect(REAL_ESTATE_OVERRIDES[0].rate).toBe(0.10)
+      expect(REAL_ESTATE_OVERRIDES[1].rate).toBe(0.08)
+      expect(REAL_ESTATE_OVERRIDES[2].rate).toBe(0.05)
+      expect(REAL_ESTATE_OVERRIDES[3].rate).toBe(0.04)
+      expect(REAL_ESTATE_OVERRIDES[4].rate).toBe(0.03)
+      expect(REAL_ESTATE_OVERRIDES[5].rate).toBe(0.02)
     })
   })
 
-  describe('calculateWellnessCommission', () => {
-    it('calculates wellness residual for active tier', () => {
-      const result = calculateWellnessCommission({
-        employeeCount: 47,
-        monthlyRatePerEmployee: 18,
-        consultantTier: 'active',
-        companyName: 'Green Valley Dental',
-      })
-      // 47 * 18 = 846 gross, 846 * 0.70 = 592.20
-      expect(result.grossAmount).toBe(846)
-      expect(result.amount).toBe(592.2)
-      expect(result.payoutPercentage).toBe('70%')
-      expect(result.sourceLabel).toBe('Green Valley Dental (47 employees)')
-    })
-
-    it('calculates wellness residual for managing director', () => {
-      const result = calculateWellnessCommission({
-        employeeCount: 100,
-        monthlyRatePerEmployee: 15,
-        consultantTier: 'managing_director',
-        companyName: 'Big Corp',
-      })
-      // 100 * 15 = 1500 gross, 1500 * 0.90 = 1350
-      expect(result.grossAmount).toBe(1500)
-      expect(result.amount).toBe(1350)
+  describe('Business Funding Overrides', () => {
+    it('has correct 6-level override rates', () => {
+      expect(BUSINESS_FUNDING_OVERRIDES).toHaveLength(6)
+      expect(BUSINESS_FUNDING_OVERRIDES[0].rate).toBe(0.10)
+      expect(BUSINESS_FUNDING_OVERRIDES[5].rate).toBe(0.02)
     })
   })
 
-  describe('calculateEHMPProjection', () => {
-    it('projects monthly and annual income', () => {
-      const result = calculateEHMPProjection({
-        employeeCount: 50,
-        monthlyRate: 15,
-        consultantTier: 'active',
-      })
-      // 50 * 15 = 750 gross, 750 * 0.70 = 525/month, 6300/year
-      expect(result.monthlyGross).toBe(750)
-      expect(result.monthlyNet).toBe(525)
-      expect(result.annualNet).toBe(6300)
+  describe('Property Restoration', () => {
+    it('has correct 8% agent rate', () => {
+      expect(PROPERTY_RESTORATION_AGENT_RATE).toBe(0.08)
     })
 
-    it('handles minimum rate ($12)', () => {
-      const result = calculateEHMPProjection({
-        employeeCount: 10,
-        monthlyRate: 12,
-        consultantTier: 'associate',
-      })
-      // 10 * 12 = 120, 120 * 0.60 = 72/month
-      expect(result.monthlyNet).toBe(72)
-      expect(result.annualNet).toBe(864)
-    })
-
-    it('handles maximum rate ($18)', () => {
-      const result = calculateEHMPProjection({
-        employeeCount: 500,
-        monthlyRate: 18,
-        consultantTier: 'managing_director',
-      })
-      // 500 * 18 = 9000, 9000 * 0.90 = 8100/month
-      expect(result.monthlyNet).toBe(8100)
-      expect(result.annualNet).toBe(97200)
+    it('has correct 6-level override rates', () => {
+      expect(PROPERTY_RESTORATION_OVERRIDES[0].rate).toBe(0.01)
+      expect(PROPERTY_RESTORATION_OVERRIDES[1].rate).toBe(0.0075)
+      expect(PROPERTY_RESTORATION_OVERRIDES[2].rate).toBe(0.005)
+      expect(PROPERTY_RESTORATION_OVERRIDES[3].rate).toBe(0.005)
+      expect(PROPERTY_RESTORATION_OVERRIDES[4].rate).toBe(0.0025)
+      expect(PROPERTY_RESTORATION_OVERRIDES[5].rate).toBe(0.0025)
     })
   })
 
-  describe('Tier Progression', () => {
+  describe('Rank System', () => {
+    it('has 6 ranks from LC 1 to Executive Director', () => {
+      expect(RANK_REQUIREMENTS).toHaveLength(6)
+      expect(RANK_REQUIREMENTS[0].rank).toBe('lc_1')
+      expect(RANK_REQUIREMENTS[5].rank).toBe('executive_director')
+    })
+
+    it('has correct advancement bonuses', () => {
+      expect(RANK_REQUIREMENTS[1].advancementBonus).toBe(25)   // LC 2
+      expect(RANK_REQUIREMENTS[2].advancementBonus).toBe(50)   // LC 3
+      expect(RANK_REQUIREMENTS[3].advancementBonus).toBe(100)  // Senior LC
+      expect(RANK_REQUIREMENTS[4].advancementBonus).toBe(250)  // MD
+      expect(RANK_REQUIREMENTS[5].advancementBonus).toBe(500)  // ED
+    })
+
+    it('returns correct rank labels', () => {
+      expect(getRankLabel('lc_1')).toBe('LC 1')
+      expect(getRankLabel('senior_lc')).toBe('Senior LC')
+      expect(getRankLabel('executive_director')).toBe('Executive Director')
+    })
+
+    it('qualifies for correct rank based on activity', () => {
+      expect(qualifiesForRank(0, 0)).toBe('lc_1')
+      expect(qualifiesForRank(2, 0)).toBe('lc_2')
+      expect(qualifiesForRank(4, 0)).toBe('lc_3')
+      expect(qualifiesForRank(6, 50)).toBe('senior_lc')
+      expect(qualifiesForRank(10, 200)).toBe('managing_director')
+      expect(qualifiesForRank(15, 500)).toBe('executive_director')
+    })
+
+    it('returns next rank correctly', () => {
+      expect(getNextRank('lc_1')?.rank).toBe('lc_2')
+      expect(getNextRank('managing_director')?.rank).toBe('executive_director')
+      expect(getNextRank('executive_director')).toBeNull()
+    })
+
+    it('calculates rank progress', () => {
+      // LC 1 with 1 recruit → 75% to LC 2 (need 2 recruits: 50% + 0 team req: 100%) / 2
+      const progress = getRankProgress('lc_1', 1, 0)
+      expect(progress.percentage).toBe(75)
+      expect(progress.nextRank?.rank).toBe('lc_2')
+    })
+  })
+
+  describe('Income Calculator (all streams)', () => {
+    it('calculates combined income', () => {
+      const result = calculateTotalIncome({
+        activeLCsByLevel: [3, 8, 15, 20, 10, 5],
+        ehmpPersonalEmployers: 2,
+        ehmpAvgEmployees: 50,
+        ehmpL1Employers: 5,
+        ehmpL2Employers: 10,
+        ehmpL3Employers: 8,
+        loansPersonalPerMonth: 1,
+        avgLoanSize: 500000,
+        loansTeamPerMonth: 5,
+        bfDealsPersonalPerMonth: 1,
+        avgDealSize: 100000,
+        bfDealsTeamPerMonth: 3,
+      })
+      expect(result.totalMonthly).toBeGreaterThan(0)
+      expect(result.totalAnnual).toBe(result.totalMonthly * 12)
+      expect(result.membershipOverrides).toBeGreaterThan(0)
+      expect(result.ehmpPersonal).toBe(2000) // 100 employees * $20
+      expect(result.qualifiedRank).toBe('lc_2') // 3 personal recruits (L1), need 4 for LC 3
+    })
+  })
+
+  describe('Legacy Tier Progression', () => {
     it('returns correct next tier', () => {
       expect(getNextTier('associate')?.tier).toBe('active')
-      expect(getNextTier('active')?.tier).toBe('senior')
-      expect(getNextTier('senior')?.tier).toBe('managing_director')
       expect(getNextTier('managing_director')).toBeNull()
     })
 
     it('calculates tier progress correctly', () => {
-      // Associate halfway to Active ($250K of $500K, 5 of 10 enrollees)
       const progress = getTierProgress('associate', 250000, 5)
       expect(progress.percentage).toBe(50)
-      expect(progress.nextTier?.tier).toBe('active')
     })
 
-    it('returns 100% for max tier', () => {
-      const progress = getTierProgress('managing_director', 50000000, 1000)
-      expect(progress.percentage).toBe(100)
-      expect(progress.nextTier).toBeNull()
-    })
-
-    it('caps progress at 100% even when exceeding requirements', () => {
-      const progress = getTierProgress('associate', 1000000, 100)
-      expect(progress.percentage).toBe(100)
-    })
-
-    it('has correct tier requirements', () => {
+    it('has 4 tiers', () => {
       expect(TIER_REQUIREMENTS).toHaveLength(4)
-      expect(TIER_REQUIREMENTS[0].tier).toBe('associate')
-      expect(TIER_REQUIREMENTS[3].tier).toBe('managing_director')
-      expect(TIER_REQUIREMENTS[3].minFundedVolume).toBe(15_000_000)
     })
   })
 

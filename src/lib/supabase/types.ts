@@ -3,15 +3,24 @@
 // ============================================================
 
 export type ConsultantTier = 'associate' | 'active' | 'senior' | 'managing_director'
+
+// Rank system from SPM 7.5 — used for genealogy & revenue sharing qualification
+export type ConsultantRank = 'lc_1' | 'lc_2' | 'lc_3' | 'senior_lc' | 'managing_director' | 'executive_director'
+
+// Team member status for genealogy views
+export type TeamMemberStatus = 'active' | 'inactive' | 'new' | 'at-risk'
+
+// All income stream types
+export type IncomeStream = 'membership' | 'ehmp' | 'real-estate' | 'business-funding' | 'property-restoration' | 'clean-energy' | 'business-services'
 export type ConsultantRole = 'consultant' | 'admin'
 export type LeadStatus = 'application' | 'in_review' | 'approved' | 'funded' | 'declined'
 export type WellnessStatus = 'pending' | 'active' | 'cancelled'
 export type CommissionStatus = 'pending' | 'paid' | 'cancelled'
-export type CommissionType = 'loan_referral' | 'wellness_commission' | 'wellness_residual'
+export type CommissionType = 'loan_referral' | 'loan_personal' | 'wellness_commission' | 'wellness_residual' | 'property_restoration' | 'revenue_share' | 'membership_override' | 'business_funding' | 'clean_energy' | 'rank_bonus'
 export type PostCategory = 'win' | 'question' | 'tip' | 'announcement'
 export type NotificationType = 'deal_update' | 'new_content' | 'community' | 'training' | 'system'
 export type VideoCategory = 'Agent Training' | 'Commercial Lending' | 'Wellness/EHMP' | 'Success Stories'
-export type MaterialCategory = 'Real Estate' | 'EHMP / Wellness' | 'Business Funding' | 'Clean Energy'
+export type MaterialCategory = 'Real Estate' | 'EHMP / Wellness' | 'Business Funding' | 'Clean Energy' | 'Property Claims' | 'Company Materials' | 'Compensation'
 export type PayoutPeriodStatus = 'open' | 'closed' | 'paid'
 export type LeaderboardPeriod = 'monthly' | 'all_time'
 

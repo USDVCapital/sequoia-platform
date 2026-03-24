@@ -100,10 +100,10 @@ CREATE TABLE IF NOT EXISTS public.wellness_enrollments (
 CREATE TABLE IF NOT EXISTS public.commissions (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   consultant_id   UUID NOT NULL REFERENCES public.consultants(id) ON DELETE CASCADE,
-  source_type     TEXT NOT NULL CHECK (source_type IN ('lead', 'wellness')),
+  source_type     TEXT NOT NULL CHECK (source_type IN ('lead', 'wellness', 'property_restoration')),
   source_id       UUID,
   source_label    TEXT,
-  commission_type TEXT NOT NULL CHECK (commission_type IN ('loan_referral', 'wellness_commission', 'wellness_residual')),
+  commission_type TEXT NOT NULL CHECK (commission_type IN ('loan_referral', 'loan_personal', 'wellness_commission', 'wellness_residual', 'property_restoration', 'revenue_share')),
   amount          NUMERIC NOT NULL,
   status          TEXT NOT NULL DEFAULT 'pending'
                     CHECK (status IN ('pending', 'paid', 'cancelled')),
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS public.materials (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title         TEXT NOT NULL,
   filename      TEXT,
-  category      TEXT NOT NULL CHECK (category IN ('Real Estate', 'EHMP / Wellness', 'Business Funding', 'Clean Energy')),
+  category      TEXT NOT NULL CHECK (category IN ('Real Estate', 'EHMP / Wellness', 'Business Funding', 'Clean Energy', 'Property Claims', 'Company Materials', 'Compensation')),
   description   TEXT,
   is_coming_soon BOOLEAN NOT NULL DEFAULT FALSE,
   sort_order    INTEGER NOT NULL DEFAULT 0,
@@ -357,53 +357,68 @@ CREATE OR REPLACE TRIGGER trg_training_progress_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- ============================================================
--- COMMISSION CALCULATION FUNCTIONS
+-- COMMISSION CALCULATION FUNCTIONS — SPM Comp Plan 7.5
+-- ============================================================
+-- Loan commissions:
+--   Referral = 23% of total commission (for new/uncertified LCs)
+--   Personal = 46% of total commission (after On Job Training)
+--   Sequoia overhead = 30% of total commission
+--   Revenue sharing = 6 levels (10%, 5%, 3%, 1.5%, 1.5%, 1%)
+--   Bonus pool = 2% of each closed file
+--
+-- Wellness / EHMP:
+--   PEPM tiered: $20 (5-199), $22 (200-499), $24 (500+)
+--   Revenue share: 3 levels ($1, $1, $0.50 per employee)
+--
+-- Property Restoration:
+--   Agent commission = 8%
+--   Overrides: 6 levels (1%, 0.75%, 0.5%, 0.5%, 0.25%, 0.25%)
 -- ============================================================
 
--- Tier-based commission rates for loan referrals
-CREATE OR REPLACE FUNCTION public.get_loan_commission_rate(consultant_tier TEXT)
+-- PEPM rate based on total enrollment count
+CREATE OR REPLACE FUNCTION public.get_ehmp_pepm_rate(employee_count INTEGER)
 RETURNS NUMERIC LANGUAGE plpgsql IMMUTABLE AS $$
 BEGIN
-  RETURN CASE consultant_tier
-    WHEN 'associate' THEN 0.005
-    WHEN 'active' THEN 0.0075
-    WHEN 'senior' THEN 0.01
-    WHEN 'managing_director' THEN 0.0125
-    ELSE 0.005
+  RETURN CASE
+    WHEN employee_count >= 500 THEN 24
+    WHEN employee_count >= 200 THEN 22
+    ELSE 20
   END;
 END;
 $$;
 
--- Tier-based payout percentage for wellness residuals
-CREATE OR REPLACE FUNCTION public.get_wellness_payout_rate(consultant_tier TEXT)
-RETURNS NUMERIC LANGUAGE plpgsql IMMUTABLE AS $$
-BEGIN
-  RETURN CASE consultant_tier
-    WHEN 'associate' THEN 0.60
-    WHEN 'active' THEN 0.70
-    WHEN 'senior' THEN 0.80
-    WHEN 'managing_director' THEN 0.90
-    ELSE 0.60
-  END;
-END;
-$$;
-
--- Calculate commission when a deal is funded
+-- Calculate commission when a deal is funded (Comp Plan 7.5)
 CREATE OR REPLACE FUNCTION public.calculate_loan_commission()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 DECLARE
-  v_tier TEXT;
+  v_onboarding_completed BOOLEAN;
   v_rate NUMERIC;
+  v_total_commission NUMERIC;
   v_amount NUMERIC;
+  v_commission_type TEXT;
 BEGIN
   -- Only trigger when status changes to 'funded'
   IF NEW.status = 'funded' AND (OLD.status IS DISTINCT FROM 'funded') AND NEW.funded_amount IS NOT NULL THEN
-    SELECT tier INTO v_tier FROM public.consultants WHERE id = NEW.consultant_id;
-    v_rate := public.get_loan_commission_rate(v_tier);
-    v_amount := NEW.funded_amount * v_rate;
+    SELECT onboarding_completed INTO v_onboarding_completed
+    FROM public.consultants WHERE id = NEW.consultant_id;
+
+    -- Total commission = funded_amount * points (stored as percentage in estimated_amount)
+    -- For simplicity, use 2% default if not specified
+    v_total_commission := NEW.funded_amount * 0.02;
+
+    -- Certified (completed training) = 46%, Referral only = 23%
+    IF v_onboarding_completed THEN
+      v_rate := 0.46;
+      v_commission_type := 'loan_personal';
+    ELSE
+      v_rate := 0.23;
+      v_commission_type := 'loan_referral';
+    END IF;
+
+    v_amount := v_total_commission * v_rate;
 
     INSERT INTO public.commissions (consultant_id, source_type, source_id, source_label, commission_type, amount, status)
-    VALUES (NEW.consultant_id, 'lead', NEW.id, NEW.client_name || ' — ' || NEW.funding_type, 'loan_referral', v_amount, 'pending');
+    VALUES (NEW.consultant_id, 'lead', NEW.id, NEW.client_name || ' — ' || NEW.funding_type, v_commission_type, v_amount, 'pending');
   END IF;
 
   RETURN NEW;
@@ -414,29 +429,27 @@ CREATE OR REPLACE TRIGGER trg_lead_funded_commission
   AFTER UPDATE ON public.leads
   FOR EACH ROW EXECUTE FUNCTION public.calculate_loan_commission();
 
--- Generate monthly wellness commissions for all active enrollments
+-- Generate monthly wellness commissions for all active enrollments (PEPM-based)
 CREATE OR REPLACE FUNCTION public.generate_monthly_wellness_commissions(p_period_start DATE, p_period_end DATE)
 RETURNS INTEGER LANGUAGE plpgsql AS $$
 DECLARE
   v_count INTEGER := 0;
   v_enrollment RECORD;
-  v_tier TEXT;
-  v_rate NUMERIC;
+  v_pepm NUMERIC;
   v_amount NUMERIC;
 BEGIN
   FOR v_enrollment IN
-    SELECT we.*, c.tier
+    SELECT we.*
     FROM public.wellness_enrollments we
-    JOIN public.consultants c ON c.id = we.consultant_id
     WHERE we.status = 'active'
   LOOP
-    v_rate := public.get_wellness_payout_rate(v_enrollment.tier);
-    v_amount := v_enrollment.monthly_rate * v_enrollment.employee_count * v_rate;
+    v_pepm := public.get_ehmp_pepm_rate(v_enrollment.employee_count);
+    v_amount := v_enrollment.employee_count * v_pepm;
 
     INSERT INTO public.commissions (consultant_id, source_type, source_id, source_label, commission_type, amount, status, period_start, period_end)
     VALUES (v_enrollment.consultant_id, 'wellness', v_enrollment.id,
             v_enrollment.company_name || ' (' || v_enrollment.employee_count || ' employees)',
-            'wellness_residual', v_amount, 'pending', p_period_start, p_period_end);
+            'wellness_commission', v_amount, 'pending', p_period_start, p_period_end);
 
     v_count := v_count + 1;
   END LOOP;
@@ -455,7 +468,7 @@ SELECT
   SUM(c.amount) AS total_amount,
   COUNT(*) AS commission_count
 FROM public.commissions c
-WHERE c.commission_type = 'loan_referral'
+WHERE c.commission_type IN ('loan_referral', 'loan_personal')
 GROUP BY DATE_TRUNC('month', c.created_at)
 ORDER BY month;
 
