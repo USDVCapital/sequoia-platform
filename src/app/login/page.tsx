@@ -211,12 +211,12 @@ function LoginContent() {
                 />
                 <span className="text-sm text-neutral-600">Remember me</span>
               </label>
-              <button
-                type="button"
+              <Link
+                href="/auth/forgot-password"
                 className="text-sm text-neutral-700 hover:text-black font-medium transition"
               >
                 Forgot password?
-              </button>
+              </Link>
             </div>
 
             <button

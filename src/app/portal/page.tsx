@@ -808,13 +808,84 @@ function EHMPCalculator() {
         </div>
 
         <Link
-          href="/solutions/wellness"
+          href="/portal/income-calculator"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-sequoia-700 hover:text-sequoia-900 transition-colors"
         >
           See full projection
           <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
       </div>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Team Summary Widget
+// ---------------------------------------------------------------------------
+
+const TEAM_BY_LEVEL = [
+  { level: 1, active: 3, total: 8 },
+  { level: 2, active: 4, total: 14 },
+  { level: 3, active: 3, total: 12 },
+  { level: 4, active: 1, total: 8 },
+  { level: 5, active: 1, total: 3 },
+  { level: 6, active: 0, total: 2 },
+]
+
+function TeamSummaryWidget() {
+  return (
+    <section aria-labelledby="team-summary-heading" className="card-sequoia p-5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-sequoia-100 text-sequoia-700">
+            <Users size={16} aria-hidden="true" />
+          </div>
+          <div>
+            <h2 id="team-summary-heading" className="text-base font-bold text-sequoia-900">
+              Team Activity
+            </h2>
+            <p className="text-xs text-brand-neutral-500">Your 47-member downline at a glance</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mb-5">
+        <div className="text-center">
+          <div className="text-2xl font-extrabold text-green-700">12</div>
+          <div className="text-xs text-brand-neutral-500">Active</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-extrabold text-amber-500">27</div>
+          <div className="text-xs text-brand-neutral-500">Inactive</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-extrabold text-red-500">8</div>
+          <div className="text-xs text-brand-neutral-500">At Risk</div>
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        {TEAM_BY_LEVEL.map(({ level, active, total }) => (
+          <div key={level} className="flex items-center gap-3">
+            <span className="text-xs w-14 text-brand-neutral-500 font-medium">Level {level}</span>
+            <div className="flex-1 bg-brand-neutral-100 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-sequoia-600 rounded-full h-2 transition-all"
+                style={{ width: total > 0 ? `${(active / total) * 100}%` : '0%' }}
+              />
+            </div>
+            <span className="text-xs w-10 text-right font-medium text-brand-neutral-600">{active}/{total}</span>
+          </div>
+        ))}
+      </div>
+
+      <Link
+        href="/portal/team"
+        className="flex items-center justify-center gap-1.5 w-full mt-4 px-3 py-2.5 rounded-lg border border-brand-neutral-200 text-sm font-semibold text-sequoia-700 hover:bg-sequoia-50 transition-colors"
+      >
+        View Full Team
+        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+      </Link>
     </section>
   )
 }
@@ -832,8 +903,11 @@ export default function PortalDashboard() {
       {/* Quick Stats */}
       <QuickStats />
 
-      {/* What to Do Today */}
-      <WhatToDoToday />
+      {/* Team Summary + What to Do Today */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <TeamSummaryWidget />
+        <WhatToDoToday />
+      </div>
 
       {/* Two-column section: checklist + activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

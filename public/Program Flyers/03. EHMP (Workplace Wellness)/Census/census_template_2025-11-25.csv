@@ -1,0 +1,11 @@
+Wellness Program Census,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+Company Name,,,,,,,,,,,,,,,,,,,,,,,,,,
+Company Phone,,,,,,,,,,,,,,,,,,,,,,,,,,
+Company Email,,,,,,,,,,,,,,,,,,,,,,,,,,
+EIN,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+Group Client Name,Employee Last Name,Employee First Name,SSN,Date of Birth,Phone Number,Email,Employee Number,Department Number,Marital Status - M or S,Work State,Gross Annual TAXABLE Wages,Pay Frequency*,Federal - W-4 Marital Status,New w-4 or old w-4?,2019 w-4 Dependents Claimed,2020 W-4 Box 2c Checked?,2020 W-4 Step 3 Total,State Marital Status,Dependents-State Withholding,Employee Group Health Contribution (Monthly),Health Deducted Pre- Tax?,Other Monthly Pre-Tax Deductions,Monthly Post-Tax Health Deduction,Monthly Pre-Tax 401k/IRA Deduction,Other Monthly Post-Tax Deduction,Remark
+Acme Corp,Smith,John,123-45-6789,1/1/1990,240-000-0000,john.smith@company.com,E001,D100,M,CA,75000,Bi-Weekly,Married,New,0,No,0,Married,2,250,Yes,50,0,200,100,
+Acme Corp,Johnson,Sarah,987-65-4321,2/2/1988,301-111-1111,Sarah.johnson@company.com,E002,D101,S,NY,85000,Semi-Monthly,Single,Old,1,No,0,Single,0,300,Yes,75,50,250,150,
