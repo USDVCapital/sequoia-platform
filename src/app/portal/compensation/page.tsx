@@ -277,12 +277,34 @@ function RealEstateTab() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-        <p className="text-sm text-neutral-600">
-          <strong>Note:</strong> Agent commission rates vary by deal — loan type, size, and lender terms
-          determine the total points charged. Common products include Bridge Loans, Hard Money, Fix &amp; Flip,
-          DSCR, Commercial, SBA, Construction, and Ground-Up.
+      {/* Typical product rates for reference */}
+      <div className="rounded-xl border border-neutral-200 bg-white p-5">
+        <h3 className="mb-1 text-base font-semibold text-sequoia-900">
+          Typical Agent Commission by Product
+        </h3>
+        <p className="mb-4 text-xs text-neutral-500">
+          Rates vary by deal — these are typical ranges for reference.
         </p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { name: 'Bridge Loans', rate: '1.5%' },
+            { name: 'Hard Money', rate: '1.5%' },
+            { name: 'Fix & Flip', rate: '1.5%' },
+            { name: 'DSCR', rate: '1.0%' },
+            { name: 'Commercial', rate: '1.0%' },
+            { name: 'SBA', rate: '1.0%' },
+            { name: 'Construction', rate: '1.5%' },
+            { name: 'Ground-Up', rate: '1.5%' },
+          ].map((p) => (
+            <div
+              key={p.name}
+              className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-center"
+            >
+              <p className="text-xs text-neutral-500">{p.name}</p>
+              <p className="mt-1 text-lg font-bold text-gold-700">{p.rate}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Revenue sharing pyramid */}
