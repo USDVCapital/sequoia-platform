@@ -2,6 +2,40 @@
 
 ---
 
+## 2026-03-24 (Session 3) — Forgot Password Flow, OG Image, Meta Tags
+Built by: Todd Billings + Claude Code
+
+### Forgot Password Flow
+- Wired the previously dead "Forgot password?" button on `/login` to a real flow
+- Created `/auth/forgot-password` page: email input → `supabase.auth.resetPasswordForEmail()` → confirmation screen with "check your email" message and retry option
+- Created `/auth/reset-password` page: session validation → new password + confirm form → `supabase.auth.updateUser()` → success message with auto-redirect to portal
+- Changed login page "Forgot password?" from `<button>` to `<Link>` pointing to `/auth/forgot-password`
+- Flow: Login → Forgot password → Enter email → Supabase sends reset email → User clicks link → `/auth/callback` exchanges code (redirect to `/auth/reset-password`) → User sets new password → redirected to portal
+- Guided Supabase URL Configuration: added `https://sequoia-platform.vercel.app/auth/callback` and `http://localhost:3000/auth/callback` as redirect URLs, updated Site URL to `https://sequoia-platform.vercel.app`
+
+### Dynamic OG Image (Open Graph)
+- Created `src/app/opengraph-image.tsx` using Next.js `ImageResponse` API from `next/og`
+- Design: dark gradient background, gold accent lines top/bottom, Sequoia gold logo (loaded via `readFile` at build time), tagline, 4 service pills (Commercial Lending, Business Consulting, Wellness Programs, Clean Energy), `seqsolution.com` at bottom
+- 1200×630 PNG generated server-side — automatically injected as `og:image` and `twitter:image` meta tags by Next.js file convention
+- Added `metadataBase` to layout.tsx so Next.js generates correct absolute URLs for OG tags
+
+### Enhanced Meta Tags
+- Added `twitter.card: 'summary_large_image'` for full-size preview on Twitter/X
+- Added `twitter.title` and `twitter.description` for Twitter-specific text
+- Added `authors`, `creator`, `robots` (index + follow), and `locale` to metadata
+
+### New Files
+- `src/app/auth/forgot-password/page.tsx` — Forgot password page
+- `src/app/auth/reset-password/page.tsx` — Reset password page
+- `src/app/opengraph-image.tsx` — Dynamic OG image generator
+
+### Decisions Made
+- **readFile for logo in OG image**: Logo PNG is ~49KB base64 — too large to inline in the source file. Used `readFile` from `node:fs/promises` at build time as recommended by Next.js docs.
+- **Session check on reset page**: Reset password page validates session existence before showing the form. If no valid session (expired/invalid link), shows "Link expired" with a button to request a new one.
+- **seqsolution.com on OG image**: Used the custom domain (not vercel.app) on the OG image since that's the intended production domain.
+
+---
+
 ## 2026-03-23 (Session 2) — Database Infrastructure, Admin Panel, Onboarding, Commission Engine, Analytics, Testing
 Built by: Todd Billings + Claude Code
 

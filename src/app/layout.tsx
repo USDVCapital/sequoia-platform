@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sequoia-platform.vercel.app'),
   title: "Sequoia Enterprise Solutions | Fueling Growth & Expanding Possibilities",
   description:
     "Sequoia Enterprise Solutions is a solution-driven commercial lending and business consulting platform. Access 500+ vetted lending partners, business funding, wellness programs, and clean energy solutions.",
@@ -28,12 +29,24 @@ export const metadata: Metadata = {
     "commercial lending consultant",
     "Sequoia Enterprise Solutions",
   ],
+  authors: [{ name: 'Sequoia Enterprise Solutions' }],
+  creator: 'Sequoia Enterprise Solutions',
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: 'Sequoia Enterprise Solutions',
     description: 'Your trusted partner for business solutions, commercial lending, and recurring income opportunities.',
     url: 'https://sequoia-platform.vercel.app',
     siteName: 'Sequoia Enterprise Solutions',
+    locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sequoia Enterprise Solutions',
+    description: 'Your trusted partner for business solutions, commercial lending, and recurring income opportunities.',
   },
 };
 
