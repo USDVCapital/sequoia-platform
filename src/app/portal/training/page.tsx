@@ -343,28 +343,28 @@ function VideoCard({ video }: { video: TrainingVideo }) {
       className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer"
     >
       {/* Thumbnail */}
-      <div className="relative h-40 bg-gray-900 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-video bg-gray-900 flex items-center justify-center overflow-hidden">
         <img
-          src={video.thumbnail}
+          src={video.thumbnail.replace('mqdefault', 'hqdefault')}
           alt={video.title}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Play button */}
-        <div className="relative z-10 w-12 h-12 rounded-full bg-black/40 border border-white/30 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-200">
-          <Play size={18} className="text-white ml-0.5 fill-white" />
+        <div className="relative z-10 w-10 h-10 rounded-full bg-black/40 border border-white/30 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-200">
+          <Play size={14} className="text-white ml-0.5 fill-white" />
         </div>
 
         {/* Duration */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/40 rounded-full px-2 py-0.5 text-white text-xs font-medium">
-          <Clock size={10} />
+        <div className="absolute bottom-1.5 right-1.5 flex items-center gap-1 bg-black/40 rounded-full px-1.5 py-0.5 text-white text-[10px] font-medium">
+          <Clock size={9} />
           {video.duration}
         </div>
 
         {/* New badge */}
         {video.isNew && (
-          <div className="absolute top-2 left-2 bg-gold-500 text-sequoia-950 text-xs font-bold px-2 py-0.5 rounded-full">
+          <div className="absolute top-1.5 left-1.5 bg-gold-500 text-sequoia-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
             NEW
           </div>
         )}
@@ -381,18 +381,18 @@ function VideoCard({ video }: { video: TrainingVideo }) {
       )}
 
       {/* Content */}
-      <div className="p-4 flex flex-col gap-2 flex-1">
+      <div className="p-3 flex flex-col gap-1.5 flex-1">
         <div className="flex items-start justify-between gap-2">
           <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold shrink-0 ${CATEGORY_COLORS[video.category]}`}
+            className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${CATEGORY_COLORS[video.category]}`}
           >
             {video.category}
           </span>
           {video.progress > 0 && (
-            <span className="text-xs text-gold-700 font-semibold shrink-0">{video.progress}%</span>
+            <span className="text-[10px] text-gold-700 font-semibold shrink-0">{video.progress}%</span>
           )}
         </div>
-        <h3 className="font-bold text-[var(--sequoia-900)] text-sm leading-snug line-clamp-2">
+        <h3 className="font-bold text-[var(--sequoia-900)] text-xs leading-snug line-clamp-2">
           {video.title}
         </h3>
       </div>
@@ -409,26 +409,26 @@ function ArticleCard({ article }: { article: TrainingArticle }) {
       className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer"
     >
       {/* Icon header */}
-      <div className="relative h-40 bg-[#0D2B1E] flex items-center justify-center">
-        <BookOpen size={48} className="text-[#C9A84C] opacity-80 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute top-2 left-2 bg-[#C9A84C] text-[#0D2B1E] text-xs font-bold px-2 py-0.5 rounded-full">
+      <div className="relative aspect-video bg-[#0D2B1E] flex items-center justify-center">
+        <BookOpen size={36} className="text-[#C9A84C] opacity-80 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute top-1.5 left-1.5 bg-[#C9A84C] text-[#0D2B1E] text-[10px] font-bold px-1.5 py-0.5 rounded-full">
           {article.badge}
         </div>
-        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/40 rounded-full px-2 py-0.5 text-white text-xs font-medium">
-          <Clock size={10} />
+        <div className="absolute bottom-1.5 right-1.5 flex items-center gap-1 bg-black/40 rounded-full px-1.5 py-0.5 text-white text-[10px] font-medium">
+          <Clock size={9} />
           {article.duration}
         </div>
       </div>
-      <div className="p-4 flex flex-col gap-2 flex-1">
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 self-start">
+      <div className="p-3 flex flex-col gap-1.5 flex-1">
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 self-start">
           {article.category}
         </span>
-        <h3 className="font-bold text-[var(--sequoia-900)] text-sm leading-snug line-clamp-2">
+        <h3 className="font-bold text-[var(--sequoia-900)] text-xs leading-snug line-clamp-2">
           {article.title}
         </h3>
-        <p className="text-xs text-gray-500 line-clamp-2">{article.description}</p>
-        <span className="mt-auto text-xs font-semibold text-[#C9A84C] flex items-center gap-1">
-          Read <ChevronRight size={12} />
+        <p className="text-[10px] text-gray-500 line-clamp-2">{article.description}</p>
+        <span className="mt-auto text-[10px] font-semibold text-[#C9A84C] flex items-center gap-1">
+          Read <ChevronRight size={10} />
         </span>
       </div>
     </Link>
@@ -521,7 +521,7 @@ function FullLibrary() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {filtered.map((v) => (
           <VideoCard key={v.id} video={v} />
         ))}
@@ -533,7 +533,7 @@ function FullLibrary() {
           {filtered.length > 0 && (
             <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Reading</h3>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {ALL_ARTICLES.map((a) => (
               <ArticleCard key={a.id} article={a} />
             ))}
@@ -610,7 +610,7 @@ export default function TrainingPage() {
           title="Continue Watching"
           subtitle="Pick up where you left off"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {continueWatching.map((v) => (
               <VideoCard key={v.id} video={v} />
             ))}
@@ -623,7 +623,7 @@ export default function TrainingPage() {
           title="Recommended for You"
           subtitle="Based on your Active tier and recent activity"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {recommended.map((v) => (
               <VideoCard key={v.id} video={v} />
             ))}
@@ -636,7 +636,7 @@ export default function TrainingPage() {
           title="New This Week"
           subtitle="Fresh content added to the library"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {newThisWeek.map((v) => (
               <VideoCard key={v.id} video={v} />
             ))}
