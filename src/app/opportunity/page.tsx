@@ -79,7 +79,7 @@ const incomeStreams = [
 const valueItems = [
   { icon: <Users size={18} />, text: 'Access to 500+ vetted lending partners' },
   { icon: <Layers size={18} />, text: 'Full product suite: Real Estate, Business Funding, Services, Clean Energy' },
-  { icon: <Zap size={18} />, text: 'CEA AI Assistant for instant product guidance' },
+  { icon: <Zap size={18} />, text: 'SEA AI Assistant for instant product guidance' },
   { icon: <BookOpen size={18} />, text: 'Weekly live training every Wednesday at 8 PM ET' },
   { icon: <Play size={18} />, text: '190+ on-demand training videos' },
   { icon: <Globe size={18} />, text: 'Personal replicated website' },
@@ -130,7 +130,7 @@ const faqs = [
   },
   {
     q: 'What is the $29.99/month membership fee for?',
-    a: 'Access to 500+ lending partners, the full product suite, CEA AI assistant, 190+ training videos, weekly live training, your replicated website, and real-time deal tracking.',
+    a: 'Access to 500+ lending partners, the full product suite, SEA AI assistant, 190+ training videos, weekly live training, your replicated website, and real-time deal tracking.',
   },
   {
     q: 'Can I do this part-time?',
@@ -146,7 +146,7 @@ const faqs = [
   },
   {
     q: 'What support is available after I enroll?',
-    a: 'Weekly live training (Wed 8 PM ET), 190+ videos, CEA AI, community feed, and direct team access at 301-337-8035.',
+    a: 'Weekly live training (Wed 8 PM ET), 190+ videos, SEA AI, community feed, and direct team access at 301-337-8035.',
   },
   {
     q: 'What happens if I want to cancel?',

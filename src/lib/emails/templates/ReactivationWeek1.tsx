@@ -183,7 +183,7 @@ export const ReactivationWeek1: React.FC<ReactivationWeek1Props> = ({
             <td style={{ width: "50%", paddingRight: "8px", verticalAlign: "top" as const }}>
               <div style={styles.featureCard}>
                 <p style={styles.featureIcon}>🤖</p>
-                <p style={styles.featureTitle}>CEA AI Assistant</p>
+                <p style={styles.featureTitle}>SEA AI Assistant</p>
                 <p style={styles.featureDesc}>
                   Your personal AI built for insurance and financial services.
                   Get instant answers, proposal drafts, and objection handling

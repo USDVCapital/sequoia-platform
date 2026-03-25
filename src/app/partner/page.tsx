@@ -82,7 +82,7 @@ const partnershipModels = [
     features: [
       'Access to 500+ lending partners',
       '190+ training videos & resources',
-      'CEA AI Assistant for product guidance',
+      'SEA AI Assistant for product guidance',
       'Full CRM and pipeline tools',
       'EHMP wellness program access',
       'Community of 2,500+ consultants',

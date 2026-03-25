@@ -43,7 +43,7 @@ const navItems = [
   { label: 'Community',         href: '/portal/community',         icon: MessageSquare   },
   { label: 'Weekly Q&A',       href: '/portal/weekly-qa',         icon: HelpCircle      },
   { label: 'Materials',         href: '/portal/materials',          icon: FolderOpen      },
-  { label: 'CEA AI',            href: '/portal/ai',                icon: Bot             },
+  { label: 'SEA AI',            href: '/portal/ai',                icon: Bot             },
   { label: 'Notifications',     href: '/portal/notifications',     icon: Bell            },
   { label: 'My Profile',        href: '/portal/profile',           icon: User            },
 ]
@@ -67,7 +67,7 @@ function getPageTitle(pathname: string): string {
     'weekly-qa':         'Weekly Q&A',
     materials:           'Marketing Materials',
     profile:             'My Profile',
-    ai:                  'CEA AI',
+    ai:                  'SEA AI',
     notifications:       'Notifications',
   }
   return map[segment] ?? 'Dashboard'

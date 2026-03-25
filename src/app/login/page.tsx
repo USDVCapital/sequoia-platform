@@ -114,7 +114,7 @@ function LoginContent() {
             {[
               "Track your deals and commissions in real time",
               "190+ training videos at your fingertips",
-              "CEA AI Assistant for instant product guidance",
+              "SEA AI Assistant for instant product guidance",
               "Connect with 2,500+ consultants nationwide",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">

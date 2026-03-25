@@ -45,7 +45,7 @@ const portalLinks = [
   { label: 'Training', href: '/portal/training', icon: GraduationCap },
   { label: 'Community', href: '/portal/community', icon: Users },
   { label: 'Leaderboard', href: '/portal/leaderboard', icon: Trophy },
-  { label: 'CEA AI', href: '/portal/ai', icon: Bot },
+  { label: 'SEA AI', href: '/portal/ai', icon: Bot },
   { label: 'My Profile', href: '/portal/profile', icon: UserCircle },
 ]
 
@@ -312,7 +312,7 @@ function PortalSecondaryNav() {
     { label: 'Training', href: '/portal/training' },
     { label: 'Community', href: '/portal/community' },
     { label: 'Leaderboard', href: '/portal/leaderboard' },
-    { label: 'CEA AI', href: '/portal/ai' },
+    { label: 'SEA AI', href: '/portal/ai' },
   ]
 
   return (

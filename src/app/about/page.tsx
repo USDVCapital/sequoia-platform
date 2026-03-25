@@ -47,7 +47,7 @@ const milestones = [
   },
   {
     icon: <Zap size={20} />,
-    stat: 'CEA AI',
+    stat: 'SEA AI',
     label: 'AI Assistant Deployed',
     detail: 'Intelligent assistant powering client consultations',
     variant: 'success' as const,

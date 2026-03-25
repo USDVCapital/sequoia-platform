@@ -69,7 +69,7 @@ const responseMap: { keywords: string[]; response: string }[] = [
   },
   {
     keywords: ['get started', 'new', 'begin', 'first', 'start', 'join'],
-    response: '**Getting Started as a Sequoia Consultant:**\n\n1. **Enroll** at $29.99/month \u2014 this gives you full access to the platform\n2. **Complete your profile** in the portal\n3. **Watch the \u201cWelcome to Sequoia\u201d training video**\n4. **Attend your first Wednesday training** (every Wed at 8 PM ET)\n5. **Start with EHMP** \u2014 it\'s the fastest path to your first commission because it costs the employer nothing out of pocket\n6. **Use the CEA AI** (that\'s me!) to prepare for client conversations\n7. **Submit your first lead** through the portal\n\nThe 30-Day Reactivation Challenge at /reactivation is a great structured path if you want step-by-step guidance.'
+    response: '**Getting Started as a Sequoia Consultant:**\n\n1. **Enroll** at $29.99/month \u2014 this gives you full access to the platform\n2. **Complete your profile** in the portal\n3. **Watch the \u201cWelcome to Sequoia\u201d training video**\n4. **Attend your first Wednesday training** (every Wed at 8 PM ET)\n5. **Start with EHMP** \u2014 it\'s the fastest path to your first commission because it costs the employer nothing out of pocket\n6. **Use the SEA AI** (that\'s me!) to prepare for client conversations\n7. **Submit your first lead** through the portal\n\nThe 30-Day Reactivation Challenge at /reactivation is a great structured path if you want step-by-step guidance.'
   },
   {
     keywords: ['solar', 'ev', 'charging', 'clean energy', 'green'],
@@ -143,7 +143,7 @@ function saveChatHistory(messages: Message[]) {
 const WELCOME_MESSAGE: Message = {
   id: 0,
   role: 'assistant',
-  content: `Hi Todd! I'm your **Sequoia Enterprise AI assistant** (CEA). Ask me anything about our products, loan criteria, or how to approach a client.
+  content: `Hi Todd! I'm your **Sequoia Enterprise AI assistant** (SEA). Ask me anything about our products, loan criteria, or how to approach a client.
 
 Here are a few things I can help with:
 - Loan product criteria and eligibility
@@ -389,7 +389,7 @@ export default function AIPage() {
                   Consultant Portal
                 </p>
                 <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                  CEA AI Assistant
+                  SEA AI Assistant
                   <span className="inline-flex items-center gap-1 bg-gold-500/20 border border-gold-400/30 text-gold-300 text-xs font-semibold px-2 py-0.5 rounded-full">
                     <Sparkles size={10} />
                     Beta
@@ -479,7 +479,7 @@ export default function AIPage() {
             </div>
 
             <p className="text-xs text-[var(--neutral-400)] mt-2 text-center">
-              CEA AI provides general guidance. Always confirm deal specifics with your underwriting team.
+              SEA AI provides general guidance. Always confirm deal specifics with your underwriting team.
             </p>
           </div>
         </div>
