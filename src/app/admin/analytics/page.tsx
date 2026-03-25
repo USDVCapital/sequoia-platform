@@ -32,7 +32,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  type PieLabelRenderProps,
 } from 'recharts'
 
 // ── Types ────────────────────────────────────────────────────
@@ -782,33 +781,39 @@ export default function FinancialAnalyticsPage() {
                 <h3 className="text-lg font-bold text-sequoia-900">Product Mix</h3>
               </div>
               {pieChartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pieChartData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={110}
-                      innerRadius={50}
-                      paddingAngle={2}
-                      dataKey="value"
-                      label={({ name, payload }: PieLabelRenderProps) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const pct = (payload as any)?.pct ?? ''
-                        return `${name}: ${pct}%`
-                      }}
-                      labelLine={{ stroke: '#999', strokeWidth: 1 }}
-                    >
-                      {pieChartData.map((entry, idx) => (
-                        <Cell key={idx} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      {...ChartTooltipStyle}
-                      formatter={(value: number) => formatCurrency(value)}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <PieChart>
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        innerRadius={45}
+                        paddingAngle={2}
+                        dataKey="value"
+                        label={false}
+                        labelLine={false}
+                      >
+                        {pieChartData.map((entry, idx) => (
+                          <Cell key={idx} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        {...ChartTooltipStyle}
+                        formatter={(value: number) => formatCurrency(value)}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-2 px-2">
+                    {pieChartData.map((entry, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5 text-xs text-brand-neutral-600">
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color }} />
+                        <span>{entry.name}: {entry.pct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-[300px] text-brand-neutral-400 text-sm">
                   No product data available
