@@ -24,6 +24,7 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronRight,
+  Play,
 } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
@@ -774,62 +775,90 @@ export default function MaterialsPage() {
         </div>
       </div>
 
-      {/* Grouped material list */}
-      <div className="space-y-4">
+      {/* Grouped material cards */}
+      <div className="space-y-8">
         {categoryOrder.filter(cat => grouped[cat]).map(category => (
-          <div key={category} className="rounded-xl border border-neutral-200 bg-white overflow-hidden">
+          <div key={category}>
             {/* Category header */}
             <button
               onClick={() => toggleCategory(category)}
-              className="flex items-center gap-3 w-full px-5 py-4 text-left hover:bg-neutral-50 transition-colors"
+              className="flex items-center gap-3 mb-4 group"
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold-100 text-gold-700">
                 {getCategoryIcon(category)}
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-neutral-900 text-sm">{category}</h3>
+              <div className="text-left">
+                <h3 className="font-bold text-neutral-900">{category}</h3>
                 <p className="text-xs text-neutral-500">{grouped[category].length} items</p>
               </div>
-              {expandedCategories.has(category) ? <ChevronDown size={18} className="text-neutral-400" /> : <ChevronRight size={18} className="text-neutral-400" />}
+              {expandedCategories.has(category) ? <ChevronDown size={16} className="text-neutral-400 ml-1" /> : <ChevronRight size={16} className="text-neutral-400 ml-1" />}
             </button>
 
-            {/* Material items */}
+            {/* Material cards grid */}
             {expandedCategories.has(category) && (
-              <div className="border-t border-neutral-100">
-                {grouped[category].map((mat, idx) => (
-                  <div
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {grouped[category].map((mat) => (
+                  <a
                     key={mat.id}
-                    className={`flex items-center gap-4 px-5 py-3.5 hover:bg-neutral-50 transition-colors ${
-                      idx > 0 ? 'border-t border-neutral-100' : ''
-                    }`}
+                    href={`/${mat.filepath}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-xl overflow-hidden border border-neutral-200 bg-white hover:shadow-md hover:border-neutral-300 transition-all group/card flex flex-col"
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-neutral-100 text-neutral-500">
-                      {getFileIcon(mat.fileType)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-neutral-900 text-sm truncate">{mat.title}</span>
-                        <span className="inline-block text-[10px] font-semibold uppercase tracking-wider text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded">
-                          {getFileLabel(mat.fileType)}
-                        </span>
-                        {mat.subcategory && (
-                          <span className="inline-block text-[10px] font-medium text-gold-700 bg-gold-50 px-1.5 py-0.5 rounded">
-                            {mat.subcategory}
+                    {/* Thumbnail */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-50">
+                      {mat.fileType === 'image' ? (
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`/${mat.filepath}`}
+                            alt={mat.title}
+                            loading="lazy"
+                            className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                          />
+                        </>
+                      ) : mat.fileType === 'video' ? (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-900">
+                          <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center mb-2">
+                            <Play size={16} className="text-white ml-0.5 fill-white" />
+                          </div>
+                          <span className="text-white/60 text-[10px] font-medium uppercase tracking-wider">Video</span>
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <div className="w-12 h-14 rounded-lg bg-white shadow-sm border border-neutral-200 flex items-center justify-center mb-2">
+                            {getFileIcon(mat.fileType)}
+                          </div>
+                          <span className="text-neutral-400 text-[10px] font-semibold uppercase tracking-wider">
+                            {getFileLabel(mat.fileType)}
                           </span>
-                        )}
+                        </div>
+                      )}
+                      {/* Download overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover/card:opacity-100">
+                        <div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center">
+                          <Download size={14} className="text-neutral-800" />
+                        </div>
                       </div>
-                      <p className="text-xs text-neutral-500 mt-0.5 line-clamp-1">{mat.description}</p>
+                      {/* File type badge */}
+                      <div className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[9px] font-bold uppercase px-1.5 py-0.5 rounded">
+                        {getFileLabel(mat.fileType)}
+                      </div>
+                      {/* Subcategory badge */}
+                      {mat.subcategory && (
+                        <div className="absolute top-1.5 left-1.5 bg-gold-500/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          {mat.subcategory}
+                        </div>
+                      )}
                     </div>
-                    <a
-                      href={`/${mat.filepath}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-neutral-800 transition-colors"
-                    >
-                      <Download size={12} />
-                      <span className="hidden sm:inline">Download</span>
-                    </a>
-                  </div>
+                    {/* Content */}
+                    <div className="p-3 flex-1 flex flex-col gap-1">
+                      <h4 className="font-bold text-neutral-900 text-xs leading-snug line-clamp-2">
+                        {mat.title}
+                      </h4>
+                      <p className="text-[10px] text-neutral-500 line-clamp-2 mt-auto">{mat.description}</p>
+                    </div>
+                  </a>
                 ))}
               </div>
             )}
