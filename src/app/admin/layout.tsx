@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   LayoutDashboard,
+  Brain,
   Users,
   FileText,
   DollarSign,
@@ -30,6 +31,7 @@ import {
 
 const adminNavItems = [
   { label: 'Dashboard',    href: '/admin',              icon: LayoutDashboard },
+  { label: 'Command Center', href: '/admin/command-center', icon: Brain        },
   { label: 'Consultants',  href: '/admin/consultants',  icon: Users           },
   { label: 'Deals',        href: '/admin/deals',        icon: FileText        },
   { label: 'Enrollments',  href: '/admin/enrollments',  icon: Heart           },
@@ -55,6 +57,7 @@ function getPageTitle(pathname: string): string {
   const last = segment.pop() ?? 'admin'
   const map: Record<string, string> = {
     admin:        'Dashboard',
+    'command-center': 'Command Center',
     consultants:  'Consultants',
     deals:        'Deals',
     enrollments:  'Enrollments',

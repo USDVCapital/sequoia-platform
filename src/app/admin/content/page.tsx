@@ -196,7 +196,13 @@ export default function AdminContentPage() {
           {/* Videos List */}
           <div className="space-y-2">
             {videos.map((video) => (
-              <div key={video.id} className="card-sequoia p-4 flex items-center gap-4">
+              <a
+                key={video.id}
+                href={`https://www.youtube.com/watch?v=${video.youtube_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-sequoia p-4 flex items-center gap-4 hover:shadow-md hover:border-sequoia-300 transition-all cursor-pointer block"
+              >
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-red-100 text-red-600 shrink-0">
                   <Film size={18} />
                 </div>
@@ -218,7 +224,7 @@ export default function AdminContentPage() {
                     {video.category} &middot; <Clock size={10} className="inline" /> {video.duration} &middot; ID: {video.youtube_id}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
             {videos.length === 0 && (
               <p className="text-sm text-brand-neutral-400 text-center py-8">No training videos yet</p>
@@ -235,7 +241,13 @@ export default function AdminContentPage() {
           </h3>
           <div className="space-y-2">
             {materials.map((material) => (
-              <div key={material.id} className="card-sequoia p-4 flex items-center gap-4">
+              <a
+                key={material.id}
+                href={material.filename || '#'}
+                target={material.filename ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                className={`card-sequoia p-4 flex items-center gap-4 block transition-all ${material.filename && !material.is_coming_soon ? 'hover:shadow-md hover:border-sequoia-300 cursor-pointer' : 'opacity-75'}`}
+              >
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-neutral-100 text-brand-neutral-600 shrink-0">
                   <FolderOpen size={18} />
                 </div>
@@ -253,7 +265,7 @@ export default function AdminContentPage() {
                     {material.filename && <> &middot; {material.filename}</>}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
             {materials.length === 0 && (
               <p className="text-sm text-brand-neutral-400 text-center py-8">No materials yet</p>
