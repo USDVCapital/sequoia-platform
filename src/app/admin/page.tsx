@@ -217,22 +217,35 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="card-sequoia p-5">
-        <h3 className="text-base font-bold text-sequoia-900 mb-4">Quick Actions</h3>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/admin/submissions" className="btn-primary text-sm">
-            <ClipboardCheck size={16} />
-            <span style={{ color: '#FFFFFF' }}>Review Submissions</span>
-          </Link>
-          <Link href="/admin/commissions" className="btn-primary text-sm">
-            <CheckCircle size={16} />
-            <span style={{ color: '#FFFFFF' }}>Approve Commissions</span>
-          </Link>
-          <Link href="/admin/content" className="btn-gold text-sm">
-            <Film size={16} />
-            Add Training Video
-          </Link>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Link href="/admin/submissions" className="group rounded-xl border border-neutral-200 bg-white p-5 hover:shadow-md hover:border-sequoia-300 transition-all">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="icon-box-sequoia w-9 h-9"><ClipboardCheck size={16} /></div>
+            <h3 className="text-sm font-bold text-sequoia-900">Review Submissions</h3>
+          </div>
+          <p className="text-xs text-gray-400">Review new contact form submissions and applications</p>
+        </Link>
+        <Link href="/admin/commissions" className="group rounded-xl border border-neutral-200 bg-white p-5 hover:shadow-md hover:border-sequoia-300 transition-all">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="icon-box-gold w-9 h-9"><CheckCircle size={16} /></div>
+            <h3 className="text-sm font-bold text-sequoia-900">Approve Commissions</h3>
+          </div>
+          <p className="text-xs text-gray-400">Review pending commissions and process payouts</p>
+        </Link>
+        <Link href="/admin/content" className="group rounded-xl border border-neutral-200 bg-white p-5 hover:shadow-md hover:border-sequoia-300 transition-all">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="icon-box-sequoia w-9 h-9"><Film size={16} /></div>
+            <h3 className="text-sm font-bold text-sequoia-900">Add Training Video</h3>
+          </div>
+          <p className="text-xs text-gray-400">Upload new training content for the consultant library</p>
+        </Link>
+        <Link href="/admin/analytics" className="group rounded-xl border border-neutral-200 bg-white p-5 hover:shadow-md hover:border-sequoia-300 transition-all">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="icon-box-gold w-9 h-9"><ArrowRight size={16} /></div>
+            <h3 className="text-sm font-bold text-sequoia-900">View Analytics</h3>
+          </div>
+          <p className="text-xs text-gray-400">Financial performance, revenue breakdown, and trends</p>
+        </Link>
       </div>
     </div>
   )
