@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   Building2,
@@ -243,7 +243,7 @@ function StepProgress({ current }: { current: number }) {
 
 // ─── Page Component ─────────────────────────────────────────────────────────
 
-export default function ApplyPage() {
+function ApplyPageInner() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState<FormData>(INITIAL)
@@ -851,5 +851,17 @@ export default function ApplyPage() {
         </div>
       </div>
     </section>
+  )
+}
+
+export default function ApplyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-brand-neutral-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-gold-500" />
+      </div>
+    }>
+      <ApplyPageInner />
+    </Suspense>
   )
 }
