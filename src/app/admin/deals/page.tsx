@@ -40,7 +40,30 @@ export default function AdminDealsPage() {
       .from('leads')
       .select('*, consultant:consultants(full_name, tier)')
       .order('created_at', { ascending: false })
-    setDeals(data ?? [])
+
+    const leads = data ?? []
+
+    // Resolve referral_slug for deals with no consultant assigned
+    const unassigned = leads.filter(d => !d.consultant_id && d.referral_slug)
+    if (unassigned.length > 0) {
+      const slugs = [...new Set(unassigned.map(d => d.referral_slug as string))]
+      const { data: referrers } = await supabase
+        .from('consultants')
+        .select('slug, full_name, tier')
+        .in('slug', slugs)
+      const slugMap = new Map((referrers ?? []).map(r => [r.slug, r]))
+
+      for (const deal of leads) {
+        if (!deal.consultant && deal.referral_slug) {
+          const ref = slugMap.get(deal.referral_slug as string)
+          if (ref) {
+            (deal as Record<string, unknown>).consultant = { full_name: ref.full_name, tier: ref.tier }
+          }
+        }
+      }
+    }
+
+    setDeals(leads)
     setLoading(false)
   }
 
