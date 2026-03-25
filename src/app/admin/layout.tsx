@@ -15,6 +15,7 @@ import {
   Inbox,
   Film,
   BarChart3,
+  GitBranch,
   Menu,
   X,
   LogOut,
@@ -35,6 +36,7 @@ const adminNavItems = [
   { label: 'Submissions',  href: '/admin/submissions',  icon: Inbox           },
   { label: 'Content',      href: '/admin/content',      icon: Film            },
   { label: 'Analytics',    href: '/admin/analytics',    icon: BarChart3       },
+  { label: 'Genealogy',   href: '/admin/genealogy',    icon: GitBranch       },
 ]
 
 // ---------------------------------------------------------------------------
@@ -55,6 +57,7 @@ function getPageTitle(pathname: string): string {
     submissions:  'Submissions',
     content:      'Content',
     analytics:    'Analytics',
+    genealogy:    'Genealogy',
   }
   return map[last] ?? 'Admin'
 }

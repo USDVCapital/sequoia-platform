@@ -16,7 +16,11 @@ export type ConsultantRole = 'consultant' | 'admin'
 export type LeadStatus = 'application' | 'in_review' | 'approved' | 'funded' | 'declined'
 export type WellnessStatus = 'pending' | 'active' | 'cancelled'
 export type CommissionStatus = 'pending' | 'paid' | 'cancelled'
-export type CommissionType = 'loan_referral' | 'loan_personal' | 'wellness_commission' | 'wellness_residual' | 'property_restoration' | 'revenue_share' | 'membership_override' | 'business_funding' | 'clean_energy' | 'rank_bonus'
+export type CommissionType = 'loan_referral' | 'loan_personal' | 'wellness_commission' | 'wellness_residual' | 'property_restoration' | 'revenue_share' | 'membership_override' | 'business_funding' | 'clean_energy' | 'rank_bonus' | 'business_services' | 'sequoia_overhead' | 'bonus_pool'
+
+export type CommissionApprovalStatus = 'pending' | 'reviewed' | 'approved' | 'paid'
+
+export type ProductCategory = 'real_estate_lending' | 'business_funding' | 'business_services' | 'clean_energy' | 'wellness'
 export type PostCategory = 'win' | 'question' | 'tip' | 'announcement'
 export type NotificationType = 'deal_update' | 'new_content' | 'community' | 'training' | 'system'
 export type VideoCategory = 'Agent Training' | 'Commercial Lending' | 'Wellness/EHMP' | 'Success Stories'
@@ -43,6 +47,9 @@ export type Database = {
           avatar_color: string | null
           referral_code: string | null
           referred_by: string | null
+          sponsor_id: string | null
+          slug: string | null
+          rank: ConsultantRank
           is_active: boolean
           onboarding_completed: boolean
           onboarding_completed_at: string | null
@@ -55,7 +62,7 @@ export type Database = {
       leads: {
         Row: {
           id: string
-          consultant_id: string
+          consultant_id: string | null
           client_name: string
           client_email: string
           client_phone: string | null
@@ -68,6 +75,10 @@ export type Database = {
           advisor: string | null
           next_step: string | null
           estimated_close: string | null
+          product_category: ProductCategory | null
+          product_id: string | null
+          metadata: Record<string, unknown> | null
+          referral_slug: string | null
           created_at: string
           updated_at: string
         }
@@ -94,12 +105,19 @@ export type Database = {
         Row: {
           id: string
           consultant_id: string
-          source_type: 'lead' | 'wellness'
+          source_type: 'lead' | 'wellness' | 'property_restoration' | 'clean_energy' | 'business_services' | 'membership'
           source_id: string | null
           source_label: string | null
           commission_type: CommissionType
           amount: number
           status: CommissionStatus
+          deal_id: string | null
+          waterfall_level: number | null
+          override_rate: number | null
+          gross_commission: number | null
+          sequoia_overhead: number | null
+          bonus_pool_amount: number | null
+          approval_status: CommissionApprovalStatus
           period_start: string | null
           period_end: string | null
           paid_at: string | null
@@ -325,12 +343,24 @@ export type Database = {
         Args: Record<string, never>
         Returns: string
       }
-      get_loan_commission_rate: {
-        Args: { consultant_tier: string }
-        Returns: number
+      get_upline_chain: {
+        Args: { p_consultant_id: string; p_max_levels?: number }
+        Returns: { level: number; consultant_id: string; full_name: string; rank: string; tier: string; sponsor_id: string | null; is_active: boolean; slug: string | null }[]
       }
-      get_wellness_payout_rate: {
-        Args: { consultant_tier: string }
+      get_downline_tree: {
+        Args: { p_consultant_id: string; p_max_levels?: number }
+        Returns: { level: number; consultant_id: string; full_name: string; rank: string; tier: string; sponsor_id: string | null; is_active: boolean; slug: string | null; email: string; phone: string | null; created_at: string }[]
+      }
+      get_team_stats: {
+        Args: { p_consultant_id: string }
+        Returns: { total_team: number; active_team: number; team_by_level: unknown }[]
+      }
+      calculate_deal_waterfall: {
+        Args: { p_deal_id: string; p_gross_commission: number }
+        Returns: { waterfall_level: number; consultant_id: string | null; consultant_name: string; consultant_rank: string | null; role: string; rate: number; amount: number; is_recaptured: boolean }[]
+      }
+      get_ehmp_pepm_rate: {
+        Args: { employee_count: number }
         Returns: number
       }
       generate_monthly_wellness_commissions: {
@@ -382,4 +412,34 @@ export type AuthUser = {
   id: string
   email: string
   consultant: Consultant
+}
+
+// ── Waterfall / Genealogy types ─────────────────────────────
+
+export interface WaterfallPayout {
+  waterfallLevel: number        // -1 = Sequoia, 0 = agent, 1-6 = override levels, 99 = bonus pool
+  consultantId: string | null
+  consultantName: string
+  consultantRank: string | null
+  role: string                  // 'sequoia_overhead' | 'agent_personal' | 'agent_referral' | 'override_level_N' | 'recaptured_level_N' | 'bonus_pool'
+  rate: number
+  amount: number
+  isRecaptured: boolean
+}
+
+export interface UplineNode {
+  level: number
+  consultantId: string
+  fullName: string
+  rank: string
+  tier: string
+  sponsorId: string | null
+  isActive: boolean
+  slug: string | null
+}
+
+export interface DownlineNode extends UplineNode {
+  email: string
+  phone: string | null
+  createdAt: string
 }
