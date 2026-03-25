@@ -82,14 +82,16 @@ export default function AdminContentPage() {
 
   // Close menu on outside click
   useEffect(() => {
+    if (!openMenuId) return
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpenMenuId(null)
       }
     }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
-  }, [])
+    // Delay listener to avoid catching the opening click
+    const timer = setTimeout(() => document.addEventListener('mousedown', handleClick), 0)
+    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handleClick) }
+  }, [openMenuId])
 
   // Close modal on Escape
   useEffect(() => {
@@ -245,7 +247,7 @@ export default function AdminContentPage() {
           </div>
 
           {/* Video Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {videos.map((video) => {
               // Inline edit mode
               if (editingVideoId === video.id) {
@@ -331,10 +333,10 @@ export default function AdminContentPage() {
                   onClick={() => setActiveVideo(video)}
                 >
                   {/* Thumbnail */}
-                  <div className="relative h-44 bg-gray-900 overflow-hidden">
+                  <div className="relative aspect-video bg-gray-900 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
+                      src={`https://img.youtube.com/vi/${video.youtube_id}/hqdefault.jpg`}
                       alt={video.title}
                       className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                     />
@@ -427,7 +429,7 @@ export default function AdminContentPage() {
           <h3 className="text-base font-bold text-sequoia-900">
             Materials ({materials.length})
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {materials.map((material) => (
               <a
                 key={material.id}
@@ -541,7 +543,7 @@ export default function AdminContentPage() {
               <div className="rounded-lg overflow-hidden border border-neutral-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`https://img.youtube.com/vi/${newVideo.youtubeId}/mqdefault.jpg`}
+                  src={`https://img.youtube.com/vi/${newVideo.youtubeId}/hqdefault.jpg`}
                   alt="Thumbnail preview"
                   className="w-full h-auto"
                 />
