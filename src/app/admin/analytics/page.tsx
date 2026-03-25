@@ -648,13 +648,26 @@ export default function FinancialAnalyticsPage() {
                 <LineChart data={trendChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.6)" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="rgba(255,255,255,0.6)" tick={{ fontSize: 12 }} tickFormatter={(v: number) => formatCompact(v)} />
+                  <YAxis
+                    yAxisId="left"
+                    stroke="#2d7a50"
+                    tick={{ fontSize: 12, fill: '#2d7a50' }}
+                    tickFormatter={(v: number) => formatCompact(v)}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    stroke="#C8A84E"
+                    tick={{ fontSize: 12, fill: '#C8A84E' }}
+                    tickFormatter={(v: number) => formatCompact(v)}
+                  />
                   <Tooltip
                     {...ChartTooltipStyle}
                     formatter={(value: number) => formatCurrency(value)}
                   />
                   <Legend wrapperStyle={{ color: '#fff', fontSize: '13px' }} />
                   <Line
+                    yAxisId="left"
                     type="monotone"
                     dataKey="Funded Volume"
                     stroke="#2d7a50"
@@ -663,6 +676,7 @@ export default function FinancialAnalyticsPage() {
                     activeDot={{ r: 6 }}
                   />
                   <Line
+                    yAxisId="right"
                     type="monotone"
                     dataKey="Sequoia Revenue"
                     stroke="#C8A84E"
