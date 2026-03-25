@@ -13,7 +13,7 @@
 -- Update Allen Wu to be the root with proper genealogy fields
 UPDATE public.consultants
 SET sponsor_id = NULL, slug = 'allen-wu', rank = 'executive_director'
-WHERE email = 'allen@seqsolution.com';
+WHERE email = 'allen.wu@seqsolution.com';
 
 -- ── L1: 5 Direct Reports ───────────────────────────────────
 
@@ -31,14 +31,14 @@ DECLARE
   i INTEGER;
 BEGIN
   -- Find root
-  SELECT id INTO v_root_id FROM public.consultants WHERE email = 'allen@seqsolution.com';
+  SELECT id INTO v_root_id FROM public.consultants WHERE email = 'allen.wu@seqsolution.com';
   IF v_root_id IS NULL THEN
-    RAISE EXCEPTION 'Root consultant (allen@seqsolution.com) not found. Run base seed first.';
+    RAISE EXCEPTION 'Root consultant (allen.wu@seqsolution.com) not found. Run base seed first.';
   END IF;
 
   -- Update existing consultants with genealogy fields
   UPDATE public.consultants SET sponsor_id = v_root_id, slug = 'todd-billings', rank = 'managing_director'
-    WHERE email = 'todd@sequoia-demo.com';
+    WHERE email = 'todd@usdvcapital.com';
 
   -- ── L1: 5 Direct Reports of Allen Wu ────────────────────
   INSERT INTO public.consultants (email, full_name, phone, consultant_id, tier, role, sponsor_id, slug, rank, is_active, onboarding_completed)
