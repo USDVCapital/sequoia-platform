@@ -432,10 +432,19 @@ export default function FinancialAnalyticsPage() {
       const month = c.created_at.substring(0, 7)
       const existing = monthMap.get(month) || { dealIds: new Set<string>(), volume: 0, commissions: 0, sequoiaRevenue: 0 }
       existing.commissions += Number(c.amount)
-      if (c.waterfall_level === -1 || (c.waterfall_level !== null && c.waterfall_level >= 1 && c.waterfall_level <= 6 && !c.consultant_id)) {
+      // Sequoia revenue = overhead (-1) + bonus pool (99) + override levels (1-6)
+      if (c.waterfall_level !== null && c.waterfall_level !== 0) {
         existing.sequoiaRevenue += Number(c.amount)
       }
       monthMap.set(month, existing)
+    }
+
+    // If no waterfall-level commissions exist, estimate Sequoia revenue
+    // as overhead (30%) of gross commissions (2% of funded volume)
+    for (const [month, data] of monthMap) {
+      if (data.sequoiaRevenue === 0 && data.volume > 0) {
+        data.sequoiaRevenue = Math.round(data.volume * 0.02 * 0.30)
+      }
     }
 
     const rows: MonthlyRow[] = []
