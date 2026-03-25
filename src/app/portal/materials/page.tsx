@@ -81,6 +81,32 @@ function getFileLabel(fileType: string): string {
   }
 }
 
+function getCategoryGradient(category: string): string {
+  switch (category) {
+    case 'Real Estate': return 'from-emerald-800 to-emerald-950'
+    case 'Business Funding': return 'from-blue-800 to-blue-950'
+    case 'EHMP / Wellness': return 'from-teal-700 to-teal-950'
+    case 'Property Claims': return 'from-amber-800 to-amber-950'
+    case 'Clean Energy': return 'from-green-700 to-green-950'
+    case 'Company Materials': return 'from-slate-700 to-slate-900'
+    case 'Compensation': return 'from-yellow-700 via-amber-800 to-yellow-950'
+    default: return 'from-neutral-700 to-neutral-900'
+  }
+}
+
+function getCategoryIconLarge(category: string) {
+  switch (category) {
+    case 'Real Estate': return <Building2 size={32} />
+    case 'Business Funding': return <Banknote size={32} />
+    case 'EHMP / Wellness': return <Heart size={32} />
+    case 'Property Claims': return <Shield size={32} />
+    case 'Clean Energy': return <Zap size={32} />
+    case 'Company Materials': return <Briefcase size={32} />
+    case 'Compensation': return <DollarSign size={32} />
+    default: return <FolderOpen size={32} />
+  }
+}
+
 function getCategoryIcon(category: string) {
   switch (category) {
     case 'Real Estate': return <Building2 size={20} />
@@ -806,32 +832,36 @@ export default function MaterialsPage() {
                     className="rounded-xl overflow-hidden border border-neutral-200 bg-white hover:shadow-md hover:border-neutral-300 transition-all group/card flex flex-col"
                   >
                     {/* Thumbnail */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-50">
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       {mat.fileType === 'image' ? (
-                        <>
+                        <div className="absolute inset-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={`/${mat.filepath}`}
                             alt={mat.title}
                             loading="lazy"
-                            className="absolute inset-0 w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
                           />
-                        </>
-                      ) : mat.fileType === 'video' ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-800 to-neutral-900">
-                          <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center mb-2">
-                            <Play size={16} className="text-white ml-0.5 fill-white" />
-                          </div>
-                          <span className="text-white/60 text-[10px] font-medium uppercase tracking-wider">Video</span>
                         </div>
                       ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <div className="w-12 h-14 rounded-lg bg-white shadow-sm border border-neutral-200 flex items-center justify-center mb-2">
-                            {getFileIcon(mat.fileType)}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryGradient(mat.category)} flex flex-col items-center justify-center p-3`}>
+                          <div className="text-white/20 mb-2">
+                            {getCategoryIconLarge(mat.category)}
                           </div>
-                          <span className="text-neutral-400 text-[10px] font-semibold uppercase tracking-wider">
-                            {getFileLabel(mat.fileType)}
-                          </span>
+                          <div className="flex items-center gap-1.5 mb-1.5">
+                            <div className="text-white/70">{getFileIcon(mat.fileType)}</div>
+                            <span className="text-white/70 text-[10px] font-bold uppercase tracking-wider">
+                              {getFileLabel(mat.fileType)}
+                            </span>
+                          </div>
+                          <p className="text-white text-[11px] font-semibold text-center leading-tight line-clamp-2 px-1">
+                            {mat.title}
+                          </p>
+                          {mat.fileType === 'video' && (
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center">
+                              <Play size={12} className="text-white ml-0.5 fill-white" />
+                            </div>
+                          )}
                         </div>
                       )}
                       {/* Download overlay */}
