@@ -282,7 +282,7 @@ export default function AdminProductsPage() {
                 {/* Rate summary pills */}
                 <div className="hidden sm:flex items-center gap-2">
                   <span className="text-[10px] px-2 py-1 rounded-full bg-amber-50 text-amber-700 font-medium border border-amber-200">
-                    Agent: {product.same_rate ? pct(product.agent_rate_personal) : `${pct(product.agent_rate_referral)} / ${pct(product.agent_rate_personal)}`}
+                    Agent: {product.same_rate ? product.agent_label_personal : `${pct(product.agent_rate_referral)} / ${pct(product.agent_rate_personal)}`}
                   </span>
                   {product.overhead_rate > 0 && (
                     <span className="text-[10px] px-2 py-1 rounded-full bg-gray-50 text-gray-600 font-medium border border-gray-200">
@@ -290,7 +290,9 @@ export default function AdminProductsPage() {
                     </span>
                   )}
                   <span className="text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-200">
-                    L1: {pct(product.override_l1)}
+                    {product.category_key === 'wellness'
+                      ? `L1: $1/emp`
+                      : `L1: ${pct(product.override_l1)}`}
                   </span>
                 </div>
 
@@ -401,49 +403,110 @@ export default function AdminProductsPage() {
                   ) : (
                     /* Read-only view */
                     <div className="space-y-4">
-                      <div>
-                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Agent Commission</h4>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {product.category_key === 'wellness' ? (
+                        /* EHMP/Wellness — show PEPM dollar amounts */
+                        <>
                           <div>
-                            <span className="text-xs text-gray-400">Referral Rate</span>
-                            <p className="text-sm font-semibold text-gray-800">{pct(product.agent_rate_referral)}</p>
-                          </div>
-                          <div>
-                            <span className="text-xs text-gray-400">Personal Rate</span>
-                            <p className="text-sm font-semibold text-gray-800">{pct(product.agent_rate_personal)}</p>
-                          </div>
-                          <div>
-                            <span className="text-xs text-gray-400">Overhead</span>
-                            <p className="text-sm font-semibold text-gray-800">{pct(product.overhead_rate)}</p>
-                          </div>
-                          <div>
-                            <span className="text-xs text-gray-400">Bonus Pool</span>
-                            <p className="text-sm font-semibold text-gray-800">{pct(product.bonus_pool_rate)}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Override Rates (6 Levels)</h4>
-                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-                          {[
-                            ['L1', product.override_l1],
-                            ['L2', product.override_l2],
-                            ['L3', product.override_l3],
-                            ['L4', product.override_l4],
-                            ['L5', product.override_l5],
-                            ['L6', product.override_l6],
-                          ].map(([label, val]) => (
-                            <div key={label as string}>
-                              <span className="text-xs text-gray-400">{label as string}</span>
-                              <p className="text-sm font-semibold text-gray-800">{pct(val as number)}</p>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Agent Commission (PEPM, Paid Monthly)</h4>
+                            <div className="rounded-lg border border-neutral-200 overflow-hidden">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="bg-[#0D2B1E] text-white text-xs">
+                                    <th className="px-4 py-2 text-left font-semibold">Group Size</th>
+                                    <th className="px-4 py-2 text-left font-semibold">Commission</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr className="border-b border-neutral-100">
+                                    <td className="px-4 py-2 text-gray-600">5 – 199 employees</td>
+                                    <td className="px-4 py-2 font-bold text-sequoia-900">$20 PEPM</td>
+                                  </tr>
+                                  <tr className="border-b border-neutral-100 bg-neutral-50">
+                                    <td className="px-4 py-2 text-gray-600">200 – 499 employees</td>
+                                    <td className="px-4 py-2 font-bold text-sequoia-900">$22 PEPM</td>
+                                  </tr>
+                                  <tr>
+                                    <td className="px-4 py-2 text-gray-600">500+ employees</td>
+                                    <td className="px-4 py-2 font-bold text-sequoia-900">$24 PEPM</td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Team Revenue Share (Override)</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-center">
+                                <span className="text-xs text-emerald-600 font-medium">1st Level</span>
+                                <p className="text-lg font-bold text-emerald-800">$1.00</p>
+                                <span className="text-[10px] text-emerald-500">per employee</span>
+                              </div>
+                              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-center">
+                                <span className="text-xs text-emerald-600 font-medium">2nd Level</span>
+                                <p className="text-lg font-bold text-emerald-800">$1.00</p>
+                                <span className="text-[10px] text-emerald-500">per employee</span>
+                              </div>
+                              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-center">
+                                <span className="text-xs text-emerald-600 font-medium">3rd Level</span>
+                                <p className="text-lg font-bold text-emerald-800">$0.50</p>
+                                <span className="text-[10px] text-emerald-500">per employee</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+                            Paid in perpetuity while employees remain enrolled. Enroll 500+ employees = $10,600+/month in residual income.
+                          </div>
+                        </>
+                      ) : (
+                        /* Standard percentage-based products */
+                        <>
+                          <div>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Agent Commission</h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                              <div>
+                                <span className="text-xs text-gray-400">Referral Rate</span>
+                                <p className="text-sm font-semibold text-gray-800">{pct(product.agent_rate_referral)}</p>
+                              </div>
+                              <div>
+                                <span className="text-xs text-gray-400">Personal Rate</span>
+                                <p className="text-sm font-semibold text-gray-800">{pct(product.agent_rate_personal)}</p>
+                              </div>
+                              <div>
+                                <span className="text-xs text-gray-400">Overhead</span>
+                                <p className="text-sm font-semibold text-gray-800">{pct(product.overhead_rate)}</p>
+                              </div>
+                              <div>
+                                <span className="text-xs text-gray-400">Bonus Pool</span>
+                                <p className="text-sm font-semibold text-gray-800">{pct(product.bonus_pool_rate)}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Override Rates (6 Levels)</h4>
+                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                              {[
+                                ['L1', product.override_l1],
+                                ['L2', product.override_l2],
+                                ['L3', product.override_l3],
+                                ['L4', product.override_l4],
+                                ['L5', product.override_l5],
+                                ['L6', product.override_l6],
+                              ].map(([label, val]) => (
+                                <div key={label as string}>
+                                  <span className="text-xs text-gray-400">{label as string}</span>
+                                  <p className="text-sm font-semibold text-gray-800">{pct(val as number)}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
 
                       <div className="flex items-center gap-6 text-xs text-gray-400">
-                        <span>Default commission rate: {pct(product.default_commission_rate)}</span>
+                        {product.category_key !== 'wellness' && <span>Default commission rate: {pct(product.default_commission_rate)}</span>}
                         <span>Labels: {product.agent_label_referral} / {product.agent_label_personal}</span>
                         {product.same_rate && <span className="text-amber-600 font-medium">Same rate (no distinction)</span>}
                       </div>
