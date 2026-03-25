@@ -153,12 +153,12 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatsCard icon={Users} label="Total Consultants" value={stats.totalConsultants} />
-        <StatsCard icon={UserCheck} label="Active Consultants" value={stats.activeConsultants} />
-        <StatsCard icon={FileText} label="Total Deals" value={stats.totalDeals} />
-        <StatsCard icon={DollarSign} label="Pending Commissions" value={formatCurrency(stats.pendingCommissions)} accentColor="gold" />
-        <StatsCard icon={Heart} label="EHMP Enrollees" value={stats.ehmpEnrollees.toLocaleString()} />
-        <StatsCard icon={TrendingUp} label="Total Funded Volume" value={formatCurrency(stats.totalFundedVolume)} accentColor="gold" />
+        <StatsCard icon={Users} label="Total Consultants" value={stats.totalConsultants} href="/admin/consultants" />
+        <StatsCard icon={UserCheck} label="Active Consultants" value={stats.activeConsultants} href="/admin/consultants" />
+        <StatsCard icon={FileText} label="Total Deals" value={stats.totalDeals} href="/admin/deals" />
+        <StatsCard icon={DollarSign} label="Pending Commissions" value={formatCurrency(stats.pendingCommissions)} accentColor="gold" href="/admin/commissions" />
+        <StatsCard icon={Heart} label="EHMP Enrollees" value={stats.ehmpEnrollees.toLocaleString()} href="/admin/enrollments" />
+        <StatsCard icon={TrendingUp} label="Total Funded Volume" value={formatCurrency(stats.totalFundedVolume)} accentColor="gold" href="/admin/deals" />
       </div>
 
       {/* Recent Activity */}
@@ -173,13 +173,13 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {recentDeals.map((deal) => (
-              <div key={deal.id} className="flex items-center justify-between py-2 border-b border-brand-neutral-100 last:border-0">
+              <Link key={deal.id} href={`/admin/deals/${deal.id}`} className="flex items-center justify-between py-2 border-b border-brand-neutral-100 last:border-0 hover:bg-brand-neutral-50 rounded px-2 -mx-2 transition-colors">
                 <div>
                   <p className="text-sm font-semibold text-sequoia-900">{deal.client_name}</p>
                   <p className="text-xs text-brand-neutral-500">{deal.funding_type} &middot; {formatDate(deal.created_at)}</p>
                 </div>
                 {statusBadge(deal.status)}
-              </div>
+              </Link>
             ))}
             {recentDeals.length === 0 && (
               <p className="text-sm text-brand-neutral-400 text-center py-4">No deals yet</p>
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {recentSubmissions.map((sub) => (
-              <div key={sub.id} className="flex items-center justify-between py-2 border-b border-brand-neutral-100 last:border-0">
+              <Link key={sub.id} href="/admin/submissions" className="flex items-center justify-between py-2 border-b border-brand-neutral-100 last:border-0 hover:bg-brand-neutral-50 rounded px-2 -mx-2 transition-colors">
                 <div>
                   <p className="text-sm font-semibold text-sequoia-900">{sub.full_name}</p>
                   <p className="text-xs text-brand-neutral-500">{sub.role} &middot; {formatDate(sub.created_at)}</p>
@@ -207,7 +207,7 @@ export default function AdminDashboard() {
                 ) : (
                   <span className="badge-gold text-xs">New</span>
                 )}
-              </div>
+              </Link>
             ))}
             {recentSubmissions.length === 0 && (
               <p className="text-sm text-brand-neutral-400 text-center py-4">No submissions yet</p>
