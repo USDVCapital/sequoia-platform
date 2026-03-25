@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import type { Lead, Consultant } from '@/lib/supabase/types'
@@ -25,6 +26,7 @@ const statusBadgeColors: Record<string, string> = {
 }
 
 export default function AdminDealsPage() {
+  const router = useRouter()
   const [deals, setDeals] = useState<LeadWithConsultant[]>([])
   const [loading, setLoading] = useState(true)
   const [actionDealId, setActionDealId] = useState<string | null>(null)
@@ -184,6 +186,7 @@ export default function AdminDealsPage() {
         <DataTable
           columns={columns}
           data={deals as unknown as Record<string, unknown>[]}
+          onRowClick={(row) => router.push(`/admin/deals/${row.id}`)}
           searchPlaceholder="Search by client name..."
           searchKeys={['client_name', 'business_name']}
           filters={[
