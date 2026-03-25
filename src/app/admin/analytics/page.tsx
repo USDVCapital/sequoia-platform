@@ -239,7 +239,7 @@ export default function FinancialAnalyticsPage() {
         supabase.from('commissions').select('id, consultant_id, amount, waterfall_level, gross_commission, commission_type, deal_id, created_at, status'),
         supabase.from('leads').select('id, status, funded_amount, product_category, created_at').eq('status', 'funded'),
         supabase.from('leads').select('id', { count: 'exact', head: true }).in('status', ['application', 'in_review', 'approved']),
-        supabase.from('consultants').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('consultants').select('id', { count: 'exact', head: true }).eq('is_active', true),
         supabase.from('consultants').select('id', { count: 'exact', head: true }),
       ])
 
