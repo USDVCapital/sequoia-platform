@@ -24,6 +24,12 @@ const consultantLinks = [
   { label: 'Consultant Login', href: '/login' },
 ]
 
+const legalLinks = [
+  { label: 'Income Disclosure', href: '/legal/income-disclosure' },
+  { label: 'Terms & Conditions', href: '/terms' },
+  { label: 'Privacy Policy', href: '/privacy' },
+]
+
 const socialLinks = [
   {
     label: 'LinkedIn',
@@ -95,7 +101,7 @@ export default function Footer() {
       {/* Main grid */}
       <div className="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 lg:px-8">
         {/* Brand + columns */}
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand block – takes 1 extra column on large screens */}
           <div className="lg:col-span-1">
             <Link
@@ -139,7 +145,14 @@ export default function Footer() {
             ))}
           </FooterColumn>
 
-          {/* Column 4 – Connect */}
+          {/* Column 4 – Legal */}
+          <FooterColumn heading="Legal">
+            {legalLinks.map((l) => (
+              <FooterLink key={l.href} href={l.href} label={l.label} />
+            ))}
+          </FooterColumn>
+
+          {/* Column 5 – Connect */}
           <FooterColumn heading="Connect">
             {socialLinks.map(({ label, href, Icon }) => (
               <li key={href}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   Play,
   Clock,
@@ -282,6 +283,39 @@ const ALL_VIDEOS: TrainingVideo[] = [
   },
 ]
 
+// ── Article Data ──────────────────────────────────────────────────────────────
+
+interface TrainingArticle {
+  id: string
+  title: string
+  description: string
+  category: string
+  duration: string
+  badge: string
+  route: string
+}
+
+const ALL_ARTICLES: TrainingArticle[] = [
+  {
+    id: 'you-are-the-boss',
+    title: 'You Are the Boss',
+    description: 'Understand your role as an independent contractor and the network marketing model that powers your business.',
+    category: 'Mindset & Business Basics',
+    duration: '5 min read',
+    badge: 'Foundational',
+    route: '/resources/you-are-the-boss',
+  },
+  {
+    id: 'how-to-be-liked',
+    title: 'How to Be Liked by Others',
+    description: '17 principles for building the human connections that drive team growth and client loyalty.',
+    category: 'Mindset & Business Basics',
+    duration: '4 min read',
+    badge: 'Foundational',
+    route: '/resources/how-to-be-liked',
+  },
+]
+
 const CATEGORY_COLORS: Record<VideoCategory, string> = {
   'Agent Training': 'bg-sequoia-100 text-sequoia-800',
   'Commercial Lending': 'bg-blue-50 text-blue-700',
@@ -366,6 +400,41 @@ function VideoCard({ video }: { video: TrainingVideo }) {
   )
 }
 
+// ── Article Card ─────────────────────────────────────────────────────────────
+
+function ArticleCard({ article }: { article: TrainingArticle }) {
+  return (
+    <Link
+      href={article.route}
+      className="card-sequoia overflow-hidden p-0 flex flex-col group cursor-pointer"
+    >
+      {/* Icon header */}
+      <div className="relative h-40 bg-[#0D2B1E] flex items-center justify-center">
+        <BookOpen size={48} className="text-[#C9A84C] opacity-80 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute top-2 left-2 bg-[#C9A84C] text-[#0D2B1E] text-xs font-bold px-2 py-0.5 rounded-full">
+          {article.badge}
+        </div>
+        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/40 rounded-full px-2 py-0.5 text-white text-xs font-medium">
+          <Clock size={10} />
+          {article.duration}
+        </div>
+      </div>
+      <div className="p-4 flex flex-col gap-2 flex-1">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 self-start">
+          {article.category}
+        </span>
+        <h3 className="font-bold text-[var(--sequoia-900)] text-sm leading-snug line-clamp-2">
+          {article.title}
+        </h3>
+        <p className="text-xs text-gray-500 line-clamp-2">{article.description}</p>
+        <span className="mt-auto text-xs font-semibold text-[#C9A84C] flex items-center gap-1">
+          Read <ChevronRight size={12} />
+        </span>
+      </div>
+    </Link>
+  )
+}
+
 // ── Section ───────────────────────────────────────────────────────────────────
 
 function Section({
@@ -395,7 +464,7 @@ function Section({
 
 // ── Full Library with Filters ─────────────────────────────────────────────────
 
-type LibraryFilter = 'All' | VideoCategory
+type LibraryFilter = 'All' | VideoCategory | 'Reading'
 
 const LIBRARY_FILTERS: LibraryFilter[] = [
   'All',
@@ -403,15 +472,20 @@ const LIBRARY_FILTERS: LibraryFilter[] = [
   'Commercial Lending',
   'Wellness/EHMP',
   'Success Stories',
+  'Reading',
 ]
 
 function FullLibrary() {
   const [filter, setFilter] = useState<LibraryFilter>('All')
 
-  const filtered =
-    filter === 'All'
+  const isReading = filter === 'Reading'
+  const filtered = isReading
+    ? []
+    : filter === 'All'
       ? ALL_VIDEOS
       : ALL_VIDEOS.filter((v) => v.category === filter)
+
+  const showArticles = filter === 'All' || isReading
 
   return (
     <section className="mb-12">
@@ -419,7 +493,7 @@ function FullLibrary() {
         <span className="icon-box-sequoia w-9 h-9"><Filter size={18} /></span>
         <div>
           <h2 className="text-lg font-bold text-[var(--sequoia-900)]">Full Library</h2>
-          <p className="text-sm text-[var(--neutral-400)]">{ALL_VIDEOS.length} videos</p>
+          <p className="text-sm text-[var(--neutral-400)]">{ALL_VIDEOS.length} videos &middot; {ALL_ARTICLES.length} articles</p>
         </div>
       </div>
 
@@ -453,7 +527,21 @@ function FullLibrary() {
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {/* Articles section */}
+      {showArticles && (
+        <div className={filtered.length > 0 ? 'mt-8' : ''}>
+          {filtered.length > 0 && (
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Reading</h3>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {ALL_ARTICLES.map((a) => (
+              <ArticleCard key={a.id} article={a} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {filtered.length === 0 && !showArticles && (
         <div className="text-center py-16 text-gray-400">
           <Video size={40} className="mx-auto mb-3 opacity-40" />
           <p className="font-medium">No videos in this category yet.</p>
