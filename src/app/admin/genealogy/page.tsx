@@ -362,7 +362,18 @@ export default function AdminGenealogyPage() {
       {/* Stats bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(s => (
-          <div key={s.label} className="rounded-xl border border-neutral-200 bg-white p-5">
+          <button
+            key={s.label}
+            onClick={() => {
+              if (s.label === 'Active') setStatusFilter('active')
+              else if (s.label === 'Inactive') setStatusFilter('inactive')
+              else setStatusFilter('all')
+            }}
+            className={`rounded-xl border bg-white p-5 text-left transition-all hover:shadow-md cursor-pointer ${
+              (s.label === 'Active' && statusFilter === 'active') || (s.label === 'Inactive' && statusFilter === 'inactive')
+                ? 'border-sequoia-400 shadow-sm' : 'border-neutral-200'
+            }`}
+          >
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg bg-gray-50 ${s.color}`}>
                 <s.icon className="h-5 w-5" />
@@ -372,7 +383,7 @@ export default function AdminGenealogyPage() {
                 <p className="text-xs text-gray-400">{s.label}</p>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
 

@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import StatsCard from '@/components/admin/StatsCard'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   ArrowLeft,
   TrendingUp,
@@ -12,6 +13,7 @@ import {
   DollarSign,
   UserCheck,
   UserX,
+  Eye,
 } from 'lucide-react'
 import type { Consultant, Lead, Commission } from '@/lib/supabase/types'
 
@@ -47,6 +49,7 @@ const statusBadgeColors: Record<string, string> = {
 export default function ConsultantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
+  const { startImpersonation } = useAuth()
   const [consultant, setConsultant] = useState<Consultant | null>(null)
   const [leads, setLeads] = useState<Lead[]>([])
   const [commissions, setCommissions] = useState<Commission[]>([])
@@ -186,6 +189,16 @@ export default function ConsultantDetailPage({ params }: { params: Promise<{ id:
             <span style={{ color: '#FFFFFF' }}>
               {consultant.is_active ? 'Deactivate' : 'Activate'}
             </span>
+          </button>
+          <button
+            onClick={() => {
+              startImpersonation(consultant.id, consultant.full_name, consultant.email)
+              router.push('/portal')
+            }}
+            className="btn-primary text-sm bg-amber-600 hover:bg-amber-700"
+          >
+            <Eye size={16} />
+            <span style={{ color: '#FFFFFF' }}>View as Agent</span>
           </button>
         </div>
       </div>

@@ -19,11 +19,22 @@ interface AuthUser {
   consultant: Consultant | null
 }
 
+interface ImpersonatingAs {
+  id: string
+  name: string
+  email: string
+}
+
 interface AuthContextType {
   isLoggedIn: boolean
   isLoading: boolean
   user: AuthUser | null
   session: Session | null
+  impersonatingAs: ImpersonatingAs | null
+  startImpersonation: (consultantId: string, name: string, email: string) => void
+  stopImpersonation: () => void
+  /** Returns the effective consultant ID — the impersonated ID when impersonating, otherwise the real user's ID */
+  effectiveConsultantId: string
   login: (email: string, password: string) => Promise<{ error?: string }>
   signup: (email: string, password: string, fullName: string) => Promise<{ error?: string }>
   logout: () => void
@@ -64,10 +75,43 @@ function buildAuthUser(supabaseUser: User, consultant: Consultant | null): AuthU
   }
 }
 
+const IMPERSONATION_KEY = 'sequoia_impersonating_as'
+
+function loadImpersonation(): ImpersonatingAs | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(IMPERSONATION_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<AuthUser | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [impersonatingAs, setImpersonatingAs] = useState<ImpersonatingAs | null>(loadImpersonation)
+
+  const startImpersonation = useCallback((consultantId: string, name: string, email: string) => {
+    const val: ImpersonatingAs = { id: consultantId, name, email }
+    sessionStorage.setItem(IMPERSONATION_KEY, JSON.stringify(val))
+    setImpersonatingAs(val)
+  }, [])
+
+  const stopImpersonation = useCallback(() => {
+    sessionStorage.removeItem(IMPERSONATION_KEY)
+    setImpersonatingAs(null)
+  }, [])
+
+  // Only allow admins to impersonate — clear if the user is not an admin
+  useEffect(() => {
+    if (user && user.role !== 'admin' && impersonatingAs) {
+      stopImpersonation()
+    }
+  }, [user, impersonatingAs, stopImpersonation])
+
+  const effectiveConsultantId = impersonatingAs?.id ?? user?.consultantId ?? ''
 
   const supabase = createClient()
 
@@ -191,6 +235,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         user,
         session,
+        impersonatingAs,
+        startImpersonation,
+        stopImpersonation,
+        effectiveConsultantId,
         login,
         signup,
         logout,

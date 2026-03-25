@@ -204,7 +204,7 @@ function Sidebar({ pathname, userName, userInitials, userId, isAdmin, onClose, o
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { isLoggedIn, isLoading, user, logout } = useAuth()
+  const { isLoggedIn, isLoading, user, logout, impersonatingAs, stopImpersonation } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const pageTitle = getPageTitle(pathname)
 
@@ -331,6 +331,25 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
             </Link>
           </div>
         </header>
+
+        {/* Impersonation banner */}
+        {impersonatingAs && (
+          <div className="shrink-0 flex items-center justify-between gap-3 px-4 sm:px-6 py-2.5 bg-amber-100 border-b border-amber-300 text-amber-900">
+            <p className="text-sm font-semibold">
+              Viewing as {impersonatingAs.name} ({impersonatingAs.email})
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                stopImpersonation()
+                router.push('/admin/consultants')
+              }}
+              className="shrink-0 px-3 py-1 text-xs font-bold rounded-md bg-amber-800 text-white hover:bg-amber-900 transition-colors"
+            >
+              Stop Impersonating
+            </button>
+          </div>
+        )}
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
