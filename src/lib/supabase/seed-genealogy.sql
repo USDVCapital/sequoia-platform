@@ -26,9 +26,7 @@ DECLARE
   v_l3_ids UUID[] := ARRAY[]::UUID[];
   v_l4_ids UUID[] := ARRAY[]::UUID[];
   v_l5_ids UUID[] := ARRAY[]::UUID[];
-  v_new_id UUID;
   v_deal_id UUID;
-  i INTEGER;
 BEGIN
   -- Find root
   SELECT id INTO v_root_id FROM public.consultants WHERE email = 'allen.wu@seqsolution.com';
@@ -48,7 +46,7 @@ BEGIN
     ('james.chen@sequoia-demo.com', 'James Chen', '(555) 201-0003', 'SEQ-2025-0103', 'active', 'consultant', v_root_id, 'james-chen', 'lc_3', TRUE, TRUE),
     ('sarah.johnson@sequoia-demo.com', 'Sarah Johnson', '(555) 201-0004', 'SEQ-2025-0104', 'associate', 'consultant', v_root_id, 'sarah-johnson', 'lc_2', FALSE, TRUE),
     ('david.kim@sequoia-demo.com', 'David Kim', '(555) 201-0005', 'SEQ-2025-0105', 'active', 'consultant', v_root_id, 'david-kim', 'lc_3', TRUE, TRUE)
-  RETURNING id INTO v_new_id; -- only gets last one, we'll re-query
+  ON CONFLICT (email) DO NOTHING;
 
   -- Collect L1 IDs
   SELECT array_agg(id ORDER BY consultant_id) INTO v_l1_ids
