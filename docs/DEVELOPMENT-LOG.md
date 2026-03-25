@@ -2,6 +2,57 @@
 
 ---
 
+## 2026-03-25 (Session 4) — Command Center Deep Links, Analytics Fixes, UI Polish, Bulk Agent Seeding, SEA Rename
+Built by: Todd Billings + Claude Code
+
+### Command Center Card Deep Links
+- All 4 alert cards (Agents at Risk, New This Month, Training Incomplete, Pending Commissions) now link to filtered detail views instead of generic list pages
+- Added `?view=at_risk|new|training_incomplete` param support to consultants page with pre-filtering logic
+- Added `?status=pending` param support to commissions page via new `initialFilters` prop on DataTable
+- Consultants page shows contextual header title/description and "View all consultants" back link when filtered
+- Added `initialFilters` prop to the shared `DataTable` component so filters can be pre-set from URL params
+
+### Analytics Page Fixes
+- **Pie chart labels**: Replaced overlapping text labels on Product Mix donut chart with a clean legend row below the chart using colored dots
+- **Dual Y-axes**: Revenue Trend chart now has independent left axis (green, Funded Volume) and right axis (gold, Sequoia Revenue) so both lines display at proper scale
+- **Active agents count**: Fixed query using `.eq('status', 'active')` — consultants table uses `is_active` (boolean), not `status` string. Was always returning 0.
+- **Sequoia Revenue always $0**: The waterfall_level filter on line 435 required `consultant_id` to be null (impossible). Fixed to count all non-agent waterfall levels (-1, 1-6, 99). Added fallback estimate of 30% overhead on gross commissions when no waterfall records exist.
+- Removed unused `PieLabelRenderProps` import
+
+### Training Page — Smaller Video Cards
+- Switched from fixed `h-40` to `aspect-video` for thumbnails — no more stretching
+- Upgraded thumbnails from `mqdefault` (320×180) to `hqdefault` (480×360)
+- Grid now shows 5 per row on xl, 4 on lg, 3 on sm, 2 on mobile
+- Reduced padding, text sizes, play button, badges for compact cards
+- Applied same fixes to admin content page (`/admin/content`)
+
+### Materials Page Redesign
+- Converted from list/row layout to thumbnail card grid (5 columns on xl)
+- Image files show actual image as thumbnail
+- PDFs, docs, presentations, spreadsheets, videos show branded gradient cards with category-specific colors (green for Real Estate, blue for Business Funding, teal for Wellness, etc.), category icon watermark, file type label, and material title
+- Download overlay on hover
+- Added `Play` icon import for video cards
+
+### CEA AI → SEA AI Rename
+- Renamed all references from "CEA AI" to "SEA AI" (Sequoia Enterprise Assistant) across 10 files: Navbar, portal layout, AI page, enroll, partner, login, about, opportunity, email templates
+
+### Bulk Agent Seed Script
+- Created `src/lib/supabase/seed-agents-bulk.sql` for Supabase SQL Editor
+- Part 1: 30 leaders (MDs/Seniors) under Allen + 2,719 agents (219 active, 2,500 inactive) with sponsor chain, tiers, realistic join dates, onboarding status
+- Part 2: Deals & commissions — Allen ~$1M across 40 personal deals + override commissions on 200 org deals, Todd ~$800K across 35 personal deals, 200 deals spread across active agents
+- Active agents joined last 6 months, inactive joined 6-24 months ago with 60% onboarding completion
+
+### New Files
+- `src/lib/supabase/seed-agents-bulk.sql` — Bulk agent + deals + commissions seed script
+
+### Decisions Made
+- **Pre-filtering vs DataTable filtering**: For consultants, complex filters (at_risk = !is_active && onboarding_completed) are applied at page level before passing to DataTable, since DataTable only supports simple key-value equality filters
+- **Sequoia Revenue fallback**: When no waterfall commission records exist, estimate revenue as 30% overhead × 2% gross commission rate × funded volume — matches the comp plan structure
+- **hqdefault over maxresdefault**: YouTube hqdefault (480×360) is reliable for all videos; maxresdefault sometimes 404s for older videos
+- **Branded gradient cards for materials**: Rather than trying to generate PDF thumbnails (complex, slow), used category-themed gradient cards with title text — visually distinctive and zero loading cost
+
+---
+
 ## 2026-03-24 (Session 3) — Forgot Password Flow, OG Image, Meta Tags
 Built by: Todd Billings + Claude Code
 
