@@ -115,21 +115,22 @@ function initials(name: string) {
 }
 
 /* ─── Tree Node ─── */
-function TreeNode({ member, members, depth, onSelect, selectedId, expandedIds, toggleExpand, filter }: {
-  member: TeamMember; members: TeamMember[]; depth: number; onSelect: (m: TeamMember) => void
-  selectedId: string | null; expandedIds: Set<string>; toggleExpand: (id: string) => void; filter: string
+function TreeNode({ member, depth, onSelect, selectedId, expandedIds, toggleExpand, matchingIds }: {
+  member: TeamMember; depth: number; onSelect: (m: TeamMember) => void
+  selectedId: string | null; expandedIds: Set<string>; toggleExpand: (id: string) => void; matchingIds: Set<string>
 }) {
-  const children = members.filter(m => m.sponsorId === member.id)
+  const children = allMembers.filter(m => m.sponsorId === member.id)
   const hasChildren = children.length > 0
   const expanded = expandedIds.has(member.id)
   const sc = statusColor[member.status]
+  const isMatch = matchingIds.has(member.id)
 
   return (
     <div style={{ paddingLeft: depth * 24 }}>
       <div
-        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer border-l-4 ${sc.border} ${
-          selectedId === member.id ? 'bg-neutral-100 ring-1 ring-[#C8A84E]' : 'hover:bg-neutral-50'
-        }`}
+        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer border-l-4 ${sc.border} transition-opacity ${
+          isMatch ? 'opacity-100' : 'opacity-40'
+        } ${selectedId === member.id ? 'bg-neutral-100 ring-1 ring-[#C8A84E]' : 'hover:bg-neutral-50'}`}
         onClick={() => onSelect(member)}
       >
         {hasChildren ? (
@@ -154,13 +155,11 @@ function TreeNode({ member, members, depth, onSelect, selectedId, expandedIds, t
       </div>
       {expanded && hasChildren && (
         <div>
-          {children
-            .filter(c => !filter || c.name.toLowerCase().includes(filter) || c.id.toLowerCase().includes(filter))
-            .map(c => (
-              <TreeNode key={c.id} member={c} members={members} depth={depth + 1}
-                onSelect={onSelect} selectedId={selectedId} expandedIds={expandedIds}
-                toggleExpand={toggleExpand} filter={filter} />
-            ))}
+          {children.map(c => (
+            <TreeNode key={c.id} member={c} depth={depth + 1}
+              onSelect={onSelect} selectedId={selectedId} expandedIds={expandedIds}
+              toggleExpand={toggleExpand} matchingIds={matchingIds} />
+          ))}
         </div>
       )}
     </div>
@@ -230,16 +229,60 @@ export default function TeamPage() {
   useEffect(() => { document.title = 'Team | Sequoia Enterprise Solutions' }, [])
 
   const q = search.toLowerCase()
-  const filtered = useMemo(() =>
-    allMembers.filter(m =>
-      (statusFilter === 'all' || m.status === statusFilter) &&
-      (!q || m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q))
-    ), [statusFilter, q])
+
+  // Members matching the current filter
+  const matchingIds = useMemo(() => new Set(
+    allMembers
+      .filter(m =>
+        (statusFilter === 'all' || m.status === statusFilter) &&
+        (!q || m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q))
+      )
+      .map(m => m.id)
+  ), [statusFilter, q])
+
+  // For list view: only matching members
+  const filtered = useMemo(() => allMembers.filter(m => matchingIds.has(m.id)), [matchingIds])
+
+  // For tree view: find all ancestors of matching members so we can show them
+  const ancestorIds = useMemo(() => {
+    const ancestors = new Set<string>()
+    for (const m of allMembers) {
+      if (!matchingIds.has(m.id)) continue
+      // Walk up the sponsor chain
+      let current = m
+      while (current.sponsorId && current.sponsorId !== 'root') {
+        ancestors.add(current.sponsorId)
+        const parent = allMembers.find(p => p.id === current.sponsorId)
+        if (!parent) break
+        current = parent
+      }
+    }
+    return ancestors
+  }, [matchingIds])
+
+  // When filtering, auto-expand ancestors so matches are visible
+  useEffect(() => {
+    if (statusFilter !== 'all' || q) {
+      setExpandedIds(prev => {
+        const next = new Set(prev)
+        for (const id of ancestorIds) next.add(id)
+        // Also expand root-level members that are ancestors
+        for (const m of allMembers.filter(m => m.sponsorId === 'root' && ancestorIds.has(m.id))) {
+          next.add(m.id)
+        }
+        return next
+      })
+    }
+  }, [statusFilter, q, ancestorIds])
 
   const toggleExpand = (id: string) =>
     setExpandedIds(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s })
 
-  const roots = filtered.filter(m => m.sponsorId === 'root')
+  const expandAll = () => setExpandedIds(new Set(allMembers.map(m => m.id)))
+  const collapseAll = () => setExpandedIds(new Set())
+
+  // Tree roots: always show L1 members (all of them), let tree node handle visibility
+  const roots = allMembers.filter(m => m.sponsorId === 'root')
 
   const stats = [
     { label: 'Total Team', value: 47, icon: Users, color: 'text-sequoia-900' },
@@ -299,6 +342,20 @@ export default function TeamPage() {
           ))}
         </div>
         <div className="flex gap-1 ml-auto">
+          {view === 'tree' && (
+            <>
+              <button onClick={expandAll}
+                className="px-2.5 py-1.5 text-[11px] font-medium rounded-lg bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                title="Expand All">
+                Expand All
+              </button>
+              <button onClick={collapseAll}
+                className="px-2.5 py-1.5 text-[11px] font-medium rounded-lg bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50"
+                title="Collapse All">
+                Collapse All
+              </button>
+            </>
+          )}
           <button onClick={() => setView('tree')}
             className={`p-2 rounded-lg ${view === 'tree' ? 'bg-sequoia-900 text-white' : 'bg-white border border-neutral-200 text-neutral-600'}`}>
             <GitBranch size={16} />
@@ -325,9 +382,9 @@ export default function TeamPage() {
             <div className="rounded-xl border border-neutral-200 bg-white p-4 space-y-1">
               {roots.length === 0 && <p className="text-sm text-neutral-400 text-center py-8">No members match your filters.</p>}
               {roots.map(m => (
-                <TreeNode key={m.id} member={m} members={filtered} depth={0}
+                <TreeNode key={m.id} member={m} depth={0}
                   onSelect={setSelected} selectedId={selected?.id ?? null}
-                  expandedIds={expandedIds} toggleExpand={toggleExpand} filter={q} />
+                  expandedIds={expandedIds} toggleExpand={toggleExpand} matchingIds={matchingIds} />
               ))}
             </div>
           ) : (

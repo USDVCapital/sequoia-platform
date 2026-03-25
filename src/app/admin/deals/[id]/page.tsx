@@ -84,36 +84,67 @@ export default function AdminDealDetailPage() {
   useEffect(() => {
     async function fetchDeal() {
       const supabase = createClient()
-      const { data } = await supabase
+
+      // Try with extended fields first (after migration), fall back to base fields
+      let result = await supabase
         .from('leads')
         .select('*, consultant:consultants(full_name, rank, onboarding_completed, sponsor_id)')
         .eq('id', dealId)
         .single()
 
+      // If join fails (columns don't exist yet), try simpler query
+      if (result.error) {
+        console.warn('Extended query failed, trying base query:', result.error.message)
+        result = await supabase
+          .from('leads')
+          .select('*, consultant:consultants(full_name, tier, onboarding_completed)')
+          .eq('id', dealId)
+          .single()
+      }
+
+      const data = result.data
       if (data) {
-        setDeal(data as DealDetail)
-        // Set defaults based on deal data
+        // Normalize — if 'rank' doesn't exist yet, use tier as fallback
+        const consultant = data.consultant as Record<string, unknown> | null
+        const normalizedDeal = {
+          ...data,
+          consultant: consultant ? {
+            full_name: String(consultant.full_name || ''),
+            rank: String(consultant.rank || consultant.tier || 'lc_1'),
+            onboarding_completed: Boolean(consultant.onboarding_completed),
+            sponsor_id: consultant.sponsor_id ? String(consultant.sponsor_id) : null,
+          } : null,
+        } as DealDetail
+
+        setDeal(normalizedDeal)
+
         if (data.funded_amount) {
-          setGrossCommission(Math.round(data.funded_amount * 0.02 * 100) / 100) // default 2 points
+          setGrossCommission(Math.round(Number(data.funded_amount) * 0.02 * 100) / 100)
         }
-        if (data.consultant?.onboarding_completed) {
+        if (consultant?.onboarding_completed) {
           setIsCertified(true)
         }
 
-        // Fetch upline chain if consultant exists
+        // Try to fetch upline chain (only works after migration)
         if (data.consultant_id) {
-          const { data: uplineData } = await supabase
-            .rpc('get_upline_chain', { p_consultant_id: data.consultant_id, p_max_levels: 6 })
-          if (uplineData && Array.isArray(uplineData)) {
-            setUpline(uplineData.map((u: { level: number; consultant_id: string; full_name: string; rank: string; is_active: boolean }) => ({
-              level: u.level,
-              consultantId: u.consultant_id,
-              fullName: u.full_name,
-              rank: u.rank,
-              isActive: u.is_active,
-            })))
+          try {
+            const { data: uplineData } = await supabase
+              .rpc('get_upline_chain', { p_consultant_id: data.consultant_id, p_max_levels: 6 })
+            if (uplineData && Array.isArray(uplineData)) {
+              setUpline(uplineData.map((u: Record<string, unknown>) => ({
+                level: Number(u.level),
+                consultantId: String(u.consultant_id),
+                fullName: String(u.full_name),
+                rank: String(u.rank || 'lc_1'),
+                isActive: Boolean(u.is_active),
+              })))
+            }
+          } catch {
+            console.warn('get_upline_chain RPC not available yet — run migration SQL first')
           }
         }
+      } else {
+        console.error('Deal not found:', dealId, result.error)
       }
       setLoading(false)
     }
