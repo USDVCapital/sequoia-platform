@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import StatsCard from '@/components/admin/StatsCard'
 import type { Commission, Consultant } from '@/lib/supabase/types'
-import { DollarSign, Clock, CheckCircle, TrendingUp } from 'lucide-react'
+import { Clock, CheckCircle, TrendingUp, Calendar } from 'lucide-react'
 
 type CommissionWithConsultant = Commission & { consultant?: Pick<Consultant, 'full_name' | 'tier'> | null }
 
@@ -24,12 +24,38 @@ const statusColors: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-700 border-red-200',
 }
 
+// ── Time period filter ──────────────────────────────────────
+
+type TimePeriod = 'all' | 'mtd' | 'ytd' | '30d' | '90d' | '1y'
+
+const TIME_PERIODS: { label: string; value: TimePeriod }[] = [
+  { label: 'All Time', value: 'all' },
+  { label: 'Month to Date', value: 'mtd' },
+  { label: 'Year to Date', value: 'ytd' },
+  { label: 'Last 30 Days', value: '30d' },
+  { label: 'Last 90 Days', value: '90d' },
+  { label: 'Last Year', value: '1y' },
+]
+
+function getStartDate(period: TimePeriod): Date | null {
+  const now = new Date()
+  switch (period) {
+    case 'all': return null
+    case 'mtd': return new Date(now.getFullYear(), now.getMonth(), 1)
+    case 'ytd': return new Date(now.getFullYear(), 0, 1)
+    case '30d': { const d = new Date(); d.setDate(d.getDate() - 30); return d }
+    case '90d': { const d = new Date(); d.setDate(d.getDate() - 90); return d }
+    case '1y': { const d = new Date(); d.setFullYear(d.getFullYear() - 1); return d }
+  }
+}
+
 export default function AdminCommissionsPage() {
   const router = useRouter()
   const [commissions, setCommissions] = useState<CommissionWithConsultant[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkApproving, setBulkApproving] = useState(false)
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>('all')
 
   async function fetchCommissions() {
     const supabase = createClient()
@@ -66,7 +92,7 @@ export default function AdminCommissionsPage() {
   }
 
   const toggleSelectAll = () => {
-    const pendingIds = commissions.filter((c) => c.status === 'pending').map((c) => c.id)
+    const pendingIds = filtered.filter((c) => c.status === 'pending').map((c) => c.id)
     if (selectedIds.size === pendingIds.length && pendingIds.length > 0) {
       setSelectedIds(new Set())
     } else {
@@ -74,24 +100,28 @@ export default function AdminCommissionsPage() {
     }
   }
 
-  const now = new Date()
-  const thisMonth = now.getMonth()
-  const thisYear = now.getFullYear()
+  // ── Filter by time period ─────────────────────────────────
 
-  const totalPending = commissions
+  const filtered = useMemo(() => {
+    const start = getStartDate(timePeriod)
+    if (!start) return commissions
+    return commissions.filter(c => {
+      const d = new Date(c.paid_at || c.created_at)
+      return d >= start
+    })
+  }, [commissions, timePeriod])
+
+  // ── Stats (computed on filtered data) ─────────────────────
+
+  const totalPending = filtered
     .filter((c) => c.status === 'pending')
     .reduce((sum, c) => sum + Number(c.amount), 0)
 
-  const paidThisMonth = commissions
-    .filter((c) => {
-      if (c.status !== 'paid' || !c.paid_at) return false
-      const d = new Date(c.paid_at)
-      return d.getMonth() === thisMonth && d.getFullYear() === thisYear
-    })
+  const totalPaid = filtered
+    .filter((c) => c.status === 'paid')
     .reduce((sum, c) => sum + Number(c.amount), 0)
 
-  const totalPaidAllTime = commissions
-    .filter((c) => c.status === 'paid')
+  const totalAll = filtered
     .reduce((sum, c) => sum + Number(c.amount), 0)
 
   const columns: Column<Record<string, unknown>>[] = [
@@ -172,11 +202,34 @@ export default function AdminCommissionsPage() {
         <p className="text-sequoia-300 mt-1 text-sm">Review and approve consultant commissions</p>
       </div>
 
+      {/* Time Period Filter */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-1.5 text-sm text-gray-500">
+          <Calendar size={14} />
+          <span className="font-medium">Period:</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {TIME_PERIODS.map(({ label, value }) => (
+            <button
+              key={value}
+              onClick={() => setTimePeriod(value)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors border ${
+                timePeriod === value
+                  ? 'bg-sequoia-900 text-white border-sequoia-900'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-sequoia-300 hover:text-sequoia-700'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatsCard icon={Clock} label="Total Pending" value={formatCurrency(totalPending)} accentColor="gold" />
-        <StatsCard icon={CheckCircle} label="Paid This Month" value={formatCurrency(paidThisMonth)} />
-        <StatsCard icon={TrendingUp} label="Paid All Time" value={formatCurrency(totalPaidAllTime)} />
+        <StatsCard icon={Clock} label="Pending" value={formatCurrency(totalPending)} accentColor="gold" />
+        <StatsCard icon={CheckCircle} label="Paid" value={formatCurrency(totalPaid)} />
+        <StatsCard icon={TrendingUp} label="Total Volume" value={formatCurrency(totalAll)} />
       </div>
 
       {/* Bulk Actions */}
@@ -203,13 +256,13 @@ export default function AdminCommissionsPage() {
 
       <div className="card-sequoia p-5">
         {/* Select All pending */}
-        {commissions.some((c) => c.status === 'pending') && (
+        {filtered.some((c) => c.status === 'pending') && (
           <div className="mb-3">
             <button
               onClick={toggleSelectAll}
               className="text-xs font-semibold text-gold-600 hover:text-gold-700"
             >
-              {selectedIds.size === commissions.filter((c) => c.status === 'pending').length
+              {selectedIds.size === filtered.filter((c) => c.status === 'pending').length
                 ? 'Deselect all pending'
                 : 'Select all pending'}
             </button>
@@ -218,9 +271,9 @@ export default function AdminCommissionsPage() {
 
         <DataTable
           columns={columns}
-          data={commissions as unknown as Record<string, unknown>[]}
+          data={filtered as unknown as Record<string, unknown>[]}
           onRowClick={(row) => router.push(`/admin/commissions/${row.id}`)}
-          searchPlaceholder="Search by consultant..."
+          searchPlaceholder="Search by source..."
           searchKeys={['source_label']}
           filters={[
             {
