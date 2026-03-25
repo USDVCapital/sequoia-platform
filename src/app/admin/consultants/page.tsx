@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useMemo } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import type { Consultant } from '@/lib/supabase/types'
@@ -21,9 +22,27 @@ const tierBadgeColors: Record<string, string> = {
   managing_director: 'bg-yellow-100 text-yellow-700 border-yellow-200',
 }
 
+type ViewFilter = 'all' | 'at_risk' | 'new' | 'training_incomplete'
+
+const VIEW_LABELS: Record<ViewFilter, string> = {
+  all: 'All Consultants',
+  at_risk: 'Agents at Risk',
+  new: 'New This Month',
+  training_incomplete: 'Training Incomplete',
+}
+
+const VIEW_DESCRIPTIONS: Record<ViewFilter, string> = {
+  all: 'Manage all registered consultants',
+  at_risk: 'Churned consultants — completed training but now inactive',
+  new: 'Consultants who joined in the last 30 days',
+  training_incomplete: 'Consultants who have not yet finished onboarding',
+}
+
 export default function AdminConsultantsPage() {
   const router = useRouter()
-  const [consultants, setConsultants] = useState<(Consultant & { deal_count?: number })[]>([])
+  const searchParams = useSearchParams()
+  const view = (searchParams.get('view') as ViewFilter) || 'all'
+  const [consultants, setConsultants] = useState<(Consultant & { deal_count?: number; onboarding_completed?: boolean })[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -50,6 +69,23 @@ export default function AdminConsultantsPage() {
     }
     fetchData()
   }, [])
+
+  const filteredByView = useMemo(() => {
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now)
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    switch (view) {
+      case 'at_risk':
+        return consultants.filter((c) => !c.is_active && c.onboarding_completed)
+      case 'new':
+        return consultants.filter((c) => new Date(c.created_at) >= thirtyDaysAgo)
+      case 'training_incomplete':
+        return consultants.filter((c) => !c.onboarding_completed)
+      default:
+        return consultants
+    }
+  }, [consultants, view])
 
   const columns: Column<Record<string, unknown>>[] = [
     {
@@ -117,17 +153,31 @@ export default function AdminConsultantsPage() {
     <div className="space-y-6">
       <div className="bg-gradient-sequoia rounded-xl p-6 sm:p-8">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Consultants
+          {VIEW_LABELS[view]}
         </h2>
         <p className="text-sequoia-300 mt-1 text-sm">
-          Manage all registered consultants
+          {VIEW_DESCRIPTIONS[view]}
         </p>
       </div>
+
+      {view !== 'all' && (
+        <div className="flex items-center gap-3 px-1">
+          <Link
+            href="/admin/consultants"
+            className="text-sm font-semibold text-sequoia-700 hover:text-sequoia-900 underline underline-offset-2"
+          >
+            &larr; View all consultants
+          </Link>
+          <span className="text-sm text-brand-neutral-400">
+            Showing {filteredByView.length} consultant{filteredByView.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+      )}
 
       <div className="card-sequoia p-5">
         <DataTable
           columns={columns}
-          data={consultants as unknown as Record<string, unknown>[]}
+          data={filteredByView as unknown as Record<string, unknown>[]}
           searchPlaceholder="Search by name or email..."
           searchKeys={['full_name', 'email']}
           filters={[

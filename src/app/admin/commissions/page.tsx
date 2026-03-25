@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import StatsCard from '@/components/admin/StatsCard'
@@ -51,6 +51,8 @@ function getStartDate(period: TimePeriod): Date | null {
 
 export default function AdminCommissionsPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const statusParam = searchParams.get('status')
   const [commissions, setCommissions] = useState<CommissionWithConsultant[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -275,6 +277,7 @@ export default function AdminCommissionsPage() {
           onRowClick={(row) => router.push(`/admin/commissions/${row.id}`)}
           searchPlaceholder="Search by source..."
           searchKeys={['source_label']}
+          initialFilters={statusParam ? { status: statusParam } : {}}
           filters={[
             {
               label: 'All Statuses',

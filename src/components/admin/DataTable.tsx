@@ -22,6 +22,7 @@ interface DataTableProps<T> {
   searchPlaceholder?: string
   searchKeys?: string[]
   filters?: { label: string; key: string; options: FilterOption[] }[]
+  initialFilters?: Record<string, string>
   onRowClick?: (row: T) => void
   mobileCardRender?: (row: T) => React.ReactNode
   idKey?: string
@@ -33,12 +34,13 @@ export default function DataTable<T extends Record<string, unknown>>({
   searchPlaceholder = 'Search...',
   searchKeys = [],
   filters = [],
+  initialFilters = {},
   onRowClick,
   mobileCardRender,
   idKey = 'id',
 }: DataTableProps<T>) {
   const [search, setSearch] = useState('')
-  const [filterValues, setFilterValues] = useState<Record<string, string>>({})
+  const [filterValues, setFilterValues] = useState<Record<string, string>>(initialFilters)
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 

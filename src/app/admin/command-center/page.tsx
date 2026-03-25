@@ -553,7 +553,7 @@ ${m.pendingCommissions === 0 && m.incompleteOnboarding === 0 && alerts.agentsAtR
       {/* ── Alert Cards Row ── */}
       <div className="flex gap-4 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
         <Link
-          href="/admin/consultants"
+          href="/admin/consultants?view=at_risk"
           className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4 hover:shadow-md hover:border-red-200 transition-all group"
         >
           <div className="flex items-center gap-3 mb-2">
@@ -568,9 +568,12 @@ ${m.pendingCommissions === 0 && m.incompleteOnboarding === 0 && alerts.agentsAtR
           <p className="text-xs text-brand-neutral-400 mt-1">Churned (completed training, now inactive)</p>
         </Link>
 
-        <div className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4">
+        <Link
+          href="/admin/consultants?view=new"
+          className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4 hover:shadow-md hover:border-green-200 transition-all group"
+        >
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-green-50 text-green-500">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-green-50 text-green-500 group-hover:bg-green-100 transition-colors">
               <UserPlus size={18} />
             </div>
             <span className="text-xs font-semibold text-brand-neutral-500 uppercase tracking-wide">
@@ -579,11 +582,14 @@ ${m.pendingCommissions === 0 && m.incompleteOnboarding === 0 && alerts.agentsAtR
           </div>
           <p className="text-3xl font-extrabold text-green-600">{alerts.newThisMonth}</p>
           <p className="text-xs text-brand-neutral-400 mt-1">Joined in the last 30 days</p>
-        </div>
+        </Link>
 
-        <div className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4">
+        <Link
+          href="/admin/consultants?view=training_incomplete"
+          className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4 hover:shadow-md hover:border-amber-200 transition-all group"
+        >
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-500">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-amber-50 text-amber-500 group-hover:bg-amber-100 transition-colors">
               <GraduationCap size={18} />
             </div>
             <span className="text-xs font-semibold text-brand-neutral-500 uppercase tracking-wide">
@@ -592,10 +598,10 @@ ${m.pendingCommissions === 0 && m.incompleteOnboarding === 0 && alerts.agentsAtR
           </div>
           <p className="text-3xl font-extrabold text-amber-600">{alerts.trainingIncomplete}</p>
           <p className="text-xs text-brand-neutral-400 mt-1">Onboarding not yet finished</p>
-        </div>
+        </Link>
 
         <Link
-          href="/admin/commissions"
+          href="/admin/commissions?status=pending"
           className="flex-none w-[220px] sm:w-auto sm:flex-1 snap-start card-sequoia p-4 hover:shadow-md hover:border-amber-200 transition-all group"
         >
           <div className="flex items-center gap-3 mb-2">
