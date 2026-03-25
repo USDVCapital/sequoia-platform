@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import StatsCard from '@/components/admin/StatsCard'
@@ -24,6 +25,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function AdminCommissionsPage() {
+  const router = useRouter()
   const [commissions, setCommissions] = useState<CommissionWithConsultant[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -217,6 +219,7 @@ export default function AdminCommissionsPage() {
         <DataTable
           columns={columns}
           data={commissions as unknown as Record<string, unknown>[]}
+          onRowClick={(row) => router.push(`/admin/commissions/${row.id}`)}
           searchPlaceholder="Search by consultant..."
           searchKeys={['source_label']}
           filters={[

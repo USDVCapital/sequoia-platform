@@ -1,311 +1,679 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import StatsCard from '@/components/admin/StatsCard'
 import {
-  BarChart, Bar, LineChart, Line, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts'
-import {
-  TrendingUp,
-  Users,
-  Heart,
   DollarSign,
-  Download,
-  Calendar,
+  TrendingUp,
+  Building2,
+  Users,
+  PiggyBank,
+  BarChart3,
+  Layers,
+  Package,
+  Crown,
+  CalendarRange,
+  Loader2,
 } from 'lucide-react'
 
 // ── Types ────────────────────────────────────────────────────
 
-interface MonthlyVolume {
-  month: string
+interface KPIData {
+  grossFundedVolume: number
+  grossCommissions: number
+  netRevenueToSequoia: number
+  totalCommissionsPaid: number
+  bonusPool: number
+  activeDeals: number
+}
+
+interface WaterfallRow {
+  waterfall_level: number | null
   total_amount: number
-  commission_count: number
+  record_count: number
+  avg_amount: number
 }
 
-interface ConsultantGrowth {
-  month: string
-  new_consultants: number
-  total_consultants: number
+interface ProductRow {
+  product_category: string
+  funded_deals: number
+  total_funded_volume: number
+  total_commissions: number
 }
 
-interface EnrollmentTrend {
-  month: string
-  new_enrollees: number
-  new_companies: number
-}
-
-interface FunnelData {
-  status: string
+interface TopConsultant {
+  consultant_id: string
+  full_name: string
+  rank: string
+  total_earnings: number
   deal_count: number
-  total_amount: number
 }
 
-// ── Chart Colors ─────────────────────────────────────────────
-
-const COLORS = {
-  gold: '#C8A84E',
-  goldLight: '#E8D9A0',
-  sequoiaMid: '#4a4a4a',
-  emerald: '#059669',
-  blue: '#3B82F6',
-  purple: '#8B5CF6',
+interface MonthlyRow {
+  month: string
+  deals_funded: number
+  total_funded_volume: number
+  total_commissions: number
+  sequoia_revenue: number
 }
-
-// ── Demo Data (used when Supabase views aren't available) ────
-
-// Company-wide metrics reflecting Sequoia's actual business scale
-// $70.4M funded in 2025, targeting $100M in 2026
-// 2,500+ total consultants, 219 active
-// 153 EHMP enrollees, targeting 5,000
-
-const DEMO_FUNDED_VOLUME: MonthlyVolume[] = [
-  { month: '2025-04', total_amount: 4_200_000, commission_count: 18 },
-  { month: '2025-05', total_amount: 5_100_000, commission_count: 22 },
-  { month: '2025-06', total_amount: 5_800_000, commission_count: 26 },
-  { month: '2025-07', total_amount: 6_400_000, commission_count: 28 },
-  { month: '2025-08', total_amount: 7_200_000, commission_count: 31 },
-  { month: '2025-09', total_amount: 6_900_000, commission_count: 29 },
-  { month: '2025-10', total_amount: 8_100_000, commission_count: 35 },
-  { month: '2025-11', total_amount: 9_300_000, commission_count: 41 },
-  { month: '2025-12', total_amount: 8_600_000, commission_count: 38 },
-  { month: '2026-01', total_amount: 10_200_000, commission_count: 44 },
-  { month: '2026-02', total_amount: 11_800_000, commission_count: 52 },
-  { month: '2026-03', total_amount: 9_400_000, commission_count: 39 },
-]
-
-const DEMO_GROWTH: ConsultantGrowth[] = [
-  { month: '2025-04', new_consultants: 45, total_consultants: 1_850 },
-  { month: '2025-05', new_consultants: 62, total_consultants: 1_912 },
-  { month: '2025-06', new_consultants: 58, total_consultants: 1_970 },
-  { month: '2025-07', new_consultants: 71, total_consultants: 2_041 },
-  { month: '2025-08', new_consultants: 54, total_consultants: 2_095 },
-  { month: '2025-09', new_consultants: 67, total_consultants: 2_162 },
-  { month: '2025-10', new_consultants: 83, total_consultants: 2_245 },
-  { month: '2025-11', new_consultants: 91, total_consultants: 2_336 },
-  { month: '2025-12', new_consultants: 78, total_consultants: 2_414 },
-  { month: '2026-01', new_consultants: 104, total_consultants: 2_518 },
-  { month: '2026-02', new_consultants: 96, total_consultants: 2_614 },
-  { month: '2026-03', new_consultants: 88, total_consultants: 2_702 },
-]
-
-const DEMO_ENROLLMENT: EnrollmentTrend[] = [
-  { month: '2025-07', new_enrollees: 12, new_companies: 3 },
-  { month: '2025-08', new_enrollees: 18, new_companies: 4 },
-  { month: '2025-09', new_enrollees: 25, new_companies: 5 },
-  { month: '2025-10', new_enrollees: 31, new_companies: 6 },
-  { month: '2025-11', new_enrollees: 42, new_companies: 8 },
-  { month: '2025-12', new_enrollees: 56, new_companies: 11 },
-  { month: '2026-01', new_enrollees: 78, new_companies: 14 },
-  { month: '2026-02', new_enrollees: 95, new_companies: 18 },
-  { month: '2026-03', new_enrollees: 112, new_companies: 22 },
-]
-
-const DEMO_FUNNEL: FunnelData[] = [
-  { status: 'Application', deal_count: 142, total_amount: 0 },
-  { status: 'In Review', deal_count: 89, total_amount: 0 },
-  { status: 'Approved', deal_count: 64, total_amount: 0 },
-  { status: 'Funded', deal_count: 312, total_amount: 70_400_000 },
-  { status: 'Declined', deal_count: 47, total_amount: 0 },
-]
 
 // ── Helpers ──────────────────────────────────────────────────
+
+const fmt = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+
+function formatCurrency(val: number): string {
+  return fmt.format(val)
+}
+
+function formatCompact(val: number): string {
+  if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`
+  if (val >= 1_000) return `$${(val / 1_000).toFixed(0)}K`
+  return formatCurrency(val)
+}
+
+function waterfallLabel(level: number | null): string {
+  if (level === null) return 'Unknown'
+  if (level === -1) return 'Sequoia Overhead'
+  if (level === 0) return 'Agent (Direct)'
+  if (level >= 1 && level <= 6) return `Level ${level} Override`
+  if (level === 99) return 'Bonus Pool'
+  return `Level ${level}`
+}
+
+function rankLabel(rank: string): string {
+  const labels: Record<string, string> = {
+    lc_1: 'LC 1',
+    lc_2: 'LC 2',
+    lc_3: 'LC 3',
+    senior_lc: 'Senior LC',
+    managing_director: 'Managing Director',
+    executive_director: 'Executive Director',
+  }
+  return labels[rank] || rank
+}
+
+function rankBadgeColor(rank: string): string {
+  const colors: Record<string, string> = {
+    lc_1: 'bg-gray-100 text-gray-700 border-gray-200',
+    lc_2: 'bg-blue-50 text-blue-700 border-blue-200',
+    lc_3: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    senior_lc: 'bg-purple-50 text-purple-700 border-purple-200',
+    managing_director: 'bg-amber-50 text-amber-700 border-amber-200',
+    executive_director: 'bg-yellow-50 text-yellow-800 border-yellow-300',
+  }
+  return colors[rank] || 'bg-gray-100 text-gray-600 border-gray-200'
+}
 
 function formatMonth(dateStr: string): string {
   const [y, m] = dateStr.split('-')
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return `${months[parseInt(m) - 1]} ${y.slice(2)}`
-}
-
-function formatCurrency(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`
-  return `$${value}`
+  return `${months[parseInt(m) - 1]} ${y}`
 }
 
 // ── Component ────────────────────────────────────────────────
 
-export default function AdminAnalyticsPage() {
-  const [fundedVolume, setFundedVolume] = useState<MonthlyVolume[]>(DEMO_FUNDED_VOLUME)
-  const [growth, setGrowth] = useState<ConsultantGrowth[]>(DEMO_GROWTH)
-  const [enrollment, setEnrollment] = useState<EnrollmentTrend[]>(DEMO_ENROLLMENT)
-  const [funnel, setFunnel] = useState<FunnelData[]>(DEMO_FUNNEL)
-  const [isLoading, setIsLoading] = useState(true)
+export default function FinancialAnalyticsPage() {
+  const [loading, setLoading] = useState(true)
+  const [kpis, setKpis] = useState<KPIData>({
+    grossFundedVolume: 0,
+    grossCommissions: 0,
+    netRevenueToSequoia: 0,
+    totalCommissionsPaid: 0,
+    bonusPool: 0,
+    activeDeals: 0,
+  })
+  const [waterfallBreakdown, setWaterfallBreakdown] = useState<WaterfallRow[]>([])
+  const [productBreakdown, setProductBreakdown] = useState<ProductRow[]>([])
+  const [topConsultants, setTopConsultants] = useState<TopConsultant[]>([])
+  const [monthlyTrend, setMonthlyTrend] = useState<MonthlyRow[]>([])
 
   useEffect(() => {
-    // Use demo data for now — will switch to live Supabase data once
-    // the platform has enough real production data to be meaningful
-    setIsLoading(false)
+    fetchAllData()
   }, [])
 
-  const totalFundedVolume = fundedVolume.reduce((s, v) => s + Number(v.total_amount), 0)
-  const totalCommissions = Math.round(totalFundedVolume * 0.02)
-  const totalDeals = fundedVolume.reduce((s, v) => s + v.commission_count, 0)
-  const totalConsultants = growth.length ? growth[growth.length - 1].total_consultants : 0
-  const totalEnrollees = enrollment.reduce((s, e) => s + e.new_enrollees, 0)
+  async function fetchAllData() {
+    setLoading(true)
+    const supabase = createClient()
 
-  const handleExportCSV = () => {
-    const headers = ['Month', 'Funded Volume', 'Deals']
-    const rows = fundedVolume.map((v) => [formatMonth(v.month), v.total_amount, v.commission_count])
-    const csv = [headers, ...rows].map((r) => r.join(',')).join('\n')
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `sequoia-analytics-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    try {
+      // Fetch all data in parallel
+      const [
+        commissionsRes,
+        leadsRes,
+        activeDealsRes,
+      ] = await Promise.all([
+        supabase.from('commissions').select('id, consultant_id, amount, waterfall_level, gross_commission, commission_type, deal_id, created_at, status'),
+        supabase.from('leads').select('id, status, funded_amount, product_category, created_at').eq('status', 'funded'),
+        supabase.from('leads').select('id', { count: 'exact', head: true }).in('status', ['application', 'in_review', 'approved']),
+      ])
+
+      const commissions = commissionsRes.data ?? []
+      const fundedLeads = leadsRes.data ?? []
+      const activeDealsCount = activeDealsRes.count ?? 0
+
+      // Also fetch consultants for top earners
+      const consultantIds = [...new Set(commissions.map(c => c.consultant_id).filter(Boolean))]
+      let consultantsMap: Record<string, { full_name: string; rank: string }> = {}
+      if (consultantIds.length > 0) {
+        const { data: consultants } = await supabase
+          .from('consultants')
+          .select('id, full_name, rank')
+          .in('id', consultantIds)
+        if (consultants) {
+          consultantsMap = Object.fromEntries(consultants.map(c => [c.id, { full_name: c.full_name, rank: c.rank }]))
+        }
+      }
+
+      // ── KPI Calculations ──
+
+      // Gross Funded Volume: sum of funded_amount from funded leads
+      const grossFundedVolume = fundedLeads.reduce((sum, l) => sum + (Number(l.funded_amount) || 0), 0)
+
+      // Gross Commissions: sum of gross_commission (use distinct deal_ids)
+      const seenDealIds = new Set<string>()
+      let grossCommissions = 0
+      for (const c of commissions) {
+        if (c.gross_commission && c.deal_id && !seenDealIds.has(c.deal_id)) {
+          grossCommissions += Number(c.gross_commission)
+          seenDealIds.add(c.deal_id)
+        }
+      }
+
+      // Net Revenue to Sequoia: overhead (waterfall_level = -1) + recaptured (waterfall_level 1-6, consultant_id IS NULL)
+      const netRevenueToSequoia = commissions
+        .filter(c => c.waterfall_level === -1 || (c.waterfall_level !== null && c.waterfall_level >= 1 && c.waterfall_level <= 6 && !c.consultant_id))
+        .reduce((sum, c) => sum + Number(c.amount), 0)
+
+      // Total Commissions Paid: waterfall_level >= 0 AND consultant_id IS NOT NULL
+      const totalCommissionsPaid = commissions
+        .filter(c => c.waterfall_level !== null && c.waterfall_level >= 0 && c.consultant_id)
+        .reduce((sum, c) => sum + Number(c.amount), 0)
+
+      // Bonus Pool: waterfall_level = 99
+      const bonusPool = commissions
+        .filter(c => c.waterfall_level === 99)
+        .reduce((sum, c) => sum + Number(c.amount), 0)
+
+      setKpis({
+        grossFundedVolume,
+        grossCommissions,
+        netRevenueToSequoia,
+        totalCommissionsPaid,
+        bonusPool,
+        activeDeals: activeDealsCount,
+      })
+
+      // ── Waterfall Breakdown ──
+      const waterfallMap = new Map<number, { total: number; count: number }>()
+      for (const c of commissions) {
+        const level = c.waterfall_level ?? -999
+        const existing = waterfallMap.get(level) || { total: 0, count: 0 }
+        existing.total += Number(c.amount)
+        existing.count += 1
+        waterfallMap.set(level, existing)
+      }
+      const waterfallRows: WaterfallRow[] = []
+      for (const [level, data] of waterfallMap) {
+        if (level === -999) continue // skip null levels
+        waterfallRows.push({
+          waterfall_level: level,
+          total_amount: data.total,
+          record_count: data.count,
+          avg_amount: data.count > 0 ? data.total / data.count : 0,
+        })
+      }
+      waterfallRows.sort((a, b) => (a.waterfall_level ?? 0) - (b.waterfall_level ?? 0))
+      setWaterfallBreakdown(waterfallRows)
+
+      // ── Product Breakdown ──
+      // Build a map of deal_id -> product_category from funded leads
+      const leadMap = new Map<string, { product_category: string; funded_amount: number }>()
+      for (const l of fundedLeads) {
+        leadMap.set(l.id, {
+          product_category: l.product_category || 'uncategorized',
+          funded_amount: Number(l.funded_amount) || 0,
+        })
+      }
+
+      // Group by product_category
+      const productMap = new Map<string, { deals: Set<string>; volume: number; commissions: number }>()
+      for (const l of fundedLeads) {
+        const cat = l.product_category || 'uncategorized'
+        const existing = productMap.get(cat) || { deals: new Set<string>(), volume: 0, commissions: 0 }
+        existing.deals.add(l.id)
+        existing.volume += Number(l.funded_amount) || 0
+        productMap.set(cat, existing)
+      }
+      // Add commission totals by matching deal_id to leads
+      for (const c of commissions) {
+        if (c.deal_id) {
+          const lead = leadMap.get(c.deal_id)
+          if (lead) {
+            const existing = productMap.get(lead.product_category)
+            if (existing) {
+              existing.commissions += Number(c.amount)
+            }
+          }
+        }
+      }
+      const productRows: ProductRow[] = []
+      for (const [cat, data] of productMap) {
+        productRows.push({
+          product_category: cat,
+          funded_deals: data.deals.size,
+          total_funded_volume: data.volume,
+          total_commissions: data.commissions,
+        })
+      }
+      productRows.sort((a, b) => b.total_funded_volume - a.total_funded_volume)
+      setProductBreakdown(productRows)
+
+      // ── Top Consultants ──
+      const earningsMap = new Map<string, { total: number; deals: Set<string> }>()
+      for (const c of commissions) {
+        if (!c.consultant_id || c.waterfall_level === -1 || c.waterfall_level === 99) continue
+        const existing = earningsMap.get(c.consultant_id) || { total: 0, deals: new Set<string>() }
+        existing.total += Number(c.amount)
+        if (c.deal_id) existing.deals.add(c.deal_id)
+        earningsMap.set(c.consultant_id, existing)
+      }
+      const topEarners: TopConsultant[] = []
+      for (const [cid, data] of earningsMap) {
+        const consultant = consultantsMap[cid]
+        topEarners.push({
+          consultant_id: cid,
+          full_name: consultant?.full_name ?? 'Unknown',
+          rank: consultant?.rank ?? 'lc_1',
+          total_earnings: data.total,
+          deal_count: data.deals.size,
+        })
+      }
+      topEarners.sort((a, b) => b.total_earnings - a.total_earnings)
+      setTopConsultants(topEarners.slice(0, 10))
+
+      // ── Monthly Trend ──
+      const monthMap = new Map<string, { dealIds: Set<string>; volume: number; commissions: number; sequoiaRevenue: number }>()
+
+      // Group funded leads by month
+      for (const l of fundedLeads) {
+        const month = l.created_at.substring(0, 7) // YYYY-MM
+        const existing = monthMap.get(month) || { dealIds: new Set<string>(), volume: 0, commissions: 0, sequoiaRevenue: 0 }
+        existing.dealIds.add(l.id)
+        existing.volume += Number(l.funded_amount) || 0
+        monthMap.set(month, existing)
+      }
+
+      // Add commission data by month
+      for (const c of commissions) {
+        const month = c.created_at.substring(0, 7)
+        const existing = monthMap.get(month) || { dealIds: new Set<string>(), volume: 0, commissions: 0, sequoiaRevenue: 0 }
+        existing.commissions += Number(c.amount)
+        if (c.waterfall_level === -1 || (c.waterfall_level !== null && c.waterfall_level >= 1 && c.waterfall_level <= 6 && !c.consultant_id)) {
+          existing.sequoiaRevenue += Number(c.amount)
+        }
+        monthMap.set(month, existing)
+      }
+
+      const monthlyRows: MonthlyRow[] = []
+      for (const [month, data] of monthMap) {
+        monthlyRows.push({
+          month,
+          deals_funded: data.dealIds.size,
+          total_funded_volume: data.volume,
+          total_commissions: data.commissions,
+          sequoia_revenue: data.sequoiaRevenue,
+        })
+      }
+      monthlyRows.sort((a, b) => a.month.localeCompare(b.month))
+      setMonthlyTrend(monthlyRows)
+    } catch (err) {
+      console.error('Failed to load financial analytics:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const productCategoryLabel = (cat: string): string => {
+    const labels: Record<string, string> = {
+      real_estate_lending: 'Real Estate Lending',
+      business_funding: 'Business Funding',
+      business_services: 'Business Services',
+      clean_energy: 'Clean Energy',
+      wellness: 'Wellness / EHMP',
+      uncategorized: 'Uncategorized',
+    }
+    return labels[cat] || cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-sequoia rounded-xl p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Analytics</h2>
-            <p className="text-sequoia-300 mt-1 text-sm">Business performance metrics and trends</p>
-          </div>
-          <button
-            onClick={handleExportCSV}
-            className="btn-gold self-start sm:self-auto flex items-center gap-2 whitespace-nowrap"
-          >
-            <Download size={16} />
-            Export CSV
-          </button>
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Financial Analytics
+          </h2>
+          <p className="text-sequoia-300 mt-1 text-sm">
+            Revenue, commissions, and business performance overview
+          </p>
         </div>
+      </div>
 
-        {/* Summary stats */}
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {[
-            { label: 'Funded Volume', value: formatCurrency(totalFundedVolume), icon: DollarSign },
-            { label: 'Commissions', value: formatCurrency(totalCommissions), icon: DollarSign },
-            { label: 'Total Deals', value: totalDeals.toString(), icon: TrendingUp },
-            { label: 'Consultants', value: totalConsultants.toLocaleString(), icon: Users },
-            { label: 'EHMP Enrollees', value: totalEnrollees.toLocaleString(), icon: Heart },
-          ].map((stat) => (
-            <div key={stat.label} className="glass rounded-xl p-3 sm:p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <stat.icon size={14} className="text-gold-400" />
-                <p className="text-sequoia-200 text-xs uppercase tracking-widest">{stat.label}</p>
-              </div>
-              <p className="text-white text-xl sm:text-2xl font-bold">{stat.value}</p>
+      {/* Loading state */}
+      {loading && (
+        <div className="flex items-center justify-center gap-2 py-8">
+          <Loader2 size={20} className="animate-spin text-gold-600" />
+          <span className="text-sm text-brand-neutral-500">Loading financial data...</span>
+        </div>
+      )}
+
+      {/* KPI Cards */}
+      {!loading && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <StatsCard
+              icon={TrendingUp}
+              label="Gross Funded Volume"
+              value={formatCompact(kpis.grossFundedVolume)}
+              subtext="Total funded deal volume"
+              accentColor="gold"
+              href="/admin/deals"
+            />
+            <StatsCard
+              icon={DollarSign}
+              label="Gross Commissions"
+              value={formatCompact(kpis.grossCommissions)}
+              subtext="Total commissions generated"
+              accentColor="gold"
+              href="/admin/commissions"
+            />
+            <StatsCard
+              icon={Building2}
+              label="Net Revenue to Sequoia"
+              value={formatCompact(kpis.netRevenueToSequoia)}
+              subtext="Overhead + recaptured overrides"
+              accentColor="gold"
+            />
+            <StatsCard
+              icon={Users}
+              label="Total Commissions Paid"
+              value={formatCompact(kpis.totalCommissionsPaid)}
+              subtext="Payouts to consultants"
+              href="/admin/commissions"
+            />
+            <StatsCard
+              icon={PiggyBank}
+              label="Bonus Pool"
+              value={formatCompact(kpis.bonusPool)}
+              subtext="Reserved for rank bonuses"
+            />
+            <StatsCard
+              icon={BarChart3}
+              label="Active Deals"
+              value={kpis.activeDeals.toLocaleString()}
+              subtext="In pipeline (app / review / approved)"
+              href="/admin/deals"
+            />
+          </div>
+
+          {/* Commission Breakdown by Level */}
+          <div className="card-sequoia overflow-hidden">
+            <div className="flex items-center gap-2 p-5 pb-0">
+              <Layers size={18} className="text-gold-600" />
+              <h3 className="text-lg font-bold text-sequoia-900">Commission Breakdown by Level</h3>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[var(--sequoia-800)] text-white">
+                    <th className="text-left px-5 py-3 font-semibold">Level</th>
+                    <th className="text-right px-5 py-3 font-semibold">Total Amount</th>
+                    <th className="text-right px-5 py-3 font-semibold">Records</th>
+                    <th className="text-right px-5 py-3 font-semibold">Avg per Deal</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-brand-neutral-100">
+                  {waterfallBreakdown.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-5 py-8 text-center text-brand-neutral-400">
+                        No commission data available
+                      </td>
+                    </tr>
+                  ) : (
+                    waterfallBreakdown.map((row) => (
+                      <tr key={row.waterfall_level} className="hover:bg-brand-neutral-50 transition-colors">
+                        <td className="px-5 py-3 font-medium text-sequoia-900">
+                          {waterfallLabel(row.waterfall_level)}
+                        </td>
+                        <td className="px-5 py-3 text-right font-semibold" style={{ color: row.waterfall_level === -1 ? '#C8A84E' : undefined }}>
+                          {formatCurrency(row.total_amount)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {row.record_count.toLocaleString()}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {formatCurrency(row.avg_amount)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {waterfallBreakdown.length > 0 && (
+                  <tfoot>
+                    <tr className="bg-brand-neutral-50 font-bold">
+                      <td className="px-5 py-3 text-sequoia-900">Total</td>
+                      <td className="px-5 py-3 text-right" style={{ color: '#C8A84E' }}>
+                        {formatCurrency(waterfallBreakdown.reduce((s, r) => s + r.total_amount, 0))}
+                      </td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">
+                        {waterfallBreakdown.reduce((s, r) => s + r.record_count, 0).toLocaleString()}
+                      </td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">--</td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Funded Volume by Month */}
-        <div className="card-sequoia p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <DollarSign size={18} className="text-gold-600" />
-            <h3 className="text-lg font-bold text-[var(--sequoia-900)]">Funded Volume by Month</h3>
+          {/* Revenue by Product Category */}
+          <div className="card-sequoia overflow-hidden">
+            <div className="flex items-center gap-2 p-5 pb-0">
+              <Package size={18} className="text-gold-600" />
+              <h3 className="text-lg font-bold text-sequoia-900">Revenue by Product Category</h3>
+            </div>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[var(--sequoia-800)] text-white">
+                    <th className="text-left px-5 py-3 font-semibold">Product</th>
+                    <th className="text-right px-5 py-3 font-semibold">Funded Deals</th>
+                    <th className="text-right px-5 py-3 font-semibold">Funded Volume</th>
+                    <th className="text-right px-5 py-3 font-semibold">Total Commissions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-brand-neutral-100">
+                  {productBreakdown.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-5 py-8 text-center text-brand-neutral-400">
+                        No product data available
+                      </td>
+                    </tr>
+                  ) : (
+                    productBreakdown.map((row) => (
+                      <tr key={row.product_category} className="hover:bg-brand-neutral-50 transition-colors">
+                        <td className="px-5 py-3 font-medium text-sequoia-900">
+                          {productCategoryLabel(row.product_category)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {row.funded_deals.toLocaleString()}
+                        </td>
+                        <td className="px-5 py-3 text-right font-semibold" style={{ color: '#C8A84E' }}>
+                          {formatCurrency(row.total_funded_volume)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {formatCurrency(row.total_commissions)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {productBreakdown.length > 0 && (
+                  <tfoot>
+                    <tr className="bg-brand-neutral-50 font-bold">
+                      <td className="px-5 py-3 text-sequoia-900">Total</td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">
+                        {productBreakdown.reduce((s, r) => s + r.funded_deals, 0).toLocaleString()}
+                      </td>
+                      <td className="px-5 py-3 text-right" style={{ color: '#C8A84E' }}>
+                        {formatCurrency(productBreakdown.reduce((s, r) => s + r.total_funded_volume, 0))}
+                      </td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">
+                        {formatCurrency(productBreakdown.reduce((s, r) => s + r.total_commissions, 0))}
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
           </div>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={fundedVolume.map((v) => ({ ...v, month: formatMonth(v.month) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={formatCurrency} tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Funded Volume']} />
-                <Bar dataKey="total_amount" fill={COLORS.gold} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
-        {/* Consultant Growth */}
-        <div className="card-sequoia p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Users size={18} className="text-blue-600" />
-            <h3 className="text-lg font-bold text-[var(--sequoia-900)]">Consultant Growth</h3>
+          {/* Top Consultants by Earnings */}
+          <div className="card-sequoia overflow-hidden">
+            <div className="flex items-center gap-2 p-5 pb-0">
+              <Crown size={18} className="text-gold-600" />
+              <h3 className="text-lg font-bold text-sequoia-900">Top Consultants by Earnings</h3>
+            </div>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[var(--sequoia-800)] text-white">
+                    <th className="text-left px-5 py-3 font-semibold w-10">#</th>
+                    <th className="text-left px-5 py-3 font-semibold">Consultant</th>
+                    <th className="text-left px-5 py-3 font-semibold">Rank</th>
+                    <th className="text-right px-5 py-3 font-semibold">Total Earnings</th>
+                    <th className="text-right px-5 py-3 font-semibold">Deals</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-brand-neutral-100">
+                  {topConsultants.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-5 py-8 text-center text-brand-neutral-400">
+                        No consultant data available
+                      </td>
+                    </tr>
+                  ) : (
+                    topConsultants.map((c, idx) => (
+                      <tr key={c.consultant_id} className="hover:bg-brand-neutral-50 transition-colors">
+                        <td className="px-5 py-3">
+                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
+                            idx === 0
+                              ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                              : idx === 1
+                                ? 'bg-gray-100 text-gray-700 border border-gray-300'
+                                : idx === 2
+                                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                  : 'bg-brand-neutral-50 text-brand-neutral-500 border border-brand-neutral-200'
+                          }`}>
+                            {idx + 1}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 font-semibold text-sequoia-900">
+                          {c.full_name}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full border ${rankBadgeColor(c.rank)}`}>
+                            {rankLabel(c.rank)}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-right font-bold" style={{ color: '#C8A84E' }}>
+                          {formatCurrency(c.total_earnings)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {c.deal_count}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={growth.map((g) => ({ ...g, month: formatMonth(g.month) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="total_consultants" name="Total" stroke={COLORS.blue} strokeWidth={2} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="new_consultants" name="New" stroke={COLORS.goldLight} strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
-        {/* EHMP Enrollment Trend */}
-        <div className="card-sequoia p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Heart size={18} className="text-emerald-600" />
-            <h3 className="text-lg font-bold text-[var(--sequoia-900)]">EHMP Enrollment Trend</h3>
+          {/* Monthly Trend */}
+          <div className="card-sequoia overflow-hidden">
+            <div className="flex items-center gap-2 p-5 pb-0">
+              <CalendarRange size={18} className="text-gold-600" />
+              <h3 className="text-lg font-bold text-sequoia-900">Monthly Trend</h3>
+            </div>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[var(--sequoia-800)] text-white">
+                    <th className="text-left px-5 py-3 font-semibold">Month</th>
+                    <th className="text-right px-5 py-3 font-semibold">Deals Funded</th>
+                    <th className="text-right px-5 py-3 font-semibold">Funded Volume</th>
+                    <th className="text-right px-5 py-3 font-semibold">Total Commissions</th>
+                    <th className="text-right px-5 py-3 font-semibold">Sequoia Revenue</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-brand-neutral-100">
+                  {monthlyTrend.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-5 py-8 text-center text-brand-neutral-400">
+                        No monthly data available
+                      </td>
+                    </tr>
+                  ) : (
+                    monthlyTrend.map((row) => (
+                      <tr key={row.month} className="hover:bg-brand-neutral-50 transition-colors">
+                        <td className="px-5 py-3 font-medium text-sequoia-900">
+                          {formatMonth(row.month)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {row.deals_funded}
+                        </td>
+                        <td className="px-5 py-3 text-right font-semibold" style={{ color: '#C8A84E' }}>
+                          {formatCurrency(row.total_funded_volume)}
+                        </td>
+                        <td className="px-5 py-3 text-right text-brand-neutral-600">
+                          {formatCurrency(row.total_commissions)}
+                        </td>
+                        <td className="px-5 py-3 text-right font-semibold" style={{ color: '#C8A84E' }}>
+                          {formatCurrency(row.sequoia_revenue)}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {monthlyTrend.length > 0 && (
+                  <tfoot>
+                    <tr className="bg-brand-neutral-50 font-bold">
+                      <td className="px-5 py-3 text-sequoia-900">Total</td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">
+                        {monthlyTrend.reduce((s, r) => s + r.deals_funded, 0)}
+                      </td>
+                      <td className="px-5 py-3 text-right" style={{ color: '#C8A84E' }}>
+                        {formatCurrency(monthlyTrend.reduce((s, r) => s + r.total_funded_volume, 0))}
+                      </td>
+                      <td className="px-5 py-3 text-right text-brand-neutral-600">
+                        {formatCurrency(monthlyTrend.reduce((s, r) => s + r.total_commissions, 0))}
+                      </td>
+                      <td className="px-5 py-3 text-right" style={{ color: '#C8A84E' }}>
+                        {formatCurrency(monthlyTrend.reduce((s, r) => s + r.sequoia_revenue, 0))}
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
           </div>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={enrollment.map((e) => ({ ...e, month: formatMonth(e.month) }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="new_enrollees" name="Enrollees" stroke={COLORS.emerald} fill={COLORS.emerald} fillOpacity={0.15} strokeWidth={2} />
-                <Area type="monotone" dataKey="new_companies" name="Companies" stroke={COLORS.purple} fill={COLORS.purple} fillOpacity={0.1} strokeWidth={2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Conversion Funnel */}
-        <div className="card-sequoia p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp size={18} className="text-gold-600" />
-            <h3 className="text-lg font-bold text-[var(--sequoia-900)]">Deal Pipeline Funnel</h3>
-          </div>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={funnel} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis dataKey="status" type="category" tick={{ fontSize: 12 }} width={100} />
-                <Tooltip formatter={(value) => [String(value), 'Deals']} />
-                <Bar dataKey="deal_count" fill={COLORS.gold} radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Commission Payouts */}
-      <div className="card-sequoia p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar size={18} className="text-gold-600" />
-          <h3 className="text-lg font-bold text-[var(--sequoia-900)]">Funded Volume vs Commissions</h3>
-        </div>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={fundedVolume.map((v) => ({
-              month: formatMonth(v.month),
-              funded: Number(v.total_amount),
-              commissions: Math.round(Number(v.total_amount) * 0.02),
-            }))}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis tickFormatter={formatCurrency} tick={{ fontSize: 12 }} />
-              <Tooltip formatter={(value) => [formatCurrency(Number(value))]} />
-              <Legend />
-              <Bar dataKey="funded" name="Funded Volume" fill={COLORS.sequoiaMid} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="commissions" name="Commissions" fill={COLORS.gold} radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {isLoading && (
-        <p className="text-center text-sm text-[var(--neutral-400)] py-4">
-          Loading live data from Supabase...
-        </p>
+        </>
       )}
     </div>
   )

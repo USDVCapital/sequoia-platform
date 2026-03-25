@@ -47,8 +47,11 @@ const adminNavItems = [
 
 function getPageTitle(pathname: string): string {
   const segment = pathname.split('/').filter(Boolean)
-  // /admin/consultants/[id] -> "Consultant Detail"
+  // /admin/X/[id] -> "X Detail"
   if (segment.length >= 3 && segment[1] === 'consultants') return 'Consultant Detail'
+  if (segment.length >= 3 && segment[1] === 'deals') return 'Deal Detail'
+  if (segment.length >= 3 && segment[1] === 'enrollments') return 'Enrollment Detail'
+  if (segment.length >= 3 && segment[1] === 'commissions') return 'Commission Detail'
   const last = segment.pop() ?? 'admin'
   const map: Record<string, string> = {
     admin:        'Dashboard',

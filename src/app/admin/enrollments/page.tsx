@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import DataTable, { type Column } from '@/components/admin/DataTable'
 import StatsCard from '@/components/admin/StatsCard'
@@ -24,6 +25,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function AdminEnrollmentsPage() {
+  const router = useRouter()
   const [enrollments, setEnrollments] = useState<EnrollmentWithConsultant[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -129,6 +131,7 @@ export default function AdminEnrollmentsPage() {
         <DataTable
           columns={columns}
           data={enrollments as unknown as Record<string, unknown>[]}
+          onRowClick={(row) => router.push(`/admin/enrollments/${row.id}`)}
           searchPlaceholder="Search by company..."
           searchKeys={['company_name', 'contact_name']}
           filters={[
