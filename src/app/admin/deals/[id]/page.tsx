@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, Clock, ChevronDown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { calculateWaterfall, getWaterfallSummary } from '@/lib/waterfall-engine'
+import { calculateWaterfall, getWaterfallSummary, getProductConfig } from '@/lib/waterfall-engine'
 import type { WaterfallPayout } from '@/lib/supabase/types'
 
 // ── Helpers ─────────────────────────────────────────────────
@@ -58,6 +58,7 @@ interface DealDetail {
   status: string
   description: string | null
   consultant_id: string | null
+  referral_slug: string | null
   created_at: string
   updated_at: string
   consultant?: { full_name: string; rank: string; onboarding_completed: boolean; sponsor_id: string | null } | null
@@ -106,7 +107,7 @@ export default function AdminDealDetailPage() {
       if (data) {
         // Normalize — if 'rank' doesn't exist yet, use tier as fallback
         const consultant = data.consultant as Record<string, unknown> | null
-        const normalizedDeal = {
+        let normalizedDeal = {
           ...data,
           consultant: consultant ? {
             full_name: String(consultant.full_name || ''),
@@ -116,20 +117,46 @@ export default function AdminDealDetailPage() {
           } : null,
         } as DealDetail
 
+        // If no consultant assigned but referral_slug exists, resolve the referrer
+        if (!normalizedDeal.consultant_id && normalizedDeal.referral_slug) {
+          const { data: referrer } = await supabase
+            .from('consultants')
+            .select('id, full_name, rank, onboarding_completed, sponsor_id')
+            .eq('slug', normalizedDeal.referral_slug)
+            .single()
+
+          if (referrer) {
+            normalizedDeal = {
+              ...normalizedDeal,
+              consultant_id: referrer.id,
+              consultant: {
+                full_name: String(referrer.full_name),
+                rank: String(referrer.rank || 'lc_1'),
+                onboarding_completed: Boolean(referrer.onboarding_completed),
+                sponsor_id: referrer.sponsor_id ? String(referrer.sponsor_id) : null,
+              },
+            }
+          }
+        }
+
         setDeal(normalizedDeal)
 
-        if (data.funded_amount) {
-          setGrossCommission(Math.round(Number(data.funded_amount) * 0.02 * 100) / 100)
+        // Set default gross commission based on product type
+        const productCategory = normalizedDeal.product_category || 'real_estate_lending'
+        const config = getProductConfig(productCategory)
+        if (normalizedDeal.funded_amount) {
+          setGrossCommission(Math.round(Number(normalizedDeal.funded_amount) * config.defaultCommissionRate * 100) / 100)
         }
-        if (consultant?.onboarding_completed) {
+        if (normalizedDeal.consultant?.onboarding_completed) {
           setIsCertified(true)
         }
 
         // Try to fetch upline chain (only works after migration)
-        if (data.consultant_id) {
+        const consultantId = normalizedDeal.consultant_id
+        if (consultantId) {
           try {
             const { data: uplineData } = await supabase
-              .rpc('get_upline_chain', { p_consultant_id: data.consultant_id, p_max_levels: 6 })
+              .rpc('get_upline_chain', { p_consultant_id: consultantId, p_max_levels: 6 })
             if (uplineData && Array.isArray(uplineData)) {
               setUpline(uplineData.map((u: Record<string, unknown>) => ({
                 level: Number(u.level),
@@ -151,14 +178,17 @@ export default function AdminDealDetailPage() {
     fetchDeal()
   }, [dealId])
 
+  const productCategory = deal?.product_category || 'real_estate_lending'
+  const productConfig = getProductConfig(productCategory)
+
   const handleCalculate = () => {
     if (!deal) return
     const result = calculateWaterfall({
       dealId: deal.id,
       grossCommission,
-      productCategory: deal.product_category || 'real_estate_lending',
+      productCategory,
       agentId: deal.consultant_id || '',
-      agentName: deal.consultant?.full_name || 'Unknown Agent',
+      agentName: deal.consultant?.full_name || deal.client_name,
       agentRank: deal.consultant?.rank || 'lc_1',
       isCertified,
       upline,
@@ -298,7 +328,9 @@ export default function AdminDealDetailPage() {
         {/* Inputs */}
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Gross Commission ($)</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              {productCategory === 'property_restoration' ? 'Project Value ($)' : 'Gross Commission ($)'}
+            </label>
             <input
               type="number"
               value={grossCommission}
@@ -308,19 +340,25 @@ export default function AdminDealDetailPage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">Agent Status</label>
-            <button
-              onClick={() => setIsCertified(!isCertified)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
-                isCertified
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                  : 'bg-amber-50 border-amber-300 text-amber-700'
-              }`}
-            >
-              {isCertified ? 'Personal (46%)' : 'Referral (23%)'}
-            </button>
+            {productConfig.sameRate ? (
+              <span className="inline-flex px-4 py-2 rounded-lg text-sm font-medium border bg-emerald-50 border-emerald-300 text-emerald-700">
+                {productConfig.agentLabels[0]}
+              </span>
+            ) : (
+              <button
+                onClick={() => setIsCertified(!isCertified)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all ${
+                  isCertified
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                    : 'bg-amber-50 border-amber-300 text-amber-700'
+                }`}
+              >
+                {isCertified ? productConfig.agentLabels[1] : productConfig.agentLabels[0]}
+              </button>
+            )}
           </div>
           <div className="text-xs text-gray-400">
-            Upline: {upline.length > 0 ? `${upline.length} level${upline.length !== 1 ? 's' : ''} found` : 'No upline (all overrides → Sequoia)'}
+            Upline: {upline.length > 0 ? `${upline.length} level${upline.length !== 1 ? 's' : ''} found` : 'No upline (all overrides \u2192 Sequoia)'}
           </div>
           <button
             onClick={handleCalculate}
@@ -377,7 +415,7 @@ export default function AdminDealDetailPage() {
                     </div>
                     <span className={`text-xs ${isSequoia ? 'text-sequoia-300' : isRecaptured ? 'text-gray-400 italic' : 'text-gray-400'}`}>
                       {levelLabel}
-                      {isRecaptured && ' — Recaptured \u2192 Sequoia'}
+                      {isRecaptured && ' \u2014 Recaptured \u2192 Sequoia'}
                     </span>
                   </div>
                   <span className={`text-xs font-mono w-12 text-right ${isSequoia ? 'text-sequoia-300' : 'text-gray-500'}`}>

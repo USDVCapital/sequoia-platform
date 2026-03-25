@@ -203,10 +203,10 @@ describe('Waterfall Engine', () => {
     })
   })
 
-  describe('Property Restoration (different override rates)', () => {
+  describe('Property Restoration (different rates per comp plan)', () => {
     const payouts = calculateWaterfall({
       dealId: 'deal-5',
-      grossCommission: 10000,
+      grossCommission: 50000, // project value
       productCategory: 'property_restoration',
       agentId: 'agent-pr',
       agentName: 'PR Agent',
@@ -215,15 +215,31 @@ describe('Waterfall Engine', () => {
       upline: buildFullUpline(),
     })
 
-    it('L1 override is 1% = $100 (not 10%)', () => {
+    it('has no overhead row (property restoration has 0% overhead)', () => {
+      const overhead = payouts.find(p => p.role === 'sequoia_overhead')
+      expect(overhead).toBeUndefined()
+    })
+
+    it('Agent gets 8% of project value = $4,000', () => {
+      const agent = payouts.find(p => p.role.startsWith('agent_'))!
+      expect(agent.amount).toBe(4000)
+      expect(agent.rate).toBe(0.08)
+    })
+
+    it('L1 override is 1% = $500', () => {
       const l1 = payouts.find(p => p.waterfallLevel === 1)!
-      expect(l1.amount).toBe(100)
+      expect(l1.amount).toBe(500)
       expect(l1.rate).toBe(0.01)
     })
 
-    it('L2 override is 0.75% = $75', () => {
+    it('L2 override is 0.75% = $375', () => {
       const l2 = payouts.find(p => p.waterfallLevel === 2)!
-      expect(l2.amount).toBe(75)
+      expect(l2.amount).toBe(375)
+    })
+
+    it('has no bonus pool row', () => {
+      const bp = payouts.find(p => p.role === 'bonus_pool')
+      expect(bp).toBeUndefined()
     })
   })
 
