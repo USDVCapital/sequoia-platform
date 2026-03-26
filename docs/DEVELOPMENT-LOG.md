@@ -2,6 +2,33 @@
 
 ---
 
+## 2026-03-26 (Session 5) — Live Supabase Genealogy Tree, Portal Welcome Fix
+Built by: Todd Billings + Claude Code
+
+### Admin Genealogy — Live Supabase Data (replaces mock data)
+- Replaced 100-consultant mock data generator with real Supabase queries
+- Tree now lazy-loads children on expand — fetches direct children + child counts per node
+- Added `fetchDirectChildren()`, `fetchChildCounts()`, `fetchConsultantById()`, `fetchOrgStats()`, `searchConsultants()` Supabase helper functions
+- Root is hardcoded to Allen Wu (`ALLEN_WU_ID = '00000000-0000-0000-0000-000000000001'`)
+- Detail sidebar now fetches sponsor name, direct count, and team stats via `get_team_stats` RPC call
+- Added "Active in Team" stat to sidebar
+- Search/filter now queries Supabase directly (debounced 300ms) with a flat result list instead of filtering the tree
+- Stat cards are toggleable (click Active again to deselect) and values use `toLocaleString()` for formatting
+- Renamed `rank` display logic to `tier` to match the database schema
+- Loading spinner shown during page load and node expansion (`Loader2` icon)
+- Type changed from `Consultant` → `ConsultantNode` to match Supabase column names (`full_name`, `is_active`, `sponsor_id`, `created_at`, `tier`)
+
+### Portal Welcome Banner Fix
+- Welcome banner now uses `impersonatingAs?.name` when admin is impersonating a consultant, falling back to `user?.name`
+- Previously always showed the admin's first name even when impersonating
+
+### Decisions Made
+- Lazy-load tree approach chosen over fetching all consultants at once — scales better for large orgs
+- Search switches to flat list mode rather than filtering the tree, since server-side search can't easily reconstruct tree ancestry
+- Used `get_team_stats` RPC (database function) for recursive team size calculation rather than client-side traversal
+
+---
+
 ## 2026-03-25 (Session 4) — Command Center Deep Links, Analytics Fixes, UI Polish, Bulk Agent Seeding, SEA Rename
 Built by: Todd Billings + Claude Code
 

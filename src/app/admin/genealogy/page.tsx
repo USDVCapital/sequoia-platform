@@ -1,224 +1,220 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import Link from 'next/link'
-import { Search, ChevronRight, ChevronDown, Users, UserCheck, UserX, UserPlus, Mail, Phone, ExternalLink, X } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import { Search, ChevronRight, ChevronDown, Users, UserCheck, UserX, UserPlus, Mail, Phone, ExternalLink, X, Loader2 } from 'lucide-react'
 
 // ── Types ────────────────────────────────────────────────────
 
-interface Consultant {
+interface ConsultantNode {
   id: string
-  name: string
-  rank: string
-  sponsorId: string | null
-  isActive: boolean
+  full_name: string
   email: string
-  phone: string
-  joinedDate: string
-  slug: string
+  phone: string | null
+  tier: string
+  rank: string
+  is_active: boolean
+  sponsor_id: string | null
+  created_at: string
+  slug: string | null
+  /** Number of direct children (from count query) */
+  child_count?: number
 }
 
-// ── Mock Data Generation (100 consultants, 6 levels) ────────
+// ── Display helpers ──────────────────────────────────────────
 
-const ranks = ['lc_1', 'lc_2', 'lc_3', 'senior_lc', 'managing_director', 'executive_director'] as const
-const rankLabels: Record<string, string> = {
-  lc_1: 'LC 1', lc_2: 'LC 2', lc_3: 'LC 3', senior_lc: 'Senior LC',
+const ALLEN_WU_ID = '00000000-0000-0000-0000-000000000001'
+
+const tierLabels: Record<string, string> = {
+  associate: 'Associate', active: 'Active', senior: 'Senior',
   managing_director: 'MD', executive_director: 'ED',
 }
-const rankColors: Record<string, string> = {
-  lc_1: 'bg-gray-100 text-gray-600', lc_2: 'bg-blue-100 text-blue-600',
-  lc_3: 'bg-indigo-100 text-indigo-600', senior_lc: 'bg-purple-100 text-purple-600',
+const tierColors: Record<string, string> = {
+  associate: 'bg-gray-100 text-gray-600', active: 'bg-blue-100 text-blue-600',
+  senior: 'bg-purple-100 text-purple-600',
   managing_director: 'bg-amber-100 text-amber-700', executive_director: 'bg-yellow-100 text-yellow-800',
 }
 const avatarColors: Record<string, string> = {
-  lc_1: 'bg-gray-200 text-gray-700', lc_2: 'bg-blue-200 text-blue-700',
-  lc_3: 'bg-indigo-200 text-indigo-700', senior_lc: 'bg-purple-200 text-purple-700',
+  associate: 'bg-gray-200 text-gray-700', active: 'bg-blue-200 text-blue-700',
+  senior: 'bg-purple-200 text-purple-700',
   managing_director: 'bg-amber-200 text-amber-800', executive_director: 'bg-yellow-200 text-yellow-800',
-}
-const borderColors: Record<string, string> = {
-  executive_director: 'border-l-yellow-500', managing_director: 'border-l-amber-400',
-  active: 'border-l-green-400', inactive: 'border-l-amber-300',
-}
-
-const firstNames = ['Marcus','Priya','Jordan','Sarah','David','Emily','Carlos','Keiko','Aisha','Liam','Mei','Omar','Zara','Ethan','Nina','Alex','Fatima','Raj','Chloe','Derek','Sofia','Tyler','Nadia','James','Luna','Hassan','Vera','Leo','Jasmine','Noah','Amara','Isaac','Hana','Cole','Layla','Xavier','Mia','Soren','Yuki','Dante','Elena','Kai','Brenna','Felix','Indira','Theo','Carmen','Arjun','Kira','Wesley']
-const lastNames = ['Rivera','Nair','Blake','Chen','Kim','Okafor','Morales','Tanaka','Patel','Sullivan','Wong','Hassan','Andersen','Cooper','Nakamura','Diaz','Gupta','Monroe','Sato','Ellis','Vasquez','Shah','Brooks','Yamamoto','Foster','Ortiz','Kapoor','Hayes','Li','Bennett','Park','Ahmad','Torres','Singh','Murphy','Huang','Cole','Sharma','Cruz','Davis']
-
-function makeName(i: number): string {
-  return `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`
-}
-
-function makeDate(monthsAgo: number): string {
-  const d = new Date(2026, 2, 24)
-  d.setMonth(d.getMonth() - monthsAgo)
-  d.setDate(1 + Math.floor(Math.random() * 27))
-  return d.toISOString().split('T')[0]
-}
-
-// Build 100 consultants across levels
-const consultantData: Consultant[] = (() => {
-  const out: Consultant[] = []
-  let idx = 0
-
-  // L0: root
-  out.push({ id: 'c-0', name: 'Allen Wu', rank: 'executive_director', sponsorId: null, isActive: true, email: 'allen@sequoia-es.com', phone: '(555) 100-0000', joinedDate: '2023-01-15', slug: 'allen-wu' })
-  idx++
-
-  // L1: 5 directs under root
-  const l1Ranks = ['managing_director', 'senior_lc', 'senior_lc', 'lc_3', 'lc_3']
-  for (let i = 0; i < 5; i++) {
-    out.push({ id: `c-${idx}`, name: makeName(idx), rank: l1Ranks[i], sponsorId: 'c-0', isActive: true, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 1${String(i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(20 + i), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-    idx++
-  }
-
-  // L2: ~18 under L1 members
-  const l1Ids = out.filter(c => c.sponsorId === 'c-0').map(c => c.id)
-  const l2Counts = [5, 4, 4, 3, 2]
-  const l2Ranks = ['lc_3', 'lc_2', 'lc_2', 'lc_1', 'senior_lc', 'lc_3', 'lc_2', 'lc_1', 'lc_2', 'lc_3', 'lc_1', 'lc_2', 'lc_1', 'lc_1', 'lc_2', 'lc_3', 'lc_1', 'lc_2']
-  let l2i = 0
-  for (let p = 0; p < l1Ids.length; p++) {
-    for (let j = 0; j < l2Counts[p]; j++) {
-      const active = Math.random() > 0.25
-      out.push({ id: `c-${idx}`, name: makeName(idx), rank: l2Ranks[l2i] || 'lc_1', sponsorId: l1Ids[p], isActive: active, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 2${String(l2i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(12 + l2i), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-      idx++; l2i++
-    }
-  }
-
-  // L3: ~35 under L2 members
-  const l2Ids = out.filter(c => c.sponsorId && l1Ids.includes(c.sponsorId)).map(c => c.id)
-  for (let i = 0; i < 35; i++) {
-    const sponsor = l2Ids[i % l2Ids.length]
-    const active = Math.random() > 0.4
-    out.push({ id: `c-${idx}`, name: makeName(idx), rank: ranks[Math.min(i % 4, 3)], sponsorId: sponsor, isActive: active, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 3${String(i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(6 + (i % 10)), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-    idx++
-  }
-
-  // L4: ~25 under L3 members
-  const l3Ids = out.slice(out.length - 35).map(c => c.id)
-  for (let i = 0; i < 25; i++) {
-    const sponsor = l3Ids[i % l3Ids.length]
-    const active = Math.random() > 0.5
-    out.push({ id: `c-${idx}`, name: makeName(idx), rank: ranks[i % 3], sponsorId: sponsor, isActive: active, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 4${String(i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(3 + (i % 5)), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-    idx++
-  }
-
-  // L5: ~12 under L4 members
-  const l4Ids = out.slice(out.length - 25).map(c => c.id)
-  for (let i = 0; i < 12; i++) {
-    const sponsor = l4Ids[i % l4Ids.length]
-    const active = Math.random() > 0.5
-    out.push({ id: `c-${idx}`, name: makeName(idx), rank: ranks[i % 2], sponsorId: sponsor, isActive: active, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 5${String(i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(1 + (i % 3)), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-    idx++
-  }
-
-  // L6: 5 under L5 members
-  const l5Ids = out.slice(out.length - 12).map(c => c.id)
-  for (let i = 0; i < 5; i++) {
-    const sponsor = l5Ids[i % l5Ids.length]
-    out.push({ id: `c-${idx}`, name: makeName(idx), rank: 'lc_1', sponsorId: sponsor, isActive: Math.random() > 0.5, email: `${makeName(idx).toLowerCase().replace(' ', '.')}@email.com`, phone: `(555) 6${String(i).padStart(2, '0')}-${String(1000 + idx).slice(1)}`, joinedDate: makeDate(i), slug: makeName(idx).toLowerCase().replace(' ', '-') })
-    idx++
-  }
-
-  return out
-})()
-
-// ── Helper: build tree map ──────────────────────────────────
-
-function buildChildrenMap(consultants: Consultant[]) {
-  const map: Record<string, string[]> = {}
-  for (const c of consultants) {
-    if (c.sponsorId) {
-      if (!map[c.sponsorId]) map[c.sponsorId] = []
-      map[c.sponsorId].push(c.id)
-    }
-  }
-  return map
-}
-
-function getTeamSize(id: string, childrenMap: Record<string, string[]>): number {
-  const kids = childrenMap[id] ?? []
-  return kids.length + kids.reduce((sum, kid) => sum + getTeamSize(kid, childrenMap), 0)
 }
 
 function initials(name: string) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
 
-// ── TreeNode Component ──────────────────────────────────────
+function leftBorderClass(c: ConsultantNode) {
+  if (c.tier === 'executive_director') return 'border-l-yellow-500'
+  if (c.tier === 'managing_director') return 'border-l-amber-400'
+  return c.is_active ? 'border-l-green-400' : 'border-l-amber-300'
+}
+
+// ── Supabase helpers ─────────────────────────────────────────
+
+const supabase = createClient()
+
+async function fetchDirectChildren(parentId: string): Promise<ConsultantNode[]> {
+  const { data } = await supabase
+    .from('consultants')
+    .select('id, full_name, email, phone, tier, rank, is_active, sponsor_id, created_at, slug')
+    .eq('sponsor_id', parentId)
+    .order('full_name', { ascending: true })
+  return data ?? []
+}
+
+async function fetchChildCounts(parentIds: string[]): Promise<Record<string, number>> {
+  if (parentIds.length === 0) return {}
+  // Count children per sponsor_id
+  const { data } = await supabase
+    .from('consultants')
+    .select('sponsor_id')
+    .in('sponsor_id', parentIds)
+  const counts: Record<string, number> = {}
+  for (const row of data ?? []) {
+    if (row.sponsor_id) counts[row.sponsor_id] = (counts[row.sponsor_id] ?? 0) + 1
+  }
+  return counts
+}
+
+async function fetchConsultantById(id: string): Promise<ConsultantNode | null> {
+  const { data } = await supabase
+    .from('consultants')
+    .select('id, full_name, email, phone, tier, rank, is_active, sponsor_id, created_at, slug')
+    .eq('id', id)
+    .single()
+  return data
+}
+
+async function fetchOrgStats() {
+  const { count: total } = await supabase
+    .from('consultants')
+    .select('*', { count: 'exact', head: true })
+  const { count: active } = await supabase
+    .from('consultants')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const { count: newThisMonth } = await supabase
+    .from('consultants')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', thirtyDaysAgo.toISOString())
+  return {
+    total: total ?? 0,
+    active: active ?? 0,
+    inactive: (total ?? 0) - (active ?? 0),
+    newThisMonth: newThisMonth ?? 0,
+  }
+}
+
+async function searchConsultants(query: string, tierFilter: string, statusFilter: string): Promise<ConsultantNode[]> {
+  let q = supabase
+    .from('consultants')
+    .select('id, full_name, email, phone, tier, rank, is_active, sponsor_id, created_at, slug')
+    .order('full_name', { ascending: true })
+    .limit(100)
+
+  if (query) q = q.ilike('full_name', `%${query}%`)
+  if (tierFilter !== 'all') q = q.eq('tier', tierFilter)
+  if (statusFilter === 'active') q = q.eq('is_active', true)
+  else if (statusFilter === 'inactive') q = q.eq('is_active', false)
+
+  const { data } = await q
+  return data ?? []
+}
+
+// ── TreeNode Component (lazy-loading) ────────────────────────
 
 function TreeNode({
-  consultant, level, childrenMap, consultantMap, selectedId, onSelect, searchMatch,
+  consultant, level, selectedId, onSelect, onExpand,
+  childrenMap, loadingIds,
 }: {
-  consultant: Consultant; level: number; childrenMap: Record<string, string[]>
-  consultantMap: Record<string, Consultant>; selectedId: string | null
-  onSelect: (id: string) => void; searchMatch: Set<string>
+  consultant: ConsultantNode
+  level: number
+  selectedId: string | null
+  onSelect: (c: ConsultantNode) => void
+  onExpand: (id: string) => void
+  childrenMap: Record<string, ConsultantNode[]>
+  loadingIds: Set<string>
 }) {
   const [expanded, setExpanded] = useState(level < 1)
-  const kids = childrenMap[consultant.id] ?? []
-  const hasKids = kids.length > 0
+  const hasKids = (consultant.child_count ?? 0) > 0
+  const kids = childrenMap[consultant.id]
+  const isLoading = loadingIds.has(consultant.id)
   const isSelected = selectedId === consultant.id
-  const isMatch = searchMatch.size === 0 || searchMatch.has(consultant.id)
+  const border = leftBorderClass(consultant)
 
-  const leftBorder = consultant.rank === 'executive_director'
-    ? 'border-l-yellow-500'
-    : consultant.rank === 'managing_director'
-      ? 'border-l-amber-400'
-      : consultant.isActive ? 'border-l-green-400' : 'border-l-amber-300'
-
-  if (!isMatch && searchMatch.size > 0) return null
+  const handleExpand = () => {
+    const next = !expanded
+    setExpanded(next)
+    if (next && hasKids && !kids) {
+      onExpand(consultant.id)
+    }
+  }
 
   return (
     <div style={{ paddingLeft: level * 24 }}>
       <div
-        onClick={() => onSelect(consultant.id)}
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg border-l-[3px] cursor-pointer transition-all text-sm ${leftBorder} ${
+        onClick={() => onSelect(consultant)}
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg border-l-[3px] cursor-pointer transition-all text-sm ${border} ${
           isSelected ? 'bg-gold-50 ring-1 ring-gold-500/40' : 'hover:bg-gray-50'
         }`}
       >
         {/* Expand/collapse */}
         <button
-          onClick={e => { e.stopPropagation(); setExpanded(!expanded) }}
+          onClick={e => { e.stopPropagation(); handleExpand() }}
           className={`w-5 h-5 flex items-center justify-center rounded text-gray-400 hover:text-gray-600 transition-colors ${!hasKids ? 'invisible' : ''}`}
         >
-          {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          {isLoading ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : expanded ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5" />
+          )}
         </button>
 
         {/* Avatar */}
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${avatarColors[consultant.rank] ?? 'bg-gray-200 text-gray-600'}`}>
-          {initials(consultant.name)}
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${avatarColors[consultant.tier] ?? 'bg-gray-200 text-gray-600'}`}>
+          {initials(consultant.full_name)}
         </div>
 
         {/* Name & info */}
         <div className="flex-1 min-w-0">
-          <span className="font-semibold text-gray-800 truncate block">{consultant.name}</span>
+          <span className="font-semibold text-gray-800 truncate block">{consultant.full_name}</span>
           <div className="flex items-center gap-2 text-[11px] text-gray-400">
             <span>Level {level}</span>
-            <span>{new Date(consultant.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+            {consultant.child_count != null && <span>{consultant.child_count} direct</span>}
+            <span>{new Date(consultant.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
           </div>
         </div>
 
-        {/* Rank badge */}
-        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${rankColors[consultant.rank] ?? 'bg-gray-100 text-gray-600'}`}>
-          {rankLabels[consultant.rank] ?? consultant.rank}
+        {/* Tier badge */}
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tierColors[consultant.tier] ?? 'bg-gray-100 text-gray-600'}`}>
+          {tierLabels[consultant.tier] ?? consultant.tier}
         </span>
 
         {/* Active dot */}
-        <span className={`w-2 h-2 rounded-full shrink-0 ${consultant.isActive ? 'bg-green-400' : 'bg-amber-300'}`} />
+        <span className={`w-2 h-2 rounded-full shrink-0 ${consultant.is_active ? 'bg-green-400' : 'bg-amber-300'}`} />
       </div>
 
-      {/* Children */}
-      {expanded && hasKids && (
+      {/* Children (lazy loaded) */}
+      {expanded && kids && (
         <div>
-          {kids.map(kidId => {
-            const kid = consultantMap[kidId]
-            if (!kid) return null
-            return (
-              <TreeNode
-                key={kid.id} consultant={kid} level={level + 1}
-                childrenMap={childrenMap} consultantMap={consultantMap}
-                selectedId={selectedId} onSelect={onSelect} searchMatch={searchMatch}
-              />
-            )
-          })}
+          {kids.map(kid => (
+            <TreeNode
+              key={kid.id}
+              consultant={kid}
+              level={level + 1}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              onExpand={onExpand}
+              childrenMap={childrenMap}
+              loadingIds={loadingIds}
+            />
+          ))}
         </div>
       )}
     </div>
@@ -227,25 +223,49 @@ function TreeNode({
 
 // ── Detail Sidebar ──────────────────────────────────────────
 
-function DetailSidebar({ consultant, consultantMap, childrenMap, onClose }: {
-  consultant: Consultant; consultantMap: Record<string, Consultant>
-  childrenMap: Record<string, string[]>; onClose: () => void
+function DetailSidebar({ consultant, onClose }: {
+  consultant: ConsultantNode
+  onClose: () => void
 }) {
-  const sponsor = consultant.sponsorId ? consultantMap[consultant.sponsorId] : null
-  const directRecruits = (childrenMap[consultant.id] ?? []).length
-  const totalTeam = getTeamSize(consultant.id, childrenMap)
+  const [sponsor, setSponsor] = useState<ConsultantNode | null>(null)
+  const [teamStats, setTeamStats] = useState<{ total: number; active: number } | null>(null)
+  const [directCount, setDirectCount] = useState<number>(0)
+
+  useEffect(() => {
+    let cancelled = false
+    // Fetch sponsor name
+    if (consultant.sponsor_id) {
+      fetchConsultantById(consultant.sponsor_id).then(s => { if (!cancelled) setSponsor(s) })
+    } else {
+      setSponsor(null)
+    }
+    // Fetch team stats via RPC
+    supabase.rpc('get_team_stats', { p_consultant_id: consultant.id }).then(({ data }) => {
+      if (!cancelled && data?.[0]) {
+        setTeamStats({ total: data[0].total_team, active: data[0].active_team })
+      }
+    })
+    // Fetch direct child count
+    supabase
+      .from('consultants')
+      .select('*', { count: 'exact', head: true })
+      .eq('sponsor_id', consultant.id)
+      .then(({ count }) => { if (!cancelled) setDirectCount(count ?? 0) })
+
+    return () => { cancelled = true }
+  }, [consultant.id, consultant.sponsor_id])
 
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-5 space-y-5">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${avatarColors[consultant.rank] ?? 'bg-gray-200 text-gray-600'}`}>
-            {initials(consultant.name)}
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold ${avatarColors[consultant.tier] ?? 'bg-gray-200 text-gray-600'}`}>
+            {initials(consultant.full_name)}
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">{consultant.name}</h3>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${rankColors[consultant.rank] ?? 'bg-gray-100 text-gray-600'}`}>
-              {rankLabels[consultant.rank] ?? consultant.rank}
+            <h3 className="font-bold text-gray-900">{consultant.full_name}</h3>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tierColors[consultant.tier] ?? 'bg-gray-100 text-gray-600'}`}>
+              {tierLabels[consultant.tier] ?? consultant.tier}
             </span>
           </div>
         </div>
@@ -258,32 +278,40 @@ function DetailSidebar({ consultant, consultantMap, childrenMap, onClose }: {
         <div className="flex items-center gap-2 text-gray-600">
           <Mail className="h-4 w-4 text-gray-400" /> {consultant.email}
         </div>
-        <div className="flex items-center gap-2 text-gray-600">
-          <Phone className="h-4 w-4 text-gray-400" /> {consultant.phone}
-        </div>
+        {consultant.phone && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Phone className="h-4 w-4 text-gray-400" /> {consultant.phone}
+          </div>
+        )}
       </div>
 
       <div className="border-t border-neutral-100 pt-4 space-y-2 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-400">Sponsor</span>
-          <span className="font-medium text-gray-700">{sponsor?.name ?? 'None (Root)'}</span>
+          <span className="font-medium text-gray-700">{sponsor?.full_name ?? 'None (Root)'}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Personal Recruits</span>
-          <span className="font-semibold text-gray-800">{directRecruits}</span>
+          <span className="font-semibold text-gray-800">{directCount}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Total Team Size</span>
-          <span className="font-semibold text-gray-800">{totalTeam}</span>
+          <span className="font-semibold text-gray-800">{teamStats?.total ?? '...'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Active in Team</span>
+          <span className="font-semibold text-green-600">{teamStats?.active ?? '...'}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Joined</span>
-          <span className="font-medium text-gray-700">{new Date(consultant.joinedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span className="font-medium text-gray-700">
+            {new Date(consultant.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Status</span>
-          <span className={`font-medium ${consultant.isActive ? 'text-green-600' : 'text-amber-600'}`}>
-            {consultant.isActive ? 'Active' : 'Inactive'}
+          <span className={`font-medium ${consultant.is_active ? 'text-green-600' : 'text-amber-600'}`}>
+            {consultant.is_active ? 'Active' : 'Inactive'}
           </span>
         </div>
       </div>
@@ -300,62 +328,143 @@ function DetailSidebar({ consultant, consultantMap, childrenMap, onClose }: {
   )
 }
 
+// ── Search Results (flat list) ──────────────────────────────
+
+function SearchResults({
+  results, selectedId, onSelect,
+}: {
+  results: ConsultantNode[]
+  selectedId: string | null
+  onSelect: (c: ConsultantNode) => void
+}) {
+  return (
+    <div className="space-y-1">
+      {results.length === 0 && (
+        <p className="text-sm text-gray-400 text-center py-8">No consultants match your search.</p>
+      )}
+      {results.map(c => (
+        <div
+          key={c.id}
+          onClick={() => onSelect(c)}
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg border-l-[3px] cursor-pointer transition-all text-sm ${leftBorderClass(c)} ${
+            selectedId === c.id ? 'bg-gold-50 ring-1 ring-gold-500/40' : 'hover:bg-gray-50'
+          }`}
+        >
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${avatarColors[c.tier] ?? 'bg-gray-200 text-gray-600'}`}>
+            {initials(c.full_name)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <span className="font-semibold text-gray-800 truncate block">{c.full_name}</span>
+            <span className="text-[11px] text-gray-400">{c.email}</span>
+          </div>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${tierColors[c.tier] ?? 'bg-gray-100 text-gray-600'}`}>
+            {tierLabels[c.tier] ?? c.tier}
+          </span>
+          <span className={`w-2 h-2 rounded-full shrink-0 ${c.is_active ? 'bg-green-400' : 'bg-amber-300'}`} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── Page Component ──────────────────────────────────────────
 
 export default function AdminGenealogyPage() {
   const [search, setSearch] = useState('')
-  const [rankFilter, setRankFilter] = useState('all')
+  const [tierFilter, setTierFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedConsultant, setSelectedConsultant] = useState<ConsultantNode | null>(null)
+
+  // Tree state
+  const [root, setRoot] = useState<ConsultantNode | null>(null)
+  const [childrenMap, setChildrenMap] = useState<Record<string, ConsultantNode[]>>({})
+  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set())
+  const [pageLoading, setPageLoading] = useState(true)
+
+  // Stats
+  const [orgStats, setOrgStats] = useState({ total: 0, active: 0, inactive: 0, newThisMonth: 0 })
+
+  // Search results (when filters are active)
+  const [searchResults, setSearchResults] = useState<ConsultantNode[] | null>(null)
+  const [searching, setSearching] = useState(false)
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const isFiltering = search.length > 0 || tierFilter !== 'all' || statusFilter !== 'all'
 
   useEffect(() => { document.title = 'Genealogy | Sequoia Admin' }, [])
 
-  const consultantMap = useMemo(() => {
-    const m: Record<string, Consultant> = {}
-    for (const c of consultantData) m[c.id] = c
-    return m
+  // Initial load: root + direct children + stats
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      const [rootData, stats] = await Promise.all([
+        fetchConsultantById(ALLEN_WU_ID),
+        fetchOrgStats(),
+      ])
+      if (cancelled) return
+      if (!rootData) { setPageLoading(false); return }
+
+      // Fetch Allen's direct children
+      const children = await fetchDirectChildren(rootData.id)
+      if (cancelled) return
+
+      // Get child counts for those children
+      const counts = await fetchChildCounts(children.map(c => c.id))
+      if (cancelled) return
+      const childrenWithCounts = children.map(c => ({ ...c, child_count: counts[c.id] ?? 0 }))
+
+      // Count Allen's children
+      rootData.child_count = children.length
+
+      setRoot(rootData)
+      setChildrenMap({ [rootData.id]: childrenWithCounts })
+      setOrgStats(stats)
+      setPageLoading(false)
+    }
+    load()
+    return () => { cancelled = true }
   }, [])
 
-  const childrenMap = useMemo(() => buildChildrenMap(consultantData), [])
+  // Lazy-load children when a node is expanded
+  const handleExpand = useCallback(async (parentId: string) => {
+    setLoadingIds(prev => new Set(prev).add(parentId))
+    const children = await fetchDirectChildren(parentId)
+    const counts = await fetchChildCounts(children.map(c => c.id))
+    const childrenWithCounts = children.map(c => ({ ...c, child_count: counts[c.id] ?? 0 }))
+    setChildrenMap(prev => ({ ...prev, [parentId]: childrenWithCounts }))
+    setLoadingIds(prev => { const next = new Set(prev); next.delete(parentId); return next })
+  }, [])
 
-  const root = consultantData.find(c => c.sponsorId === null)!
-
-  // Filter logic: collect IDs that match
-  const searchMatch = useMemo(() => {
-    const lowerSearch = search.toLowerCase()
-    const matched = consultantData.filter(c => {
-      if (search && !c.name.toLowerCase().includes(lowerSearch)) return false
-      if (rankFilter !== 'all' && c.rank !== rankFilter) return false
-      if (statusFilter === 'active' && !c.isActive) return false
-      if (statusFilter === 'inactive' && c.isActive) return false
-      return true
-    })
-    // If no filters active, return empty set (show all)
-    if (!search && rankFilter === 'all' && statusFilter === 'all') return new Set<string>()
-    // Include ancestors so tree remains visible
-    const ids = new Set(matched.map(c => c.id))
-    for (const c of matched) {
-      let current: Consultant | undefined = c
-      while (current?.sponsorId) {
-        ids.add(current.sponsorId)
-        current = consultantMap[current.sponsorId]
-      }
+  // Debounced search
+  useEffect(() => {
+    if (!isFiltering) {
+      setSearchResults(null)
+      return
     }
-    return ids
-  }, [search, rankFilter, statusFilter, consultantMap])
-
-  const selectedConsultant = selectedId ? consultantMap[selectedId] : null
-
-  const activeCount = consultantData.filter(c => c.isActive).length
-  const inactiveCount = consultantData.length - activeCount
-  const newThisMonth = 7
+    setSearching(true)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(async () => {
+      const results = await searchConsultants(search, tierFilter, statusFilter)
+      setSearchResults(results)
+      setSearching(false)
+    }, 300)
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current) }
+  }, [search, tierFilter, statusFilter, isFiltering])
 
   const stats = [
-    { label: 'Total Consultants', value: consultantData.length, icon: Users, color: 'text-sequoia-700' },
-    { label: 'Active', value: activeCount, icon: UserCheck, color: 'text-green-600' },
-    { label: 'Inactive', value: inactiveCount, icon: UserX, color: 'text-amber-600' },
-    { label: 'New This Month', value: newThisMonth, icon: UserPlus, color: 'text-blue-600' },
+    { label: 'Total Consultants', value: orgStats.total, icon: Users, color: 'text-sequoia-700' },
+    { label: 'Active', value: orgStats.active, icon: UserCheck, color: 'text-green-600' },
+    { label: 'Inactive', value: orgStats.inactive, icon: UserX, color: 'text-amber-600' },
+    { label: 'New This Month', value: orgStats.newThisMonth, icon: UserPlus, color: 'text-blue-600' },
   ]
+
+  if (pageLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-sequoia-700" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -365,8 +474,8 @@ export default function AdminGenealogyPage() {
           <button
             key={s.label}
             onClick={() => {
-              if (s.label === 'Active') setStatusFilter('active')
-              else if (s.label === 'Inactive') setStatusFilter('inactive')
+              if (s.label === 'Active') setStatusFilter(prev => prev === 'active' ? 'all' : 'active')
+              else if (s.label === 'Inactive') setStatusFilter(prev => prev === 'inactive' ? 'all' : 'inactive')
               else setStatusFilter('all')
             }}
             className={`rounded-xl border bg-white p-5 text-left transition-all hover:shadow-md cursor-pointer ${
@@ -379,7 +488,7 @@ export default function AdminGenealogyPage() {
                 <s.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+                <p className="text-2xl font-bold text-gray-900">{s.value.toLocaleString()}</p>
                 <p className="text-xs text-gray-400">{s.label}</p>
               </div>
             </div>
@@ -400,15 +509,14 @@ export default function AdminGenealogyPage() {
           />
         </div>
         <select
-          value={rankFilter}
-          onChange={e => setRankFilter(e.target.value)}
+          value={tierFilter}
+          onChange={e => setTierFilter(e.target.value)}
           className="rounded-lg border border-neutral-200 px-3 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-gold-500 outline-none"
         >
-          <option value="all">All Ranks</option>
-          <option value="lc_1">LC 1</option>
-          <option value="lc_2">LC 2</option>
-          <option value="lc_3">LC 3</option>
-          <option value="senior_lc">Senior LC</option>
+          <option value="all">All Tiers</option>
+          <option value="associate">Associate</option>
+          <option value="active">Active</option>
+          <option value="senior">Senior</option>
           <option value="managing_director">MD</option>
           <option value="executive_director">ED</option>
         </select>
@@ -425,17 +533,33 @@ export default function AdminGenealogyPage() {
 
       {/* Main content: tree + sidebar */}
       <div className="flex gap-6">
-        {/* Tree view */}
+        {/* Tree view / search results */}
         <div className={`flex-1 min-w-0 rounded-xl border border-neutral-200 bg-white p-4 overflow-auto max-h-[calc(100vh-340px)] ${selectedConsultant ? 'lg:w-[60%]' : 'w-full'}`}>
-          <TreeNode
-            consultant={root}
-            level={0}
-            childrenMap={childrenMap}
-            consultantMap={consultantMap}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            searchMatch={searchMatch}
-          />
+          {isFiltering ? (
+            searching ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              </div>
+            ) : (
+              <SearchResults
+                results={searchResults ?? []}
+                selectedId={selectedConsultant?.id ?? null}
+                onSelect={setSelectedConsultant}
+              />
+            )
+          ) : root ? (
+            <TreeNode
+              consultant={root}
+              level={0}
+              selectedId={selectedConsultant?.id ?? null}
+              onSelect={setSelectedConsultant}
+              onExpand={handleExpand}
+              childrenMap={childrenMap}
+              loadingIds={loadingIds}
+            />
+          ) : (
+            <p className="text-sm text-gray-400 text-center py-8">No root consultant found.</p>
+          )}
         </div>
 
         {/* Detail sidebar */}
@@ -443,9 +567,7 @@ export default function AdminGenealogyPage() {
           <div className="hidden lg:block w-[40%] shrink-0 sticky top-0">
             <DetailSidebar
               consultant={selectedConsultant}
-              consultantMap={consultantMap}
-              childrenMap={childrenMap}
-              onClose={() => setSelectedId(null)}
+              onClose={() => setSelectedConsultant(null)}
             />
           </div>
         )}

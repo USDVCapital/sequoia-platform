@@ -267,8 +267,8 @@ function saveGoals(goals: GoalsData) {
 // ---------------------------------------------------------------------------
 
 function WelcomeBanner() {
-  const { user } = useAuth()
-  const firstName = user?.name?.split(' ')[0] ?? 'Consultant'
+  const { user, impersonatingAs } = useAuth()
+  const firstName = (impersonatingAs?.name ?? user?.name)?.split(' ')[0] ?? 'Consultant'
   const now = new Date()
   const dateStr = now.toLocaleDateString('en-US', {
     weekday: 'long',
